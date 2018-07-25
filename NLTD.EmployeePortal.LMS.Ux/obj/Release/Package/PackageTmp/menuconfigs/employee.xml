@@ -1,0 +1,85 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Menu xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <menuitem>
+    <MenuItem>
+      <title>Dashboard</title>
+      <url>/Dashboard</url>
+      <icon>fa fa-tachometer</icon>
+    </MenuItem>
+    <MenuItem>
+      <title>My Requests</title>
+      <url>#</url>
+      <icon>fa fa-user-circle-o</icon>
+      <level1item>
+        <MenuItem>
+          <title>Apply New Request</title>
+          <url>/Leaves/Apply</url>
+          <icon></icon>
+        </MenuItem>
+        <MenuItem>
+          <title>Request History</title>
+          <url>/Leaves/MyLeaveHistory</url>
+          <icon></icon>
+        </MenuItem>
+        <MenuItem>
+          <title>Day wise Report</title>
+          <url>/Admin/MyDaywiseLeaves</url>
+          <icon></icon>
+        </MenuItem>
+        <MenuItem>
+          <title>Month wise Report</title>
+          <url>/Admin/MyMonthWiseLeaves</url>
+          <icon></icon>
+        </MenuItem>
+        <MenuItem>
+          <title>Leave Balance Report</title>
+          <url>/Admin/MyYearWiseLeaveSumary</url>
+          <icon></icon>
+        </MenuItem>
+        <MenuItem>
+          <title>Permissions Report</title>
+          <url>/Admin/MyPermissions</url>
+          <icon></icon>
+        </MenuItem>
+        <MenuItem>
+          <title>Over Time Report</title>
+          <url>/Admin/MyOverTimePermissions</url>
+          <icon></icon>
+        </MenuItem>
+        <MenuItem>
+          <title>Profile</title>
+          <url>/Profile/MyLmsProfile</url>
+          <icon></icon>
+        </MenuItem>
+        <MenuItem>
+          <title>Transaction Log</title>
+          <url>/Admin/MyTransactionLogs</url>
+          <icon></icon>
+        </MenuItem>
+      </level1item>
+    </MenuItem>
+
+    <MenuItem>
+      <title>My Timesheet</title>
+      <url>#</url>
+      <icon>fa fa-user-circle-o</icon>
+      <level1item>
+        <MenuItem>
+          <title>Attendance</title>
+          <url>/Attendance/MyAttendance</url>
+          <icon></icon>
+        </MenuItem>
+        <MenuItem>
+          <title>Timesheet</title>
+          <url>/Attendance/MyTimeSheet</url>
+          <icon></icon>
+        </MenuItem>
+        <MenuItem>
+          <title>Shift</title>
+          <url>/Shift/MyShiftDetails</url>
+          <icon></icon>
+        </MenuItem>
+      </level1item>
+    </MenuItem>
+  </menuitem>
+</Menu>

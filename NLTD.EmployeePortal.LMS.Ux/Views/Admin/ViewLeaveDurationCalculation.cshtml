@@ -1,0 +1,97 @@
+﻿@model IList<NLTD.EmployeePortal.LMS.Common.DisplayModel.LeaveHeaderModel>
+
+@section onReady{
+
+    var oTable;
+    $('#companies tbody td img').click(function () {
+    var nTr = this.parentNode.parentNode;
+    if (this.src.match('details_close')) {
+    /* This row is already open - close it */
+    this.src = "/images/HdrDtl/details_open.png";
+    oTable.fnClose(nTr);
+    }
+    else {
+    /* Open this row */
+    this.src = "/images/HdrDtl/details_close.png";
+    var companyid = $(this).attr("rel");
+    $.get("CompanyEmployees?CompanyID=" + companyid, function (employees) {
+    oTable.fnOpen(nTr, employees, 'details');
+    });
+    }
+    });
+
+    /* Initialize table and make first column non-sortable*/
+    oTable = $('#companies').dataTable({  "bJQueryUI": true,
+    "aoColumns": [
+    { "bSortable": false, "bSearchable": false },
+    null,
+    null,
+    null
+    ]
+    });
+
+}
+
+http://live.datatables.net/bihawepu/1/edit
+
+<div id="demo">
+    <table id="companies" class="display">
+           class="table table-condensed table-striped table-hover">
+        <thead>
+            <tr>
+                <th></th>
+                <th>
+                    @Html.DisplayNameFor(model => model[0].LeaveTypeName)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model[0].StartDate)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model[0].StartDateType)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model[0].EndDate)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model[0].EndDateType)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model[0].Duration)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model[0].Status)
+                </th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td><img src="/images/HdrDtl/details_open.png" rel="0" alt="expand/collapse"></td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.LeaveTypeName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.StartDate)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.StartDateType)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.EndDate)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.EndDateType)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Duration)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Status)
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    </div>

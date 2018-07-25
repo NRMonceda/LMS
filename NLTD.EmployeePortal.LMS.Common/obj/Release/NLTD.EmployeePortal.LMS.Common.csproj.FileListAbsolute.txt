@@ -1,0 +1,7 @@
+D:\SureshM NLTD\My TFS\NLTD\LatestGitHub\LMS\NLTD.EmployeePortal.LMS.Common\bin\Release\NLTD.EmployeePortal.LMS.Common.dll
+D:\SureshM NLTD\My TFS\NLTD\LatestGitHub\LMS\NLTD.EmployeePortal.LMS.Common\bin\Release\NLTD.EmployeePortal.LMS.Common.pdb
+D:\SureshM NLTD\My TFS\NLTD\LatestGitHub\LMS\NLTD.EmployeePortal.LMS.Common\bin\Release\Elmah.dll
+D:\SureshM NLTD\My TFS\NLTD\LatestGitHub\LMS\NLTD.EmployeePortal.LMS.Common\bin\Release\Elmah.Mvc.dll
+D:\SureshM NLTD\My TFS\NLTD\LatestGitHub\LMS\NLTD.EmployeePortal.LMS.Common\obj\Release\NLTD.EmployeePortal.LMS.Common.csprojResolveAssemblyReference.cache
+D:\SureshM NLTD\My TFS\NLTD\LatestGitHub\LMS\NLTD.EmployeePortal.LMS.Common\obj\Release\NLTD.EmployeePortal.LMS.Common.dll
+D:\SureshM NLTD\My TFS\NLTD\LatestGitHub\LMS\NLTD.EmployeePortal.LMS.Common\obj\Release\NLTD.EmployeePortal.LMS.Common.pdb

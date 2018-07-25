@@ -1,0 +1,48 @@
+﻿@model IList<NLTD.EmployeePortal.LMS.Common.DisplayModel.Shifts>
+
+<table id="ShiftDetail"
+       class="table table-condensed table-striped table-hover">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayName("Shift ID")
+            </th>
+            <th>
+                @Html.DisplayName("Start Time")
+            </th>
+            <th>
+                @Html.DisplayName("End Time")
+            </th>
+            <th>
+                @Html.DisplayName("Shift Description")
+            </th>
+            <th class="no-sort">
+                @Html.DisplayName("Action")
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            string FromTime = string.Format("{0:hh\\:mm}", item.FromTime);
+            string ToTime = string.Format("{0:hh\\:mm}", item.ToTime);
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ShiftId)
+                </td>
+                <td>
+                    @FromTime
+                </td>
+                <td>
+                    @ToTime
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ShiftName)
+                </td>
+                <td>
+                    <button type="button" class="btn btn-primary" onclick="AddShiftPopup(@item.ShiftId)">EDIT</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

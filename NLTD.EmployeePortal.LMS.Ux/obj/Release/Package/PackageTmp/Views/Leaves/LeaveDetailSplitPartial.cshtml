@@ -1,0 +1,83 @@
+﻿@model List<NLTD.EmployeePortal.LMS.Common.DisplayModel.LeaveDtl>
+<style type="text/css">
+    #splitDiv {
+border-width:6px;
+border-style:solid;
+border-color:#207aa5;
+    }
+</style>
+
+      <div class="box-body" id ="splitDiv" style="height:270px;overflow-y:auto;">
+          <button class="close" id="closeButton" type="button" style="position:absolute;top:2px;right:7px;" onclick="hideLeaveCalculation()">x</button>
+
+              <div class="col-sm-12">
+                  <div class="row">
+                      <div class="col-sm-3">
+                          <h6 class="box-title">Date</h6>
+                      </div>
+                      <div class="col-sm-2">
+                          <h6 class="box-title">Duration</h6>
+                      </div>
+                      <div class="col-sm-7">
+                          <h6 class="box-title">Remarks</h6>
+                      </div>
+                  </div>
+
+                  @{
+                      foreach (var item in Model)
+                      {
+                          <div class="row">
+                              <div class="col-sm-3">
+                                  <p>@item.LeaveDayItem.ToShortDateString()</p>
+                              </div>
+                              <div class="col-sm-2" style="text-align: justify;">
+                                  <p>@item.LeaveDayItemQty</p>
+                              </div>
+                              <div class="col-sm-7" style="text-align: justify;">
+                                  <p>@item.Remarks</p>
+                              </div>
+                          </div>
+
+                      }
+                  }
+
+                  <div class="row">
+                      <div class="col-sm-3">
+                          </div>
+                      <div class="col-sm-2">
+                          <p>---------</p>
+                      </div>
+                      <div class="col-sm-7">
+                      </div>
+                      </div>
+
+                  <div class="row">
+                      <div class="col-sm-3">
+                          <p style="font-weight:bold">No. Of Day(s):</p>
+                      </div>
+                      <div class="col-sm-2">
+                          @{
+                              if (Model.Count > 0)
+                              {
+                                  <p style="font-weight:bold">   @Model[0].Total</p>
+                              }
+
+                          }
+                      </div>
+                      <div class="col-sm-7">
+                      </div>
+                  </div>
+              </div>
+          </div>
+
+@*@section readyscript{
+    <script>
+        $("document").ready(function () {
+            $("#btnShowDaysCalc").click(function (e) {
+                e.stopPropagation();
+                $(".LeaveDtlSplit").toggle("slow");
+
+            });
+        });
+    </script>
+}*@

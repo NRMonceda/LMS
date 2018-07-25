@@ -1,0 +1,85 @@
+﻿@model NLTD.EmployeePortal.LMS.Common.QueryModel.ManageTeamLeavesQueryModel
+    @{
+        if (Model.IsAuthorized == "NoAuth")
+        {
+            <div class="alert alert-danger">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">x</span>
+                </button>
+                You are not authorized to access this web page.
+            </div>
+        }
+        else
+        {
+
+@section scripts
+{
+    <script src="~/Scripts/jquery-2.2.4.js"></script>
+    <script src="~/Scripts/lms.js?v=1.08"></script>
+    <script type="text/javascript" src="~/Scripts/bootstrap.js"></script>
+    <script type="text/javascript" src="~/Scripts/bootstrap.js"></script>
+    <script src="~/Scripts/bootstrap-datetimepicker.js"></script>
+    <link href="~/Content/bootstrap-datetimepicker.css" rel="stylesheet" />
+
+    <script src="~/Scripts/moment.js"></script>
+    <link href="~/Content/bootstrap.css" rel="stylesheet" />
+    <script type="text/JavaScript">
+        $(document).ready(function () {
+            $('#FromDate').datetimepicker(
+                      {
+                          viewMode: "days",
+                          format: "DD-MM-YYYY"
+                      }
+                      )
+            $('#ToDate').datetimepicker(
+                     {
+                         viewMode: "days",
+                         format: "DD-MM-YYYY"
+                     }
+                     )
+
+        });
+    </script>
+
+}
+
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="box box-primary">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Team - Manage Requests</h3>
+                </div>
+                <div class="box-body">
+                    <div class="row">
+                        <div class="col-sm-2">
+                            @Html.Label("From Date")
+                            @Html.TextBoxFor(m => m.FromDate, new { @class = "form-control datetpicker" })
+                        </div>
+                        <div class="col-sm-2">
+                            @Html.Label("To Date")
+                            @Html.TextBoxFor(m => m.ToDate, new { @class = "form-control datetpicker" })
+                        </div>
+                        <div class="col-sm-6">
+                            <p> @Html.CheckBoxFor(m => m.OnlyReportedToMe)   My Direct Reportees</p>
+                            <p>@Html.CheckBoxFor(m => m.ShowApprovedLeaves)   Show Approved Requests</p>
+                        </div>
+                        <div class="col-sm-2" style="padding-top:27px;">
+                            <button type="button" id="btnSearchPending" class="btn btn-primary pull-right" onclick="loadPendingLeaves()">SEARCH</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="divForPendingLeave"></div>
+            }
+        }
+    @section readyscript{
+        <script>
+            $("document").ready(function () {
+                loadPendingLeaves()
+                });
+</script>
+
+}

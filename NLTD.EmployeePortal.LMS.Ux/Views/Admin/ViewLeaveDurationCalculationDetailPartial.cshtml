@@ -1,0 +1,20 @@
+﻿@model List<NLTD.EmployeePortal.LMS.Common.DisplayModel.LeaveHeaderModel>
+
+    <table cellpadding="4" cellspacing="0"
+           border="0" style="padding-left:50px;">
+        <tr>
+            <th>Leave Date</th>
+            <th>IsDayOff</th>
+            <th>Duration</th>
+            <th>Remarks</th>
+        </tr>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.LeaveDayItem</td>
+                <td>@item.IsDayOff</td>
+                <td>@item.LeaveDayItemQty</td>
+                <td>@item.Remarks</td>
+            </tr>
+        }
+    </table>

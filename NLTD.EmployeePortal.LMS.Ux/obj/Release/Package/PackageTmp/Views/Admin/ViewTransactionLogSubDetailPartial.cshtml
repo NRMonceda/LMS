@@ -1,0 +1,47 @@
+﻿@model IList<NLTD.EmployeePortal.LMS.Common.DisplayModel.LeaveTransactionHistoryModel>
+<table id="transactHist"
+       class="transaction table table-condensed table-striped table-hover">
+    <thead>
+        <tr>
+            <th>Leave Id</th>
+            <th>Leave From</th>
+            <th>Leave To</th>
+            <th>Transaction Date</th>
+            <th>Transaction Type</th>
+            <th>Number Of Days</th>
+            <th>Remarks</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            string transDate = item.TransactionDate.ToString("dd-MM-yyyy");
+            string startDate = item.StartDate == null ? "" : Convert.ToDateTime(item.StartDate).ToString("dd-MM-yyyy");
+            string endDate = item.EndDate == null ? "" :Convert.ToDateTime(item.EndDate).ToString("dd-MM-yyyy");
+            string leaveId = item.LeaveId > -1 ? item.LeaveId.ToString() : "";
+            <tr>
+                <td style="width:10%">
+                    @leaveId
+                </td>
+                <td style="width:15%">
+                    @startDate
+                </td>
+                <td style="width:15%">
+                    @endDate
+                </td>
+                <td style="width:15%">
+                    @transDate
+                </td>
+                <td style="width:15%">
+                    @Html.DisplayFor(modelItem => item.TransactionType)
+                </td>
+                <td style="width:15%">
+                    @Html.DisplayFor(modelItem => item.NumberOfDays)
+                </td>
+                <td style="width:20%">
+                    @Html.DisplayFor(modelItem => item.Remarks)
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

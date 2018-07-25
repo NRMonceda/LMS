@@ -1,0 +1,103 @@
+﻿@model IList<NLTD.EmployeePortal.LMS.Common.DisplayModel.PermissionDetailsModel>
+
+<table id="Permissions_id"
+       class="table table-condensed table-striped table-hover">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayName("Emp Id")
+            </th>
+            <th>
+                @Html.DisplayName("Name")
+            </th>
+            <th>
+                @Html.DisplayName("Permission Type")
+            </th>
+            <th>
+                @Html.DisplayName("Month")
+            </th>
+
+            <th>
+                @Html.DisplayName("Permission Date")
+            </th>
+            <th>
+                @Html.DisplayName("Time From")
+            </th>
+            <th>
+                @Html.DisplayName("Time To")
+            </th>
+            <th>
+                @Html.DisplayName("Duration")
+            </th>
+            <th>
+                @Html.DisplayName("Reason")
+            </th>
+            <th>
+                @Html.DisplayName("Status")
+            </th>
+            <th>
+                @Html.DisplayName("Approver Comments")
+            </th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach (var item in Model)
+        {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.EmpId)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.PermissionType)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Month)
+            </td>
+
+            <td>
+                @Html.DisplayFor(modelItem => item.PermissionDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TimeFrom)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TimeTo)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Duration)
+            </td>
+            <td data-toggle="tooltip" title='@item.Reason' data-placement="left">
+                @Html.DisplayFor(modelItem => item.ReasonShort)
+            </td>
+            <td>
+                @{
+                    if (item.Status == "Pending")
+                    {
+                        <span class="text-purple">@item.Status</span>
+                    }
+                    else if (item.Status == "Approved")
+                    {
+                        <span class="text-green">@item.Status</span>
+                    }
+                    else if (item.Status == "Rejected")
+                    {
+                        <span class="text-red">@item.Status</span>
+                    }
+                    else if (item.Status == "Cancelled")
+                    {
+                        <span class="text-maroon">@item.Status</span>
+                    }
+
+                }
+            </td>
+            <td data-toggle="tooltip" title='@item.ApproverComments' data-placement="left">
+                @Html.DisplayFor(modelItem => item.CommentsShort)
+            </td>
+        </tr>
+        }
+    </tbody>
+</table>

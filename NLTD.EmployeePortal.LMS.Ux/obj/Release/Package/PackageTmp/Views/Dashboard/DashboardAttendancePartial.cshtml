@@ -1,0 +1,69 @@
+﻿@model IList<NLTD.EmployeePortal.LMS.Common.DisplayModel.TimeSheetModel>
+
+<style>
+    #TeamTimeSheetID th {
+        font-size: 13px !important;
+        white-space: nowrap;
+    }
+
+    #TeamTimeSheetID td {
+        font-size: 12px !important;
+    }
+</style>
+<table id="TeamTimeSheetID"
+       class="table table-condensed table-striped table-hover">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayName("Name")
+            </th>
+            <th>
+                @Html.DisplayName("Shift From")
+            </th>
+            <th>
+                @Html.DisplayName("In Time")
+            </th>
+            <th>
+                @Html.DisplayName("Status")
+            </th>
+            <th>
+                @Html.DisplayName("Requests")
+            </th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @if (Model != null)
+        {
+            foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @item.Name
+                    </td>
+                    <td>@item.Shift.Split('-')[0]</td>
+                    @if (item.InTime == DateTime.MinValue)
+                    {
+                        <td style="text-align: center"> @Html.DisplayName("-")</td>
+                    }
+                    else if (@item.InTime != null)
+                    {
+                        <td> @item.InTime.ToString("HH:mm:ss")</td>
+                    }
+                    else
+                    {
+                        <td style="text-align: center"> @Html.DisplayName("-") </td>
+                    }
+
+                    <td>
+                        @item.Status
+                    </td>
+                    <td>
+                        @item.Requests
+                    </td>
+
+                </tr>
+            }
+        }
+    </tbody>
+</table>

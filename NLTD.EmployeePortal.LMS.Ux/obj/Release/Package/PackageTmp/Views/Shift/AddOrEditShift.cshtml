@@ -1,0 +1,25 @@
+﻿@model NLTD.EmployeePortal.LMS.Common.DisplayModel.Shifts
+<script>
+    $(function () {
+        $('.timepicker').timepicker({
+            timeFormat: "HH:mm"
+        });
+    });
+</script>
+<div class="box-body">
+    <div class="row">
+        <div class="col-sm-4">
+            @Html.Label("Start Time ")
+            @Html.TextBox("fromTime", string.Format("{0:hh\\:mm}", Model.FromTime), new { @class = "form-control timepicker", @id = "fromTime" })
+        </div>
+        <div class="col-sm-4">
+            @Html.Label("End Time")
+            @Html.TextBox("toTime", string.Format("{0:hh\\:mm}", Model.ToTime), new { @class = "form-control timepicker", @id = "toTime" })
+        </div>
+        <div class="col-sm-4">
+            @Html.Label("Shift Description")
+            @Html.TextBox("ShiftName", Model.ShiftName, new { @class = "form-control", @id = "ShiftName" })
+        </div>
+        @Html.Hidden("StudentId", Model.ShiftId, new { @id = "ShiftId" })
+    </div>
+</div>

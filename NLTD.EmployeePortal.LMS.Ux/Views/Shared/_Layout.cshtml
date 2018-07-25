@@ -1,0 +1,63 @@
+﻿<html>
+<head>
+    <title>NLTD LMS :: Leave Management System</title>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ionicons/2.0.1/css/ionicons.min.css">
+    <link rel="stylesheet" href="~/adminlte/dist/css/AdminLTE.css">
+    <link rel="stylesheet" href="~/adminlte/dist/css/skins/skin-blue.min.css">
+    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+    <link href="~/css/LMS.css?v=1.08" rel="stylesheet" />
+    <script type="text/javascript" src="~/lib/Moment/moment.js"></script>
+
+    <script src="~/Scripts/lms.js?v=1.08"></script>
+
+    @*<link rel="stylesheet" type="text/css" href="//cdn.datatables.net/colreorder/1.1.1/css/dataTables.colReorder.css">*@
+    <link href="~/Content/DataTables/css/colReorder.dataTables.min.css" rel="stylesheet" />
+    @RenderSection("scripts", false)
+</head>
+<body class="hold-transition skin-blue sidebar-mini">
+    <div id="divLoading" style="margin: 0px; padding: 0px; position: fixed; right: 0px;
+    top: 0px; width: 100%; height: 100%; background-color: #666666; z-index: 30001;
+    opacity: .8; filter: alpha(opacity=70);display:none">
+        <p style="position: absolute; top: 30%; left: 45%; color: White;">
+            Loading, please wait...<img src="~/images/ajax-loading.gif">
+        </p>
+    </div>
+    <div class="wrapper">
+        <header class="main-header">
+            <a href="/Dashboard" class="logo">
+                <!-- mini logo for sidebar mini 50x50 pixels -->
+                <span class="logo-mini"><img src="~/images/NLTD.png" alt="Northern Lights Technology Development" style="width:30px; padding-top:10px; padding-bottom:10px;" /></span>
+                <!-- logo for regular state and mobile devices -->
+                <span class="logo-lg"><b>NLTD</b> LMS</span>
+            </a>
+            @Html.Partial("~/Views/Shared/AdminLTE/HeaderPartial.cshtml")
+        </header>
+        @Html.Partial("~/Views/Shared/AdminLTE/SideMenuPartial.cshtml")
+
+        <!-- Content Wrapper. Contains page content -->
+        <div class="content-wrapper">
+            @Html.Partial("~/Views/Shared/AdminLTE/PageHeaderPartial.cshtml")
+            <!-- Main content -->
+            <section class="content" style="font-size:12px !important">
+                <div id="alert_placeholderCommon"> </div>
+                @RenderBody()
+            </section>
+            <!-- /.content -->
+        </div>
+        <!-- /.content-wrapper -->
+        <script src="~/Scripts/date-eu.js"></script>
+        @Html.Partial("~/Views/Shared/AdminLTE/FooterPartial.cshtml")
+        @Html.Partial("~/Views/Shared/AdminLTE/ControlSideBarLeftPartial.cshtml")
+    </div>
+    <!-- Bootstrap 3.3.6 -->
+    <script src="~/lib/bootstrap/dist/js/bootstrap.min.js"></script>
+    <!-- AdminLTE App -->
+    <script src="~/adminlte/dist/js/app.js"></script>
+    @RenderSection("readyscript", false)
+</body>
+</html>
