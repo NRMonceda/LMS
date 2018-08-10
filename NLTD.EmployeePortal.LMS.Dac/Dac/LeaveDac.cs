@@ -2457,12 +2457,7 @@ namespace NLTD.EmployeePortal.LMS.Dac
                     foreach (var item in hrEmail)
                     {
                         qry.CcEmailIds.Add(item.EmailId);
-                    }
-                    //New
-                    var optoutEmp = context.Employee.Where(x => x.ReportingToId == null).ToList();
-                    
-
-                    //
+                    }                    
                     var qryReportingTo = context.Employee.Where(x => x.UserId == qry.ReportingToId).FirstOrDefault();
                     if (qryReportingTo == null)
                     {
@@ -2473,33 +2468,27 @@ namespace NLTD.EmployeePortal.LMS.Dac
                         qry.ReportingToName = qryReportingTo.FirstName + " " + qryReportingTo.LastName;
                         qry.ToEmailId = qryReportingTo.EmailAddress;
                     }
+
                     if (actionName == "Pending")
                     {
                         qry.CcEmailIds.Remove(qry.ToEmailId);
                         qry.CcEmailIds.Add(qry.RequestorEmailId);
-
-                        //New
-                        foreach (var item in optoutEmp)
-                        {
-                            qry.CcEmailIds.Remove(item.EmailAddress);
-                        }
-                        //
+                       
                     }
                     else
                     {
-                        qry.ToEmailId = qry.RequestorEmailId;
-
-                        foreach (var item in optoutEmp)
-                        {
-                            if (qryReportingTo != null)
-                            {
-                                if (qryReportingTo.UserId != item.UserId)
-                                {
-                                    qry.CcEmailIds.Remove(item.EmailAddress);
-                                }
-                            }
-                        }
+                        qry.ToEmailId = qry.RequestorEmailId;                        
                     }
+
+                    string onlyDirectAlerts = ConfigurationManager.AppSettings["OnlyDirectAlerts"].ToString();
+                    List<string> lstOptoutEmailAddress = onlyDirectAlerts.Split(',').ToList();
+                    foreach (var item in lstOptoutEmailAddress)
+                    {
+                        if (qryReportingTo.EmailAddress.ToUpper() != item.ToUpper())
+                        {
+                            qry.CcEmailIds.Remove(item);
+                        }
+                    }                   
 
                     if (qry.IsTimeBased)
                     {
