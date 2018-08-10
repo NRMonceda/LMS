@@ -35,9 +35,9 @@ namespace NLTD.EmployeePortal.LMS.Ux.AppHelpers
                 string menu = string.Empty;
 
                 var windowsLoginName = identity.Name.ToUpper();
-                #if DEBUG
-                //windowsLoginName = "CORP\\XYZ";
-                #endif
+#if DEBUG
+                windowsLoginName = "CORP\\MJAIN";
+#endif
                 if (Request.QueryString["Username"] != null)
                 {
                     windowsLoginName = Convert.ToString(Request.QueryString["Username"]).Replace(".", "\\");

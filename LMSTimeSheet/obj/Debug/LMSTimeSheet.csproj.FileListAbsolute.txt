@@ -4,3 +4,9 @@ D:\SureshM NLTD\My TFS\NLTD\LatestGitHub\LMS\LMSTimeSheet\bin\Debug\LMSTimeSheet
 D:\SureshM NLTD\My TFS\NLTD\LatestGitHub\LMS\LMSTimeSheet\obj\Debug\LMSTimeSheet.csprojResolveAssemblyReference.cache
 D:\SureshM NLTD\My TFS\NLTD\LatestGitHub\LMS\LMSTimeSheet\obj\Debug\LMSTimeSheet.exe
 D:\SureshM NLTD\My TFS\NLTD\LatestGitHub\LMS\LMSTimeSheet\obj\Debug\LMSTimeSheet.pdb
+D:\SureshM NLTD\NewGitNltdIndia\LMS\LMSTimeSheet\bin\Debug\LMSTimeSheet.exe.config
+D:\SureshM NLTD\NewGitNltdIndia\LMS\LMSTimeSheet\bin\Debug\LMSTimeSheet.exe
+D:\SureshM NLTD\NewGitNltdIndia\LMS\LMSTimeSheet\bin\Debug\LMSTimeSheet.pdb
+D:\SureshM NLTD\NewGitNltdIndia\LMS\LMSTimeSheet\obj\Debug\LMSTimeSheet.csprojResolveAssemblyReference.cache
+D:\SureshM NLTD\NewGitNltdIndia\LMS\LMSTimeSheet\obj\Debug\LMSTimeSheet.exe
+D:\SureshM NLTD\NewGitNltdIndia\LMS\LMSTimeSheet\obj\Debug\LMSTimeSheet.pdb

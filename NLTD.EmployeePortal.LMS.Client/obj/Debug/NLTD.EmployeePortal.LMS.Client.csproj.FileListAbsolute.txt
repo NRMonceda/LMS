@@ -13,3 +13,18 @@ D:\SureshM NLTD\My TFS\NLTD\LatestGitHub\LMS\NLTD.EmployeePortal.LMS.Client\bin\
 D:\SureshM NLTD\My TFS\NLTD\LatestGitHub\LMS\NLTD.EmployeePortal.LMS.Client\obj\Debug\NLTD.EmployeePortal.LMS.Client.csprojResolveAssemblyReference.cache
 D:\SureshM NLTD\My TFS\NLTD\LatestGitHub\LMS\NLTD.EmployeePortal.LMS.Client\obj\Debug\NLTD.EmployeePortal.LMS.Client.dll
 D:\SureshM NLTD\My TFS\NLTD\LatestGitHub\LMS\NLTD.EmployeePortal.LMS.Client\obj\Debug\NLTD.EmployeePortal.LMS.Client.pdb
+D:\SureshM NLTD\NewGitNltdIndia\LMS\NLTD.EmployeePortal.LMS.Client\bin\Debug\NLTD.EmployeePortal.LMS.Client.dll
+D:\SureshM NLTD\NewGitNltdIndia\LMS\NLTD.EmployeePortal.LMS.Client\bin\Debug\NLTD.EmployeePortal.LMS.Client.pdb
+D:\SureshM NLTD\NewGitNltdIndia\LMS\NLTD.EmployeePortal.LMS.Client\bin\Debug\Elmah.dll
+D:\SureshM NLTD\NewGitNltdIndia\LMS\NLTD.EmployeePortal.LMS.Client\bin\Debug\Elmah.Mvc.dll
+D:\SureshM NLTD\NewGitNltdIndia\LMS\NLTD.EmployeePortal.LMS.Client\bin\Debug\NLTD.EmployeePortal.LMS.Common.dll
+D:\SureshM NLTD\NewGitNltdIndia\LMS\NLTD.EmployeePortal.LMS.Client\bin\Debug\NLTD.EmployeePortal.LMS.Dac.dll
+D:\SureshM NLTD\NewGitNltdIndia\LMS\NLTD.EmployeePortal.LMS.Client\bin\Debug\NLTD.EmployeePortal.LMS.Repository.dll
+D:\SureshM NLTD\NewGitNltdIndia\LMS\NLTD.EmployeePortal.LMS.Client\bin\Debug\EntityFramework.dll
+D:\SureshM NLTD\NewGitNltdIndia\LMS\NLTD.EmployeePortal.LMS.Client\bin\Debug\NLTD.EmployeePortal.LMS.Dac.pdb
+D:\SureshM NLTD\NewGitNltdIndia\LMS\NLTD.EmployeePortal.LMS.Client\bin\Debug\NLTD.EmployeePortal.LMS.Common.pdb
+D:\SureshM NLTD\NewGitNltdIndia\LMS\NLTD.EmployeePortal.LMS.Client\bin\Debug\NLTD.EmployeePortal.LMS.Repository.pdb
+D:\SureshM NLTD\NewGitNltdIndia\LMS\NLTD.EmployeePortal.LMS.Client\bin\Debug\EntityFramework.xml
+D:\SureshM NLTD\NewGitNltdIndia\LMS\NLTD.EmployeePortal.LMS.Client\obj\Debug\NLTD.EmployeePortal.LMS.Client.csprojResolveAssemblyReference.cache
+D:\SureshM NLTD\NewGitNltdIndia\LMS\NLTD.EmployeePortal.LMS.Client\obj\Debug\NLTD.EmployeePortal.LMS.Client.dll
+D:\SureshM NLTD\NewGitNltdIndia\LMS\NLTD.EmployeePortal.LMS.Client\obj\Debug\NLTD.EmployeePortal.LMS.Client.pdb

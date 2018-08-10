@@ -896,7 +896,7 @@ namespace NLTD.EmployeePortal.LMS.Dac
                                                         LeaveTypeId = types.LeaveTypeId,
                                                         LeaveTypeText = types.Type,
                                                         IsTimeBased = types.IsTimeBased
-                                                    }).ToList();
+                                                    }).ToList(); 
                 return LeaveTypes;
             }
         }
@@ -2458,7 +2458,11 @@ namespace NLTD.EmployeePortal.LMS.Dac
                     {
                         qry.CcEmailIds.Add(item.EmailId);
                     }
+                    //New
+                    var optoutEmp = context.Employee.Where(x => x.ReportingToId == null).ToList();
+                    
 
+                    //
                     var qryReportingTo = context.Employee.Where(x => x.UserId == qry.ReportingToId).FirstOrDefault();
                     if (qryReportingTo == null)
                     {
@@ -2473,10 +2477,28 @@ namespace NLTD.EmployeePortal.LMS.Dac
                     {
                         qry.CcEmailIds.Remove(qry.ToEmailId);
                         qry.CcEmailIds.Add(qry.RequestorEmailId);
+
+                        //New
+                        foreach (var item in optoutEmp)
+                        {
+                            qry.CcEmailIds.Remove(item.EmailAddress);
+                        }
+                        //
                     }
                     else
                     {
                         qry.ToEmailId = qry.RequestorEmailId;
+
+                        foreach (var item in optoutEmp)
+                        {
+                            if (qryReportingTo != null)
+                            {
+                                if (qryReportingTo.UserId != item.UserId)
+                                {
+                                    qry.CcEmailIds.Remove(item.EmailAddress);
+                                }
+                            }
+                        }
                     }
 
                     if (qry.IsTimeBased)
