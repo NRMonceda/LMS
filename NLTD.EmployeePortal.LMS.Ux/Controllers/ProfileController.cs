@@ -1,6 +1,7 @@
 ﻿using NLTD.EmployeePortal.LMS.Client;
 using NLTD.EmployeePortal.LMS.Common.DisplayModel;
 using NLTD.EmployeePortal.LMS.Common.QueryModel;
+using NLTD.EmployeePortal.LMS.Dac;
 using NLTD.EmployeePortal.LMS.Ux.AppHelpers;
 using System;
 using System.Collections;
@@ -404,6 +405,32 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
             }
 
             return Json(result);
+        }
+
+        public ActionResult EarnedLeaveCredit()
+        {
+            EmployeeProfile mdl = new EmployeeProfile();
+            using (var context = new NLTDDbContext())
+            {
+                List<LeaveTypesModel> LeaveTypes = (from l in context.LeaveType
+                                                    where l.LastRun != null
+                                                    orderby l.Createdon descending
+                                                    select new LeaveTypesModel
+                                                    {
+                                                        LastRun = l.LastRun
+                                                    }).ToList();
+                mdl.LastRun = LeaveTypes.Select(s => s.LastRun).FirstOrDefault().ToString();
+            }
+            
+            if (this.IsAuthorized == "NoAuth")
+            {
+                Response.Redirect("~/Home/Unauthorized");
+                return null;
+            }
+            else
+            {
+                return View("EarnedLeaveCredit", mdl);
+            }
         }
     }
 }

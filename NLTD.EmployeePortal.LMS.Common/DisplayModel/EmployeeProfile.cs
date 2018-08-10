@@ -86,6 +86,14 @@ namespace NLTD.EmployeePortal.LMS.Common.DisplayModel
         public string ErrorMesage { get; set; }
 
         public string Mode { get; set; }
+
+        public Int64 CurrentEL { get; set; }
+
+        public Int64 ELCredit { get; set; }
+
+        public Int64 NewELBalance { get; set; }
+
+        public string LastRun { get; set; }
     }
 
     public class TeamEmpProfile

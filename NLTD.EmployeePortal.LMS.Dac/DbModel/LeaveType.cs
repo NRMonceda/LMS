@@ -22,5 +22,9 @@ namespace NLTD.EmployeePortal.LMS.Dac.DbModel
         public bool IsTimeBased { get; set; }
 
         public int SortOrder { get; set; }
+
+        public string LastRun { get; set; }
+
+        public DateTime Createdon { get; set; }
     }
 }

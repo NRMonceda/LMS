@@ -1,0 +1,91 @@
+﻿@model IList<NLTD.EmployeePortal.LMS.Common.DisplayModel.EmployeeProfile>
+@{
+    ViewBag.Title = "EarnedLeaveCredit";
+}
+@if (ViewBag.Authorize == "NoAuth")
+{
+    <div class="alert alert-danger">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">x</span>
+        </button>
+        You are not authorized to access this web page.
+    </div>
+}
+else
+{
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="box box-primary">
+                <div class="box-header with-border">
+                    <h3 class="box-title"> Earned Leave Credit Master</h3>
+                </div>
+                <div class="box-body">
+                    <div class="row">
+                        <div class="col-sm-5">
+                            Earned Leave Credit From 
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+
+
+<table id="earnedLeaveDetail"
+       class="table table-condensed table-striped table-hover">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayName("Emp ID")
+            </th>
+            <th>
+                @Html.DisplayName("Emp Name")
+            </th>
+            <th>
+                @Html.DisplayName("DOJ")
+            </th>
+            <th>
+                @Html.DisplayName("DOC")
+            </th>
+            <th>
+                @Html.DisplayName("CurrentEL")
+            </th>
+            <th>
+                @Html.DisplayName("ELCredit")
+            </th>
+            <th>
+                @Html.DisplayName("NewELBalance")
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.EmployeeId)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.FirstName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.DOJ)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ConfirmationDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CurrentEL)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ELCredit)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.NewELBalance)
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
