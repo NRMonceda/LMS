@@ -2482,13 +2482,15 @@ namespace NLTD.EmployeePortal.LMS.Dac
 
                     string onlyDirectAlerts = ConfigurationManager.AppSettings["OnlyDirectAlerts"].ToString();
                     List<string> lstOptoutEmailAddress = onlyDirectAlerts.Split(',').ToList();
+
+
                     foreach (var item in lstOptoutEmailAddress)
                     {
                         if (qryReportingTo.EmailAddress.ToUpper() != item.ToUpper())
-                        {
-                            qry.CcEmailIds.Remove(item);
+                        {                            
+                            qry.CcEmailIds.ToList().RemoveAll(o => o.Equals(item, StringComparison.OrdinalIgnoreCase));
                         }
-                    }                   
+                    }
 
                     if (qry.IsTimeBased)
                     {
