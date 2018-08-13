@@ -409,7 +409,33 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
 
         public ActionResult EarnedLeaveCredit()
         {
-            EmployeeProfile mdl = new EmployeeProfile();
+
+            ViewBag.LastRun = GetLastRunforEL();
+            if (this.IsAuthorized == "NoAuth")
+            {
+                Response.Redirect("~/Home/Unauthorized");
+                return null;
+            }
+            else
+            {
+                return View("EarnedLeaveCredit");
+            }
+        }
+
+        public ActionResult GetEarnedLeaveMasterDetail()
+        {
+            IList<ViewEmployeeProfileModel> lstProfile = new List<ViewEmployeeProfileModel>();
+            string lastRun = GetLastRunforEL();
+            using (var client = new EmployeeClient())
+            {
+                lstProfile = client.GetEmployeeProfilesforEL(lastRun);
+            }
+            return PartialView("EarnedLeaveCreditPartial", lstProfile);
+        }
+
+        public static string GetLastRunforEL()
+        {
+            string lastRun = null;
             using (var context = new NLTDDbContext())
             {
                 List<LeaveTypesModel> LeaveTypes = (from l in context.LeaveType
@@ -419,18 +445,9 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
                                                     {
                                                         LastRun = l.LastRun
                                                     }).ToList();
-                mdl.LastRun = LeaveTypes.Select(s => s.LastRun).FirstOrDefault().ToString();
+                lastRun = LeaveTypes.Select(s => s.LastRun).FirstOrDefault().ToString();
             }
-            
-            if (this.IsAuthorized == "NoAuth")
-            {
-                Response.Redirect("~/Home/Unauthorized");
-                return null;
-            }
-            else
-            {
-                return View("EarnedLeaveCredit", mdl);
-            }
+            return lastRun;
         }
     }
 }

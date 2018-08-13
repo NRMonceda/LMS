@@ -52,5 +52,14 @@ namespace NLTD.EmployeePortal.LMS.Common.DisplayModel
         public String DOJ { get; set; }
         public String ConfirmationDate { get; set; }
         public String RelievingDate { get; set; }
+        public Decimal? CurrentEL { get; set; }
+
+        public Decimal? ELCredit { get; set; }
+
+        public Decimal? NewELBalance { get; set; }
+
+        public bool IsConfirmation { get; set; }
+
+        public string LastRun { get; set; }
     }
 }

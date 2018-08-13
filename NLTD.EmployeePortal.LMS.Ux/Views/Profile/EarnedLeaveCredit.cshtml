@@ -1,7 +1,29 @@
-﻿@model IList<NLTD.EmployeePortal.LMS.Common.DisplayModel.EmployeeProfile>
+﻿@model IList<NLTD.EmployeePortal.LMS.Common.DisplayModel.ViewEmployeeProfileModel>
 @{
     ViewBag.Title = "EarnedLeaveCredit";
 }
+
+<script src="~/Scripts/DataTables/jquery.dataTables.min.js"></script>
+<link href="~/Content/DataTables/css/jquery.dataTables.min.css" rel="stylesheet" />
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<script src="~/Scripts/daterangepicker.js"></script>
+<link href="~/Content/daterangepicker.css" rel="stylesheet" />
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/timepicker/1.3.5/jquery.timepicker.min.css">
+<script src="//cdnjs.cloudflare.com/ajax/libs/timepicker/1.3.5/jquery.timepicker.min.js"></script>
+
+@section scripts
+{
+    <script src="~/Scripts/jquery-2.2.4.js"></script>
+    <script src="~/Scripts/lms.js?v=1.08"></script>
+    <script type="text/javascript" src="~/Scripts/bootstrap.js"></script>
+    <script type="text/javascript" src="~/Scripts/bootstrap.js"></script>
+    <script src="~/Scripts/bootstrap-datetimepicker.js"></script>
+    <link href="~/Content/bootstrap-datetimepicker.css" rel="stylesheet" />
+    <script src="~/Scripts/moment.js"></script>
+    <link href="~/Content/bootstrap.css" rel="stylesheet" />
+}
+
 @if (ViewBag.Authorize == "NoAuth")
 {
     <div class="alert alert-danger">
@@ -17,75 +39,74 @@ else
         <div class="col-sm-12">
             <div class="box box-primary">
                 <div class="box-header with-border">
-                    <h3 class="box-title"> Earned Leave Credit Master</h3>
+                    <h3 class="box-title"> <b>Earned Leave Credit Master</b></h3>
                 </div>
                 <div class="box-body">
                     <div class="row">
                         <div class="col-sm-5">
-                            Earned Leave Credit From 
+                            Earned Leave Credit From <b>@ViewBag.LastRun </b>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-}
 
+    <div id="divForEarnedLeaveCreditAllocation"></div>
 
+    <div class="box-footer">
+        <div class="col-sm-10">
+        </div>
+        <div class="col-sm-2">
+            <button type="button" class="btn btn-primary" onclick="processELCredit">PROCESS</button>
+            <button type="button" class="btn btn-primary pull-right">EXPORT TO EXCEL</button>
+        </div>
+    </div>
 
-<table id="earnedLeaveDetail"
-       class="table table-condensed table-striped table-hover">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayName("Emp ID")
-            </th>
-            <th>
-                @Html.DisplayName("Emp Name")
-            </th>
-            <th>
-                @Html.DisplayName("DOJ")
-            </th>
-            <th>
-                @Html.DisplayName("DOC")
-            </th>
-            <th>
-                @Html.DisplayName("CurrentEL")
-            </th>
-            <th>
-                @Html.DisplayName("ELCredit")
-            </th>
-            <th>
-                @Html.DisplayName("NewELBalance")
-            </th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.EmployeeId)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.FirstName)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.DOJ)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.ConfirmationDate)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.CurrentEL)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.ELCredit)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.NewELBalance)
-                </td>
-            </tr>
+    @section readyscript{
+        @{
+            <script>
+                $("document").ready(function () {
+                    loadEarnedLeaveMasterDetails();
+                });
+            </script>
         }
-    </tbody>
-</table>
+    }
+            <style type="text/css">
+                .ui-timepicker-container {
+                    z-index: 1151 !important;
+                }
+
+                .ui-autocomplete {
+                    height: 220px;
+                    overflow-y: scroll;
+                    overflow-x: hidden;
+                }
+
+                th {
+                    font-size: 11px;
+                }
+
+                td {
+                    font-size: 12px;
+                }
+
+                .alert {
+                    margin-bottom: 1px;
+                    height: 30px;
+                    line-height: 30px;
+                    padding: 0px 15px;
+                }
+
+                .col-sm-2 {
+                    width: 23.666667% !important;
+                    padding-right: 0px !important;
+                    padding-left: 21px !important;
+                }
+
+                .col-sm-10 {
+                    width: 75.333333% !important;
+                }
+            </style>
+
+            }

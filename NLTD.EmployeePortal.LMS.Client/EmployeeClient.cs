@@ -100,5 +100,13 @@ namespace NLTD.EmployeePortal.LMS.Client
                 return helper.GetTeamProfiles(userId, onlyReportedToMe, paramUserId, requestMenuUser, hideInactiveEmp);
             }
         }
+
+        public IList<ViewEmployeeProfileModel> GetEmployeeProfilesforEL(string lastRun)
+        {
+            using (IEmployeeHelper helper = new EmployeeHelper())
+            {
+                return helper.GetEmployeeProfilesforEL(lastRun);
+            }
+        }
     }
 }

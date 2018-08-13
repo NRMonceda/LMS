@@ -93,6 +93,14 @@ namespace NLTD.EmployeePortal.LMS.Dac.DbHelper
             }
         }
 
+        public IList<ViewEmployeeProfileModel> GetEmployeeProfilesforEL(string lastRun)
+        {
+            using (var dac = new EmployeeDac())
+            {
+                return dac.GetEmployeeProfilesforEL(lastRun);
+            }
+        }
+
         public string UpdateEmployeeProfile(EmployeeProfile profile, Int64 ModifiedBy)
         {
             using (var dac = new EmployeeDac())

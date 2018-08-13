@@ -1,0 +1,87 @@
+﻿@model IList<NLTD.EmployeePortal.LMS.Common.DisplayModel.ViewEmployeeProfileModel>
+
+<table id="earnedLeaveDetail"
+       class="table table-condensed table-striped table-hover">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayName("Emp ID")
+            </th>
+            <th>
+                @Html.DisplayName("Name")
+            </th>
+            <th style="width: 131px;">
+                @Html.DisplayName("Joining Date")
+            </th>
+            <th style="width: 131px;">
+                @Html.DisplayName("Confirmation Date")
+            </th>
+            <th style="width: 131px;">
+                @Html.DisplayName("Current EL")
+            </th>
+            <th>
+                @Html.DisplayName("EL Credit")
+            </th>
+            <th>
+                @Html.DisplayName("New EL Balance")
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            if (item.IsConfirmation == true)
+            {
+                <tr style="background-color:red;">
+                    <td>
+                        @Html.DisplayFor(modelItem => item.EmployeeId)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Name)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.DOJ)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ConfirmationDate)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.CurrentEL)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ELCredit)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.NewELBalance)
+                    </td>
+                </tr>
+            }
+            else
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.EmployeeId)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Name)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.DOJ)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ConfirmationDate)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.CurrentEL)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ELCredit)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.NewELBalance)
+                    </td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>

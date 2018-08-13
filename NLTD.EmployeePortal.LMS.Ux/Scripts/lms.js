@@ -1434,6 +1434,23 @@ function loadShiftMasterDetails() {
         });
 }
 
+function loadEarnedLeaveMasterDetails()
+{
+    $("#divLoading").show();
+    $("#divForEarnedLeaveCreditAllocation").load('/Profile/GetEarnedLeaveMasterDetail',
+        function () {
+            $("#earnedLeaveDetail").dataTable({
+                columnDefs: [
+                    { targets: 'no-sort', orderable: false }
+                ]
+            });
+            $("#divLoading").hide();
+            $('html, body').animate({
+                scrollTop: 230 // Means Less header height
+            }, 400);
+        });
+}
+
 function AddShiftPopup(shiftId) {
     $("#alert_placeholder").empty();
     $("#divLoading").show();
