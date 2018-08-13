@@ -2487,8 +2487,9 @@ namespace NLTD.EmployeePortal.LMS.Dac
                     foreach (var item in lstOptoutEmailAddress)
                     {
                         if (qryReportingTo.EmailAddress.ToUpper() != item.ToUpper())
-                        {                            
-                            qry.CcEmailIds.ToList().RemoveAll(o => o.Equals(item, StringComparison.OrdinalIgnoreCase));
+                        {
+                            //qry.CcEmailIds.ToList().RemoveAll(o => o.Equals(item, StringComparison.OrdinalIgnoreCase));
+                            qry.CcEmailIds.Remove(item);
                         }
                     }
 
