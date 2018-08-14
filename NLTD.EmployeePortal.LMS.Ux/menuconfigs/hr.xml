@@ -191,7 +191,7 @@
           <icon></icon>
         </MenuItem>
         <MenuItem>
-          <title>Earned Leave Master </title>
+          <title>Earned Leave Credit</title>
           <url>/Profile/EarnedLeaveCredit</url>
           <icon></icon>
         </MenuItem>

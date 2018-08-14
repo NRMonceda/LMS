@@ -411,6 +411,7 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
         {
 
             ViewBag.LastRun = GetLastRunforEL();
+            ViewBag.CurrentRun = GetCurrentRunforEL(ViewBag.LastRun);
             if (this.IsAuthorized == "NoAuth")
             {
                 Response.Redirect("~/Home/Unauthorized");
@@ -424,12 +425,7 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
 
         public ActionResult GetEarnedLeaveMasterDetail()
         {
-            IList<ViewEmployeeProfileModel> lstProfile = new List<ViewEmployeeProfileModel>();
-            string lastRun = GetLastRunforEL();
-            using (var client = new EmployeeClient())
-            {
-                lstProfile = client.GetEmployeeProfilesforEL(lastRun);
-            }
+            IList<ViewEmployeeProfileModel> lstProfile = GetEmployeeELData();
             return PartialView("EarnedLeaveCreditPartial", lstProfile);
         }
 
@@ -448,6 +444,43 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
                 lastRun = LeaveTypes.Select(s => s.LastRun).FirstOrDefault().ToString();
             }
             return lastRun;
+        }
+
+        public static string GetCurrentRunforEL(string LastRun)
+        {
+            string[] lastRunDates = LastRun.Split(' ');
+            string currentRun = lastRunDates[2] + " to " + DateTime.Now.ToString("dd/MM/yyyy", null);
+            return currentRun;
+        }
+
+        public IList<ViewEmployeeProfileModel> GetEmployeeELData()
+        {
+            IList<ViewEmployeeProfileModel> lstProfile = new List<ViewEmployeeProfileModel>();
+            string lastRun = GetLastRunforEL();
+            using (var client = new EmployeeClient())
+            {
+                lstProfile = client.GetEmployeeProfilesforEL(lastRun);
+            }
+            return lstProfile;
+        }
+
+        public ActionResult ExportExcelEarnedLeaveCreditDetails()
+        {
+            IList<ViewEmployeeProfileModel> lstProfile = GetEmployeeELData();
+            List<ViewEmployeeProfileModel> excelData = new List<ViewEmployeeProfileModel>();
+            excelData = lstProfile.ToList();
+            if (excelData.Count > 0)
+            {
+                string[] columns = { "EmployeeId", "Name", "DOJ", "ConfirmationDate", "CurrentEL", "ELCredit", "NewELBalance" };
+                byte[] filecontent = ExcelExportHelper.ExportPermissionsExcel(excelData, "", false, columns);
+                return File(filecontent, ExcelExportHelper.ExcelContentType, "ELCreditReport_" + System.DateTime.Now + ".xlsx");
+            }
+            else
+            {
+                ViewBag.ErrorMsg = "Excel file is not generated as no data returned.";
+                return View("EarnedLeaveCredit");
+            }
+            return Json("Downloaded");
         }
     }
 }

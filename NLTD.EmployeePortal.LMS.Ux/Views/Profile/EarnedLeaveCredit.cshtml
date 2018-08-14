@@ -39,12 +39,12 @@ else
         <div class="col-sm-12">
             <div class="box box-primary">
                 <div class="box-header with-border">
-                    <h3 class="box-title"> <b>Earned Leave Credit Master</b></h3>
+                    <h3 class="box-title"> <b>Earned Leave Credit</b></h3>
                 </div>
-                <div class="box-body">
+                <div class="box-body" id="idELStatus">
                     <div class="row">
                         <div class="col-sm-5">
-                            Earned Leave Credit From <b>@ViewBag.LastRun </b>
+                            Earned Leave Credit From <b>@ViewBag.CurrentRun </b>
                         </div>
                     </div>
                 </div>
@@ -52,61 +52,87 @@ else
         </div>
     </div>
 
-    <div id="divForEarnedLeaveCreditAllocation"></div>
+    if (ViewBag.ErrorMsg != "" && ViewBag.ErrorMsg != null)
+    {
+            <div class="alert alert-danger">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">x</span>
+                </button>
+                @ViewBag.ErrorMsg
+            </div>
+    }
+    else
+    {
+        <div id="divForEarnedLeaveCreditAllocation"></div>
+        <div class="box-body">
+            <div class="row">
+                <form id="frmexportEL" method="post" action='@Url.Action("ExportExcelEarnedLeaveCreditDetails")'>
+                    <div class="box-footer">
+                        <div class="col-sm-10">
+                            Earned Leave Last Run: <b>@ViewBag.LastRun </b>
+                        </div>
+                        <div class="col-sm-2">
+                            <input type='submit' class="btn btn-primary" value='EXPORT TO EXCEL' onclick="return exportExcelEarnedLeaveDetails()" />
+                            <button type="button" class="btn btn-primary pull-right" onclick="processELCredit">PROCESS</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    }
 
-    <div class="box-footer">
-        <div class="col-sm-10">
-        </div>
-        <div class="col-sm-2">
-            <button type="button" class="btn btn-primary" onclick="processELCredit">PROCESS</button>
-            <button type="button" class="btn btn-primary pull-right">EXPORT TO EXCEL</button>
-        </div>
-    </div>
+
 
     @section readyscript{
         @{
             <script>
                 $("document").ready(function () {
-                    loadEarnedLeaveMasterDetails();
+                    var val = '@ViewBag.ErrorMsg';
+                    if (val === "" || val === null) {
+                        loadEarnedLeaveMasterDetails();
+                        $("#idELStatus").show();
+                    }
+                    else {
+                        $("#idELStatus").hide();
+                    }
                 });
             </script>
         }
     }
-            <style type="text/css">
-                .ui-timepicker-container {
-                    z-index: 1151 !important;
-                }
+    <style type="text/css">
+        .ui-timepicker-container {
+            z-index: 1151 !important;
+        }
 
-                .ui-autocomplete {
-                    height: 220px;
-                    overflow-y: scroll;
-                    overflow-x: hidden;
-                }
+        .ui-autocomplete {
+            height: 220px;
+            overflow-y: scroll;
+            overflow-x: hidden;
+        }
 
-                th {
-                    font-size: 11px;
-                }
+        th {
+            font-size: 11px;
+        }
 
-                td {
-                    font-size: 12px;
-                }
+        td {
+            font-size: 12px;
+        }
 
-                .alert {
-                    margin-bottom: 1px;
-                    height: 30px;
-                    line-height: 30px;
-                    padding: 0px 15px;
-                }
+        .alert {
+            margin-bottom: 1px;
+            height: 30px;
+            line-height: 30px;
+            padding: 0px 15px;
+        }
 
-                .col-sm-2 {
-                    width: 23.666667% !important;
-                    padding-right: 0px !important;
-                    padding-left: 21px !important;
-                }
+        .col-sm-2 {
+            width: 23.666667% !important;
+            padding-right: 0px !important;
+            padding-left: 21px !important;
+        }
 
-                .col-sm-10 {
-                    width: 75.333333% !important;
-                }
-            </style>
-
-            }
+        .col-sm-10 {
+            width: 75.333333% !important;
+        }
+    </style>
+  }
