@@ -52,14 +52,23 @@ else
         </div>
     </div>
 
-    if (ViewBag.ErrorMsg != "" && ViewBag.ErrorMsg != null)
+    if (ViewBag.ErrorMsg != null)
     {
-            <div class="alert alert-danger">
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">x</span>
-                </button>
-                @ViewBag.ErrorMsg
-            </div>
+        <div class="alert alert-danger">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">x</span>
+            </button>
+            @ViewBag.ErrorMsg
+        </div>
+    }
+    else if (ViewBag.CurrentRun == null)
+    {
+        <div class="alert alert-success">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">x</span>
+            </button>
+            Earned leave has been credited from @ViewBag.LastRun
+        </div>
     }
     else
     {
@@ -73,7 +82,7 @@ else
                         </div>
                         <div class="col-sm-2">
                             <input type='submit' class="btn btn-primary" value='EXPORT TO EXCEL' onclick="return exportExcelEarnedLeaveDetails()" />
-                            <button type="button" class="btn btn-primary pull-right" onclick="processELCredit">PROCESS</button>
+                            <button id="btnprocess" type="button" class="btn btn-primary pull-right" onclick="processELCredit()">PROCESS</button>
                         </div>
                     </div>
                 </form>
@@ -88,7 +97,11 @@ else
             <script>
                 $("document").ready(function () {
                     var val = '@ViewBag.ErrorMsg';
-                    if (val === "" || val === null) {
+                    var valCurRun = '@ViewBag.CurrentRun';
+                    if (valCurRun === null || valCurRun === "") {
+                        $("#idELStatus").hide();
+                    }
+                    else if (val === "" || val === null) {
                         loadEarnedLeaveMasterDetails();
                         $("#idELStatus").show();
                     }
@@ -99,40 +112,40 @@ else
             </script>
         }
     }
-    <style type="text/css">
-        .ui-timepicker-container {
-            z-index: 1151 !important;
-        }
+            <style type="text/css">
+                .ui-timepicker-container {
+                    z-index: 1151 !important;
+                }
 
-        .ui-autocomplete {
-            height: 220px;
-            overflow-y: scroll;
-            overflow-x: hidden;
-        }
+                .ui-autocomplete {
+                    height: 220px;
+                    overflow-y: scroll;
+                    overflow-x: hidden;
+                }
 
-        th {
-            font-size: 11px;
-        }
+                th {
+                    font-size: 11px;
+                }
 
-        td {
-            font-size: 12px;
-        }
+                td {
+                    font-size: 12px;
+                }
 
-        .alert {
-            margin-bottom: 1px;
-            height: 30px;
-            line-height: 30px;
-            padding: 0px 15px;
-        }
+                .alert {
+                    margin-bottom: 1px;
+                    height: 30px;
+                    line-height: 30px;
+                    padding: 0px 15px;
+                }
 
-        .col-sm-2 {
-            width: 23.666667% !important;
-            padding-right: 0px !important;
-            padding-left: 21px !important;
-        }
+                .col-sm-2 {
+                    width: 23.666667% !important;
+                    padding-right: 0px !important;
+                    padding-left: 21px !important;
+                }
 
-        .col-sm-10 {
-            width: 75.333333% !important;
-        }
-    </style>
-  }
+                .col-sm-10 {
+                    width: 75.333333% !important;
+                }
+            </style>
+            }

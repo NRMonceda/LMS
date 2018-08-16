@@ -253,6 +253,7 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
                                            orderby e.FirstName
                                            select new ViewEmployeeProfileModel
                                            {
+                                               UserId = e.UserId,
                                                EmployeeId = e.EmployeeId,
                                                Name = e.FirstName + " " + e.LastName,
                                                DOJ = e.DOJ.ToString(),

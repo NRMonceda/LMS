@@ -6,6 +6,7 @@ using NLTD.EmployeePortal.LMS.Ux.AppHelpers;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Net.Mail;
 using System.Text.RegularExpressions;
@@ -409,9 +410,21 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
 
         public ActionResult EarnedLeaveCredit()
         {
-
-            ViewBag.LastRun = GetLastRunforEL();
-            ViewBag.CurrentRun = GetCurrentRunforEL(ViewBag.LastRun);
+            string lastRun = GetLastRunforEL();
+             
+            string[] lastRunDates = lastRun.Split(' ');
+            DateTime elRunMonth = DateTime.ParseExact(lastRunDates[2], "dd-MM-yyyy", CultureInfo.InvariantCulture);
+            bool isCurrentMonth = DateTime.Now.Month == elRunMonth.Month;
+            if (isCurrentMonth)
+            {
+                ViewBag.LastRun = lastRun;
+                ViewBag.CurrentRun = null;
+            }
+            else
+            {
+                ViewBag.LastRun = lastRun;
+                ViewBag.CurrentRun = GetCurrentRunforEL(lastRunDates[2]);
+            }
             if (this.IsAuthorized == "NoAuth")
             {
                 Response.Redirect("~/Home/Unauthorized");
@@ -448,8 +461,7 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
 
         public static string GetCurrentRunforEL(string LastRun)
         {
-            string[] lastRunDates = LastRun.Split(' ');
-            string currentRun = lastRunDates[2] + " to " + DateTime.Now.ToString("dd/MM/yyyy", null);
+            string currentRun = LastRun + " to " + DateTime.Now.ToString("dd/MM/yyyy", null);
             return currentRun;
         }
 
@@ -481,6 +493,22 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
                 return View("EarnedLeaveCredit");
             }
             return Json("Downloaded");
+        }
+
+        public ActionResult UpdateEarnedLeaves(List<ViewEmployeeProfileModel> ELCreditList)
+        {
+            string result = "";
+            string lastRun = GetLastRunforEL();
+            if (ModelState.IsValid)
+            {
+                using (var client = new EmployeeLeaveBalanceClient())
+                {
+                    long loginUserId = this.UserId;
+                    result = client.UpdateEarnedLeaveCreditAll(ELCreditList, loginUserId, lastRun);
+                }
+            }
+
+            return Json(result, JsonRequestBehavior.AllowGet);
         }
     }
 }

@@ -1451,7 +1451,41 @@ function loadEarnedLeaveMasterDetails()
         });
 }
 
-function AddShiftPopup(shiftId) {
+function processELCredit() {
+    $("#divLoading").show();
+    var tableELCredit = $('#earnedLeaveDetail').DataTable();
+    var data = tableELCredit.rows().data();
+    var jsonArr = [];
+    for (i = 0; i < data.length; i++) {
+        jsonArr.push({
+            UserId: data[i][0],
+            EmployeeId: data[i][1],
+            ELCredit: data[i][6],
+            NewELBalance: data[i][7]
+        });
+    }
+    $.ajax({
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'json',
+            type: 'POST',
+            url: '/Profile/UpdateEarnedLeaves',
+            data: JSON.stringify(jsonArr),
+            success: function (result) {
+                if (result == "Saved") {
+                    $("#btnprocess").attr("disabled", true);
+                    window.location.reload();
+                }
+                else {
+                    Clearshowalert(result, "alert alert-danger");
+                }
+    },
+            failure: function (response) {
+            Clearshowalert(response.message, "alert alert-danger");
+    }
+    });
+}
+
+    function AddShiftPopup(shiftId) {
     $("#alert_placeholder").empty();
     $("#divLoading").show();
     $("#ModelTitle").html("Add New Shift");
@@ -1459,23 +1493,23 @@ function AddShiftPopup(shiftId) {
         $("#ModelTitle").html("Edit Shift");
     }
 
-    $("#divForAddShift").load('/Shift/GetShiftMasterDetailwithId?shiftId=' + shiftId,
+    $("#divForAddShift").load('/Shift/GetShiftMasterDetailwithId?shiftId=' +shiftId,
         function () {
             $("#divLoading").hide();
             $('html, body').animate({
-                scrollTop: 230 // Means Less header height
+                    scrollTop: 230 // Means Less header height
             }, 400);
-        });
+    });
     $('#myModal').on('shown.bs.modal', function (e) {
         $('.timepicker').timepicker({
-            timeFormat: "HH:mm"
+                timeFormat: "HH:mm"
         }
         );
     });
     $("#myModal").modal('show');
 }
 
-function SaveShiftMaster() {
+    function SaveShiftMaster() {
     var shiftName, fromTime, toTime, shiftId;
     shiftName = $("#ShiftName").val().trim();
     shiftId = $("#ShiftId").val().trim();
@@ -1500,12 +1534,12 @@ function SaveShiftMaster() {
     $("#divLoading").show();
     var things = JSON.stringify({ 'shiftId': shiftId, 'shiftName': shiftName, 'fromTime': fromTime, 'toTime': toTime });
     $.ajax({
-        contentType: 'application/json; charset=utf-8',
-        dataType: 'json',
-        type: 'POST',
-        url: '/Shift/SaveShiftMaster',
-        data: things,
-        success: function (result) {
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'json',
+            type: 'POST',
+            url: '/Shift/SaveShiftMaster',
+            data: things,
+            success: function (result) {
             if (result == "Saved") {
                 $("#btnsave").attr("disabled", true);
                 window.location.reload();
@@ -1517,34 +1551,34 @@ function SaveShiftMaster() {
             else {
                 Clearshowalert(result, "alert alert-danger");
             }
-        },
-        failure: function (response) {
+    },
+            failure: function (response) {
             Clearshowalert(response.message, "alert alert-danger");
-        }
+    }
     });
 
-    //$("#myModal").modal('show');
+        //$("#myModal").modal('show');
     $("#divLoading").hide();
 }
-function loadShiftDetails() {
+    function loadShiftDetails() {
     $("#divLoading").show();
     var RequestLevelPerson = $("#RequestLevelPerson").val();
 
     $("#divForShiftAllocation").load('/Shift/GetShiftDetail?RequestMenuUser=' + RequestLevelPerson,
         function () {
             $("#ShiftDetail").dataTable({
-                columnDefs: [
-                    { targets: 'no-sort', orderable: false }
-                ]
+                    columnDefs: [
+                        { targets: 'no-sort', orderable: false }
+            ]
             });
             $("#divLoading").hide();
             $('html, body').animate({
-                scrollTop: 230 // Means Less header height
+                    scrollTop: 230 // Means Less header height
             }, 400);
-        });
+    });
 }
 
-function loadEmployeeShifts() {
+    function loadEmployeeShifts() {
     $("#divLoading").show();
     var RequestLevelPerson = $("#RequestLevelPerson").val();
     var table = null;
@@ -1552,12 +1586,12 @@ function loadEmployeeShifts() {
         function () {
             table = $("#addShiftDetail").DataTable(
                 {
-                    columnDefs: [
-                        { targets: 'no-sort', orderable: false, searchable: false }
-                    ],
-                    order: [[1, 'asc']],
-                    stateSave: true
-                });
+                        columnDefs: [
+                            { targets: 'no-sort', orderable: false, searchable: false }
+                ],
+                        order: [[1, 'asc']],
+                        stateSave: true
+            });
             $("#divLoading").hide();
 
             $('#select-all').on('click', function () {
@@ -1565,18 +1599,18 @@ function loadEmployeeShifts() {
                 $('input[type="checkbox"]', rows).prop('checked', this.checked);
             });
             $('html, body').animate({
-                scrollTop: 230,
+                    scrollTop: 230,
             }, 400);
-        });
+    });
 
     $("#alert_placeholder").empty();
 }
 
-function toDate(dateStr) {
+    function toDate(dateStr) {
     var parts = dateStr.split("-");
     return new Date(parts[2], parts[1] - 1, parts[0]);
 }
-function SaveEmployeeShift() {
+    function SaveEmployeeShift() {
     var checkedValues = table.$('input:checkbox:checked').map(function () {
         return $(this).val();
     }).get();
@@ -1614,28 +1648,28 @@ function SaveEmployeeShift() {
     var input = JSON.stringify({
         'UserId': checkedValues, 'Shift': Shift, 'FromDate': FromDate, 'ToDate': ToDate, 'RequestMenuUser': RequestLevelPerson
     });
-    //alert(things);
+        //alert(things);
     $.ajax({
-        contentType: 'application/json; charset=utf-8',
-        dataType: 'json',
-        type: 'POST',
-        url: '/Shift/SaveEmployeeShift',
-        data: input,
-        success: function (result) {
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'json',
+            type: 'POST',
+            url: '/Shift/SaveEmployeeShift',
+            data: input,
+            success: function (result) {
             if (result == "Saved") {
                 Clearshowalert("Employees Shift updated successfully.", "alert alert-success");
             }
             else {
                 Clearshowalert(result, "alert alert-danger");
             }
-        },
-        failure: function (response) {
+    },
+            failure: function (response) {
             Clearshowalert(response.message, "alert alert-danger");
-        }
+    }
     });
 }
 
-function GetEmployeeShiftDetails(FromDate, ToDate, Shift) {
+    function GetEmployeeShiftDetails(FromDate, ToDate, Shift) {
     var UserId = ($("#RequestLevelPerson").val() == "My") ? 0 : $("#UserID").val();
 
     if ($("#RequestLevelPerson").val() != "My") {
@@ -1643,7 +1677,7 @@ function GetEmployeeShiftDetails(FromDate, ToDate, Shift) {
         if (!ValidateAutocompleteName($("#Name").val(), $("#UserID").val())) {
             Clearshowalert("Please Choose a valid Username from the List.", "alert alert-danger");
             return;
-        }
+    }
 
         UserId = $("#UserID").val();
     }
@@ -1652,7 +1686,7 @@ function GetEmployeeShiftDetails(FromDate, ToDate, Shift) {
     if ($("#Name").val() == "" && $("#RequestLevelPerson").val() != "My") {
         if ($('#alert') != undefined && $('#alert') != "") {
             $('#alert').remove();
-        }
+    }
         Clearshowalert("Please enter the employee name", "alert alert-danger");
         return;
     }
@@ -1663,12 +1697,12 @@ function GetEmployeeShiftDetails(FromDate, ToDate, Shift) {
             $(".shift").dataTable({ pageLength: 50, bPaginate: false, bInfo: false });
             $("#divLoading").hide();
             $('html, body').animate({
-                scrollTop: 210  // Means Less header height
+                    scrollTop: 210  // Means Less header height
             }, 400);
-        });
+    });
 }
 
-function SaveIndividualEmployeeShift() {
+    function SaveIndividualEmployeeShift() {
     $("#alert_placeholder").empty();
     var Shift = $("#Shift").val();
     var FromDate = $("#FromDate").val();
@@ -1698,12 +1732,12 @@ function SaveIndividualEmployeeShift() {
         'FromDate': from, 'ToDate': to, 'Shift': Shift, 'UserId': UserId, 'RequestMenuUser': RequestLevelPerson
     });
     $.ajax({
-        contentType: 'application/json; charset=utf-8',
-        dataType: 'json',
-        type: 'POST',
-        url: '/Shift/SaveIndividualEmployeeShift',
-        data: input,
-        success: function (result) {
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'json',
+            type: 'POST',
+            url: '/Shift/SaveIndividualEmployeeShift',
+            data: input,
+            success: function (result) {
             if (result == "Saved") {
                 GetEmployeeShiftDetails(FromDate, ToDate, Shift);
                 Clearshowalert("Shift updated Successfully.", "alert alert-success");
@@ -1711,42 +1745,42 @@ function SaveIndividualEmployeeShift() {
             else {
                 Clearshowalert(result, "alert alert-danger");
             }
-        },
-        failure: function (response) {
+    },
+            failure: function (response) {
             Clearshowalert(response.message, "alert alert-danger");
-        }
+    }
     });
 }
-function ValidateAutocompleteName(name, userID) {
+    function ValidateAutocompleteName(name, userID) {
     if (name != "") {
         if (userID == "") {
             return false;
-        }
+    }
     }
     if (name == "") {
         if (userID != "") {
             $("#SearchUserID").val("");
             $("#UserID").val("");
-        }
+    }
     }
     return true;
 }
 
-function ValidateAceessCardNumber(CardId, userID) {
+    function ValidateAceessCardNumber(CardId, userID) {
     if (CardId == "") {
         if (userID != "") {
             $("#SearchUserID").val("");
             $("#UserID").val("");
-        }
+    }
     }
     return true;
 }
 
-function SetUserIDForAutoCompleteName(userList, name, hiddenFieldID) {
+    function SetUserIDForAutoCompleteName(userList, name, hiddenFieldID) {
     var user = $.grep(userList, function (user) {
         if (user.label.trim() == name.trim()) {
             return user.value;
-        }
+    }
     });
     if (user.length > 0) {
         $("#" + hiddenFieldID).val(user[0].value);

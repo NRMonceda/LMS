@@ -152,5 +152,81 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
                 return ex.Message;
             }
         }
+
+        public string UpdateEarnedLeaveCreditAll(List<ViewEmployeeProfileModel> empsELCreditDetails, Int64 LoginUserId, String LastRun)
+        {
+            try
+            {
+                bool isAuthorizedRole = false;
+                using (var context = new NLTDDbContext())
+                {
+                    var isAuthorized = (from e in context.Employee
+                                        join r in context.EmployeeRole on e.EmployeeRoleId equals r.RoleId
+                                        where e.UserId == LoginUserId
+                                        select new { r.Role }
+                                  ).FirstOrDefault();
+
+                    if (isAuthorized != null)
+                    {
+                        if (isAuthorized.Role.ToUpper() == "HR")
+                            isAuthorizedRole = true;
+                    }
+
+                    if (isAuthorizedRole)
+                    {
+                        foreach (var item in empsELCreditDetails)
+                        {
+                            if (item.NewELBalance > 0)
+                            {
+                                EmployeeLeaveBalance leaveBalance = context.EmployeeLeaveBalance.Where(x => x.UserId == item.UserId && x.LeaveTypeId == 2).FirstOrDefault();
+                                if (leaveBalance != null)
+                                {
+                                    leaveBalance.TotalDays = leaveBalance.TotalDays + item.ELCredit;
+                                    leaveBalance.ModifiedBy = LoginUserId;
+                                    leaveBalance.ModifiedOn = DateTime.Now;
+                                    leaveBalance.BalanceDays = leaveBalance.BalanceDays + item.ELCredit;
+                                    context.SaveChanges();
+                                }
+                                LeaveTransactionHistory leaveTransactionHistory = new LeaveTransactionHistory();
+                                leaveTransactionHistory.UserId = item.UserId;
+                                leaveTransactionHistory.LeaveTypeId = 2;
+                                leaveTransactionHistory.LeaveId = -1;
+                                leaveTransactionHistory.TransactionDate = DateTime.Now;
+                                leaveTransactionHistory.TransactionType = "C";
+                                leaveTransactionHistory.NumberOfDays = item.ELCredit.HasValue ? (decimal)item.ELCredit : 0;
+                                leaveTransactionHistory.TransactionBy = LoginUserId;
+                                leaveTransactionHistory.Remarks = null;
+                                context.LeaveTransactionHistory.Add(leaveTransactionHistory);
+                                context.SaveChanges();
+                            }
+                        }
+                        string[] lastRunDates = LastRun.Split(' ');
+                        LeaveType leaveType = new LeaveType();
+                        leaveType.OfficeId = 1;
+                        leaveType.Type = "ELCredit";
+                        leaveType.AdjustLeaveBalance = false;
+                        leaveType.ApplicableGender = "A";
+                        leaveType.IsLeave = false;
+                        leaveType.IsTimeBased = false;
+                        leaveType.LastRun = lastRunDates[2] + " to " + (DateTime.Now.ToString("dd-MM-yyyy")).ToString();
+                        leaveType.Createdon = DateTime.Now;
+                        leaveType.CreatedBy = Convert.ToInt32(LoginUserId);
+                        leaveType.Modifiedon = DateTime.Now;
+                        leaveType.ModifiedBy = Convert.ToInt32(LoginUserId);
+                        context.LeaveType.Add(leaveType);
+                        context.SaveChanges();
+                    }
+                    else
+                    {
+                        return "Need Role";
+                    }
+                }
+                return "Saved";
+            }
+            catch (Exception ex)
+            {
+                return ex.Message;
+            }
+        }
     }
 }
