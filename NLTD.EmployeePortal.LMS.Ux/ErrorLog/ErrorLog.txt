@@ -705,25 +705,3 @@ Source: System
 TargetSite: Void CheckResponse(System.Net.Mail.SmtpStatusCode, System.String)
 -----------------------------------------------------------
 
-Time: 13/08/2018 12:22:09 PM
-Leave ID:50
------------------------------------------------------------
-Message: Failure sending mail.
-StackTrace:    at System.Net.Mail.SmtpClient.Send(MailMessage message)
-   at NLTD.EmployeePortal.LMS.Ux.AppHelpers.EmailHelper.SendHtmlFormattedEmail(String recepientEmail, IList`1 ccEmail, String subject, String body) in D:\SureshM NLTD\NewGitNltdIndia\LMS\NLTD.EmployeePortal.LMS.Ux\AppHelpers\EmailHelper.cs:line 48
-   at NLTD.EmployeePortal.LMS.Ux.AppHelpers.EmailHelper.SendEmail(Int64 leaveId, String actionName) in D:\SureshM NLTD\NewGitNltdIndia\LMS\NLTD.EmployeePortal.LMS.Ux\AppHelpers\EmailHelper.cs:line 121
-Source: System
-TargetSite: Void Send(System.Net.Mail.MailMessage)
------------------------------------------------------------
-
-Time: 13/08/2018 12:24:14 PM
-Leave ID:51
------------------------------------------------------------
-Message: Failure sending mail.
-StackTrace:    at System.Net.Mail.SmtpClient.Send(MailMessage message)
-   at NLTD.EmployeePortal.LMS.Ux.AppHelpers.EmailHelper.SendHtmlFormattedEmail(String recepientEmail, IList`1 ccEmail, String subject, String body) in D:\SureshM NLTD\NewGitNltdIndia\LMS\NLTD.EmployeePortal.LMS.Ux\AppHelpers\EmailHelper.cs:line 48
-   at NLTD.EmployeePortal.LMS.Ux.AppHelpers.EmailHelper.SendEmail(Int64 leaveId, String actionName) in D:\SureshM NLTD\NewGitNltdIndia\LMS\NLTD.EmployeePortal.LMS.Ux\AppHelpers\EmailHelper.cs:line 121
-Source: System
-TargetSite: Void Send(System.Net.Mail.MailMessage)
------------------------------------------------------------
-
