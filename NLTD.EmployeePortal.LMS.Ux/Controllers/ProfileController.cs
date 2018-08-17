@@ -461,7 +461,12 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
 
         public static string GetCurrentRunforEL(string LastRun)
         {
-            string currentRun = LastRun + " to " + DateTime.Now.ToString("dd/MM/yyyy", null);
+            var today = DateTime.Today;
+            var month = new DateTime(today.Year, today.Month, 1);
+            var lastDate = month.AddDays(-1).ToString("dd-MM-yyyy", null);
+            DateTime elRunMonth = DateTime.ParseExact(LastRun, "dd-MM-yyyy", CultureInfo.InvariantCulture);
+            var firstDate = elRunMonth.AddDays(+1).ToString("dd-MM-yyyy", null);
+            string currentRun = firstDate + " to " + lastDate;
             return currentRun;
         }
 

@@ -63,17 +63,17 @@ else
     }
     else if (ViewBag.CurrentRun == null)
     {
-        <div class="alert alert-success">
+        <div class="alert alert-danger">
             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                 <span aria-hidden="true">x</span>
             </button>
-            Earned leave has been credited from @ViewBag.LastRun
+            Earned leave has been already credited.
         </div>
     }
     else
     {
         <div id="divForEarnedLeaveCreditAllocation"></div>
-        <div class="box-body">
+        <div class="box-body" id="elCreditOperaions">
             <div class="row">
                 <form id="frmexportEL" method="post" action='@Url.Action("ExportExcelEarnedLeaveCreditDetails")'>
                     <div class="box-footer">
@@ -89,7 +89,18 @@ else
             </div>
         </div>
     }
-
+    <div class="alert alert-danger" style="display: none;" id="elCreditMsgError">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">x</span>
+        </button>
+        @ViewBag.ErrorMsg
+    </div>
+    <div class="alert alert-success" style="display: none;" id="elCreditMsgSuccess">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">x</span>
+        </button>
+        Earned leave has been credited from @ViewBag.CurrentRun
+    </div>
 
 
     @section readyscript{

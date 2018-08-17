@@ -1472,16 +1472,21 @@ function processELCredit() {
             data: JSON.stringify(jsonArr),
             success: function (result) {
                 if (result == "Saved") {
-                    $("#btnprocess").attr("disabled", true);
-                    window.location.reload();
+                    $("#elCreditMsgSuccess").show();
+                    $("#divLoading").hide();
+                    $("#idELStatus").hide();
+                    $("#divForEarnedLeaveCreditAllocation").hide();
+                    $("#elCreditOperaions").hide();
                 }
                 else {
+                    $("#elCreditMsgError").show();
                     Clearshowalert(result, "alert alert-danger");
                 }
-    },
+            },
             failure: function (response) {
-            Clearshowalert(response.message, "alert alert-danger");
-    }
+                $("#elCreditMsgError").show();
+                Clearshowalert(response.message, "alert alert-danger");
+            }
     });
 }
 
