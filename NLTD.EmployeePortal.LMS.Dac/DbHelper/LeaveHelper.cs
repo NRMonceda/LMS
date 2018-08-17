@@ -45,6 +45,14 @@ namespace NLTD.EmployeePortal.LMS.Dac.DbHelper
             }
         }
 
+        public EmailDataModel GetEmailDataAddLeave(Int64 userID, Int64? leaveTypeID)
+        {
+            using (var dac = new LeaveDac())
+            {
+                return dac.GetEmailDataAddLeave(userID, leaveTypeID);
+            }
+        }
+
         public EmailDataModel GetEmailData(Int64 leaveId, string actionName)
         {
             using (var dac = new LeaveDac())

@@ -62,6 +62,8 @@ namespace NLTD.EmployeePortal.LMS.Repository
 
         EmailDataModel GetEmailData(Int64 leaveId, string actionName);
 
+        EmailDataModel GetEmailDataAddLeave(Int64 userID, Int64? leaveTypeID);
+
         //string ChangeStatusFromEmail(Int64 leaveId, Int64 userId, string action);
 
         EmailDataModel ViewLeaveFromEmail(Int64 leaveId, Int64 userId);

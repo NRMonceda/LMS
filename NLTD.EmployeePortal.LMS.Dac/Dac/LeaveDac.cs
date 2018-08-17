@@ -2527,6 +2527,45 @@ namespace NLTD.EmployeePortal.LMS.Dac
             }
         }
 
+        public EmailDataModel GetEmailDataAddLeave(Int64 userID, Int64? leaveTypeID)
+        {
+            EmailDataModel retMdl = new EmailDataModel();
+            try
+            {
+                using (var context = new NLTDDbContext())
+                {
+                    var qry = (from e in context.Employee
+                               join lt in context.LeaveType on leaveTypeID equals lt.LeaveTypeId
+                               where e.UserId == userID
+                               select new EmailDataModel
+                               {
+                                   RequestFor = e.FirstName + " " + e.LastName,
+                                   EmpId = e.EmployeeId,
+                                   ReportingToId = e.ReportingToId,
+                                   RequestorEmailId = e.EmailAddress,
+                                   LeaveTypeText = lt.Type
+                               }
+                            ).FirstOrDefault();
+                    qry.CcEmailIds = GetHigherApproversEmailIds(qry.ReportingToId);
+                    var hrEmail = (from e in context.Employee
+                                   join er in context.EmployeeRole on e.EmployeeRoleId equals er.RoleId
+                                   where (er.Role == "HR" || er.Role == "Admin") && e.IsActive == true
+                                   select new { EmailId = e.EmailAddress }
+                                 ).ToList();
+                    foreach (var item in hrEmail)
+                    {
+                        qry.CcEmailIds.Add(item.EmailId);
+                    }
+                    retMdl = qry;
+                }
+                return retMdl;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
         public EmailDataModel ViewLeaveFromEmail(Int64 leaveId, Int64 userId)
         {
             EmailDataModel retMdl = new EmailDataModel();

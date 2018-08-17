@@ -404,6 +404,19 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
                     result = client.UpdateLeaveBalance(lst, EmpUserid, LoginUserId);
                 }
             }
+            try
+            {
+                EmailHelper emailHelper = new EmailHelper();
+                #if DEBUG
+                    emailHelper.SendEmailforAddLeave(lst, EmpUserid);
+                #else
+		            BackgroundJob.Enqueue(() => emailHelper.SendEmailforAddLeave(lst, EmpUserid));
+                #endif
+            }
+            catch
+            {
+                throw;
+            }
 
             return Json(result);
         }

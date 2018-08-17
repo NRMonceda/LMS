@@ -394,6 +394,9 @@
     <Content Include="css\LMS.css" />
     <Content Include="EmailCCTemplate.html" />
     <Content Include="EmailTemplate.html" />
+    <Content Include="EmailTemplateAddLeave.html" />
+    <Content Include="EmailTemplateAddLeave_files\colorschememapping.xml" />
+    <Content Include="EmailTemplateAddLeave_files\filelist.xml" />
     <Content Include="ErrorLog\ErrorLog.txt" />
     <Content Include="favicon.ico" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
@@ -563,6 +566,7 @@
     <Content Include="Content\DataTables\css\semanticui.scss" />
     <Content Include="Content\DataTables\css\mixins.scss" />
     <Content Include="Content\DataTables\css\common.scss" />
+    <Content Include="EmailTemplateAddLeave_files\themedata.thmx" />
     <None Include="Properties\PublishProfiles\LMS For Prod.pubxml" />
     <None Include="Properties\PublishProfiles\LMS Local.pubxml" />
     <Content Include="Scripts\bootstrap.js" />
