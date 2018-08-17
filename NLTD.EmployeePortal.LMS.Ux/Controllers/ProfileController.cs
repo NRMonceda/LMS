@@ -2,6 +2,7 @@
 using NLTD.EmployeePortal.LMS.Common.DisplayModel;
 using NLTD.EmployeePortal.LMS.Common.QueryModel;
 using NLTD.EmployeePortal.LMS.Dac;
+using NLTD.EmployeePortal.LMS.Dac.DbModel;
 using NLTD.EmployeePortal.LMS.Ux.AppHelpers;
 using System;
 using System.Collections;
@@ -417,7 +418,6 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
             {
                 throw;
             }
-
             return Json(result);
         }
 
@@ -525,7 +525,43 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
                     result = client.UpdateEarnedLeaveCreditAll(ELCreditList, loginUserId, lastRun);
                 }
             }
+            foreach (var item in ELCreditList)
+            {
+                if (item.ELCredit != null && item.ELCredit > 0)
+                {
+                    using (var context = new NLTDDbContext())
+                    {
+                        try
+                        {
+                            EmployeeLeaveBalance leaveBalance = context.EmployeeLeaveBalance.Where(x => x.UserId == item.UserId && x.LeaveTypeId == 2).FirstOrDefault();
+                            List<EmployeeLeaveBalanceDetails> lst = new List<EmployeeLeaveBalanceDetails>();
+                            lst = (from employee in context.EmployeeLeaveBalance
+                                   where employee.UserId == item.UserId & employee.LeaveTypeId == 2
+                                   select new EmployeeLeaveBalanceDetails
+                                   {
+                                       BalanceDays = item.CurrentEL,
+                                       CreditOrDebit = "C",
+                                       LeaveBalanceId = leaveBalance.LeaveBalanceId,
+                                       LeaveTypeId = 2,
+                                       NoOfDays = (Decimal)item.ELCredit,
+                                       Remarks = "EL Credited",
+                                       TotalDays = item.NewELBalance
+                                   }).ToList();
 
+                            EmailHelper emailHelper = new EmailHelper();
+                            #if DEBUG
+                                emailHelper.SendEmailforAddLeave(lst, item.UserId);
+                            #else
+		                        BackgroundJob.Enqueue(() => emailHelper.SendEmailforAddLeave(lst, EmpUserid));
+                            #endif
+                        }
+                        catch(Exception e)
+                        {
+                            throw;
+                        }
+                    }
+                }
+            }
             return Json(result, JsonRequestBehavior.AllowGet);
         }
     }

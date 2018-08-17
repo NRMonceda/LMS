@@ -1460,6 +1460,7 @@ function processELCredit() {
         jsonArr.push({
             UserId: data[i][0],
             EmployeeId: data[i][1],
+            CurrentEL: data[i][5],
             ELCredit: data[i][6],
             NewELBalance: data[i][7]
         });
