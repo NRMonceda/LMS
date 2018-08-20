@@ -1,0 +1,175 @@
+﻿@model IList<NLTD.EmployeePortal.LMS.Common.DisplayModel.EmployeeAttendanceModel>
+<script type="text/javascript" src="~/Scripts/lms.js?v=1.08"></script>
+<style type="text/css">
+    .panel-group .panel {
+        border-radius: 0;
+        box-shadow: none;
+        border-color: #EEEEEE;
+    }
+
+    .panel-default > .panel-heading {
+        padding: 0;
+        border-radius: 0;
+        color: #FFFFFF;
+        background-color: #4894B3;
+        border-color: #EEEEEE;
+    }
+
+    .panel-title {
+        font-size: 12px;
+    }
+
+        .panel-title > a {
+            display: block;
+            padding: 9px;
+            text-decoration: none;
+        }
+
+    .more-less {
+        float: right;
+        color: #212121;
+    }
+
+    .panel-default > .panel-heading + .panel-collapse > .panel-body {
+        border-top-color: #EEEEEE;
+    }
+
+    /* ----- v CAN BE DELETED v ----- */
+    body {
+        background-color: #26a69a;
+    }
+</style>
+@if (Model.Count == 0)
+{
+    <div id="showalert">
+        <div class="alert alert-danger">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">x</span>
+            </button>
+            No matching records found.
+        </div>
+    </div>
+
+}
+else
+{
+    if (ViewBag.RequestLevelPerson == "My")
+    {
+        <table class="table table-condensed table-striped table-hover  dtatable">
+            <thead>
+                <tr>
+                    <th>
+                        @Html.DisplayName("Date")
+                    </th>
+                    <th>
+                        @Html.DisplayName("Day")
+                    </th>
+                    <th>
+                        @Html.DisplayName("Time")
+                    </th>
+                    <th>
+                        @Html.DisplayName("Punch")
+                    </th>
+
+                </tr>
+            </thead>
+
+            <tbody>
+                @for (int j = 0; j < Model.Count; j++)
+            {
+            <tr>
+                <td>
+                    @Model[j].InOutDate.ToString("dd-MM-yyyy")
+                </td>
+                <td>
+                    @Model[j].InOutDate.DayOfWeek
+                </td>
+                <td>
+                    @Model[j].InOutDate.ToString("HH:mm:ss")
+                </td>
+                <td>
+                    @Model[j].InOut
+                </td>
+
+            </tr>
+            }
+            </tbody>
+        </table>
+
+    }
+    else
+    {
+        <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+            @for (int i = 0; i < Model.Count; i++)
+                {
+                    Int64? userID = Model[i].UserID;
+        <div class="panel panel-default">
+            <div class="panel-heading" role="tab" id="@("heading" + Model[i].UserID)">
+                <h4 class="panel-title">
+                    <a role="button" data-toggle="collapse" data-parent="#accordion" href="@("#" + "collapse" + Model[i].UserID)" aria-expanded="true" aria-controls="collapseOne">
+                        <i class="more-less glyphicon glyphicon-plus"></i>
+                        @Model[i].Name
+                    </a>
+                </h4>
+            </div>
+            <div id="@("collapse" + Model[i].UserID)" style="background-color:#ecf0f5" class="panel-collapse collapse" role="tabpanel" aria-labelledby="@("heading" + Model[i].Name)">
+                <div class="panel-body">
+                    <table class="table table-condensed table-striped table-hover  dtatable">
+                        <thead>
+                            <tr>
+                                <th>
+                                    @Html.DisplayName("Date")
+                                </th>
+                                <th>
+                                    @Html.DisplayName("Day")
+                                </th>
+                                <th>
+                                    @Html.DisplayName("Time")
+                                </th>
+                                <th>
+                                    @Html.DisplayName("Punch")
+                                </th>
+
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            @for (int j = i; j < Model.Count; j++)
+                                {
+                                    if (Model[j].UserID != userID)
+                                    {
+                                        userID = Model[j].UserID;
+                                        i = j-1;
+                                        break;
+                                    }
+
+                                <tr>
+                                    <td>
+                                        @Model[j].InOutDate.ToString("dd-MM-yyyy")
+                                    </td>
+                                    <td>
+                                        @Model[j].InOutDate.DayOfWeek
+                                    </td>
+                                    <td>
+                                        @Model[j].InOutDate.ToString("HH:mm:ss")
+                                    </td>
+                                    <td>
+                                        @Model[j].InOut
+                                    </td>
+
+                                </tr>
+                                if (j == Model.Count - 1)
+                                {
+                                    i = j;
+                                    break;
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        }
+        </div>
+    }
+}

@@ -1,0 +1,146 @@
+﻿@model NLTD.EmployeePortal.LMS.Common.DisplayModel.EmpShift
+<script type="text/javascript" src="~/Scripts/lms.js?v=1.08"></script>
+<style type="text/css">
+    .panel-group .panel {
+        border-radius: 0;
+        box-shadow: none;
+        border-color: #EEEEEE;
+    }
+
+    .panel-default > .panel-heading {
+        padding: 0;
+        border-radius: 0;
+        color: #FFFFFF;
+        background-color: #4894B3;
+        border-color: #EEEEEE;
+    }
+
+    .panel-title {
+        font-size: 12px;
+    }
+
+        .panel-title > a {
+            display: block;
+            padding: 9px;
+            text-decoration: none;
+        }
+
+    .more-less {
+        float: right;
+        color: #212121;
+    }
+
+    .panel-default > .panel-heading + .panel-collapse > .panel-body {
+        border-top-color: #EEEEEE;
+    }
+
+    /* ----- v CAN BE DELETED v ----- */
+    body {
+        background-color: #26a69a;
+    }
+</style>
+
+<script>
+    $(function () {
+        var year = (new Date()).getFullYear();
+        var firstDate = new Date(year, 0, 1);
+        var lastDate = new Date(year, 11, 31)
+        $('#FromDate').datetimepicker(
+            {
+                viewMode: "days",
+                format: "DD-MM-YYYY",
+                minDate: firstDate,
+                maxDate: lastDate
+            }
+        );
+        $('#ToDate').datetimepicker(
+            {
+                viewMode: "days",
+                format: "DD-MM-YYYY",
+                minDate: firstDate,
+                maxDate: lastDate
+            }
+        );
+    });
+</script>
+
+@{
+    if ((Model.shiftDetail == null) || (Model.shiftDetail != null && Model.shiftDetail.Count() == 0))
+    {
+        <div id="alert" class="alert alert-danger">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">x</span>
+            </button>
+            No matching records found.
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="box box-primary" style="border-top-color:white !important">
+                    <div class="box-header with-border">
+                        <div class="col-sm-5" style="left:-15px;">
+                            <span style="font-weight:bold">Name: @Model.Name</span>
+                        </div>
+                        <div class="col-sm-2" style="left:-15px;">
+                            <span style="font-weight:bold">Employee Id: @Model.EmpId</span>
+                        </div>
+                        <div class="col-sm-5" style="padding-right:0px">
+                            <span style="font-weight:bold">Reporting To: @Model.ReportingTo</span>
+                        </div>
+                    </div>
+                    @{ if ((string)ViewBag.RequestLevelPerson != "My")
+                        {
+                            <div class="box-body">
+                                <div class="row">
+                                    <div class="col-sm-3">
+                                        @Html.Label("From Date", new { @class = "required" })
+                                        @Html.TextBox("FromDate", (string)ViewBag.FromDate, new { @class = "form-control" })
+                                    </div>
+                                    <div class="col-sm-3">
+                                        @Html.Label("To Date", new { @class = "required" })
+                                        @Html.TextBox("ToDate", (string)ViewBag.TodDate, new { @class = "form-control" })
+                                    </div>
+                                    <div class="col-sm-3">
+                                        @Html.Label("Shift", new { @class = "required" })
+                                        @Html.DropDownList("Shift", new SelectList(Model.Shifts, "ShiftId", "ShiftName", ViewBag.Shift), new { @class = "form-control" })
+                                        @Html.Hidden("UserId", Model.UserId)
+                                    </div>
+                                    <div class="col-sm-3" style="padding-top:27px;">
+                                        <button type="button" class="btn btn-primary pull-right" onclick="SaveIndividualEmployeeShift();">UPDATE SHIFT</button>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+        <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+            @for (int i = 0; i < Model.shiftDetail.Count(); i++)
+            {
+                string value = Model.shiftDetail[i].Month + " - " + DateTime.Now.Year;
+                <div class="panel panel-default">
+                    <div class="panel-heading" role="tab" id="@("heading" + Model.shiftDetail[i].Month)">
+                        <h4 class="panel-title">
+                            <a role="button" data-toggle="collapse" data-parent="#accordion" href="@("#" + "collapse" + Model.shiftDetail[i].Month)" aria-expanded="true" aria-controls="collapseOne">
+                                <i class="more-less glyphicon glyphicon-plus"></i>
+                                @value
+                            </a>
+                        </h4>
+                    </div>
+                    <div id="@("collapse" + Model.shiftDetail[i].Month)" style="background-color:#ecf0f5" class="panel-collapse collapse" role="tabpanel" aria-labelledby="@("heading" + Model.shiftDetail[i].Month)">
+                        <div class="panel-body">
+                            @*<button type="button" class="btn btn-block" data-toggle="collapse" style="text-decoration:underline;color:darkblue;">View Transaction Log</button>*@
+                            @*<div id="@("summary"+Model[i].LeaveTypeId)" class="collapse">
+                                    <div id="@("divForCreate"+Model[i].LeaveTypeId)"></div>
+                                </div>*@
+                            @Html.Partial("~/Views/Shift/EmpShiftAllocationSubDetailPartial.cshtml", Model.shiftDetail[i].shiftAllocation)
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+                        }
+}

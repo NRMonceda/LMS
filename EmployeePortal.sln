@@ -1,0 +1,52 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NLTD.EmployeePortal.LMS.Common", "NLTD.EmployeePortal.LMS.Common\NLTD.EmployeePortal.LMS.Common.csproj", "{62668ACE-A9BD-4DAE-A59B-2CD560DB4ACF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NLTD.EmployeePortal.LMS.Repository", "NLTD.EmployeePortal.LMS.Repository\NLTD.EmployeePortal.LMS.Repository.csproj", "{77D27C9B-1EA3-4A01-91AA-BDC3B1757D10}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NLTD.EmployeePortal.LMS.Dac", "NLTD.EmployeePortal.LMS.Dac\NLTD.EmployeePortal.LMS.Dac.csproj", "{779A6702-63A3-46D2-A529-E155D1C93974}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NLTD.EmployeePortal.LMS.Client", "NLTD.EmployeePortal.LMS.Client\NLTD.EmployeePortal.LMS.Client.csproj", "{80D51968-14E9-4545-93C7-775CC5BEC3F7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NLTD.EmployeePortal.LMS.Ux", "NLTD.EmployeePortal.LMS.Ux\NLTD.EmployeePortal.LMS.Ux.csproj", "{8DCF2AFE-DB67-4604-A835-5B0F5D765D7E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LMSTimeSheet", "LMSTimeSheet\LMSTimeSheet.csproj", "{ADE56488-6604-4571-90DE-94F5FBB03AD0}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{62668ACE-A9BD-4DAE-A59B-2CD560DB4ACF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{62668ACE-A9BD-4DAE-A59B-2CD560DB4ACF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{62668ACE-A9BD-4DAE-A59B-2CD560DB4ACF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{62668ACE-A9BD-4DAE-A59B-2CD560DB4ACF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{77D27C9B-1EA3-4A01-91AA-BDC3B1757D10}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{77D27C9B-1EA3-4A01-91AA-BDC3B1757D10}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{77D27C9B-1EA3-4A01-91AA-BDC3B1757D10}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{77D27C9B-1EA3-4A01-91AA-BDC3B1757D10}.Release|Any CPU.Build.0 = Release|Any CPU
+		{779A6702-63A3-46D2-A529-E155D1C93974}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{779A6702-63A3-46D2-A529-E155D1C93974}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{779A6702-63A3-46D2-A529-E155D1C93974}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{779A6702-63A3-46D2-A529-E155D1C93974}.Release|Any CPU.Build.0 = Release|Any CPU
+		{80D51968-14E9-4545-93C7-775CC5BEC3F7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{80D51968-14E9-4545-93C7-775CC5BEC3F7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{80D51968-14E9-4545-93C7-775CC5BEC3F7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{80D51968-14E9-4545-93C7-775CC5BEC3F7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8DCF2AFE-DB67-4604-A835-5B0F5D765D7E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8DCF2AFE-DB67-4604-A835-5B0F5D765D7E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8DCF2AFE-DB67-4604-A835-5B0F5D765D7E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8DCF2AFE-DB67-4604-A835-5B0F5D765D7E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ADE56488-6604-4571-90DE-94F5FBB03AD0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ADE56488-6604-4571-90DE-94F5FBB03AD0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ADE56488-6604-4571-90DE-94F5FBB03AD0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ADE56488-6604-4571-90DE-94F5FBB03AD0}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

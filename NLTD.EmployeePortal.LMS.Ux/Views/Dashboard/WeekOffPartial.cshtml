@@ -1,0 +1,29 @@
+﻿@model List<NLTD.EmployeePortal.LMS.Common.DisplayModel.DropDownItem>
+
+<div class="box-body">
+    @{
+        if (Model != null)
+        {
+            foreach (var item in Model)
+            {
+                if (item.Key.ToLower() != "sunday")
+                {
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <p>@item.Key</p>
+                        </div>
+                    </div>
+                }
+            }
+            //Display Sunday last.
+            if (Model.Exists(x => x.Key == "Sunday"))
+            {
+                <div class="row">
+                    <div class="col-sm-12">
+                        <p>Sunday</p>
+                    </div>
+                </div>
+            }
+        }
+    }
+</div>

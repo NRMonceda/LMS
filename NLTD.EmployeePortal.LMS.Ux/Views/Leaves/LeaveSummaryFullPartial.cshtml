@@ -1,0 +1,53 @@
+﻿@model List<NLTD.EmployeePortal.LMS.Common.DisplayModel.LeaveSummary>
+@{
+    <div class="box-body">
+        <div class="col-sm-12">
+            <div class="row leave-list-item">
+                <div class="row">
+                    <div class="col-sm-4">
+                        <h6 class="box-title">Leave Type</h6>
+                    </div>
+                    <div class="col-sm-2"  style="padding-left:11px;">
+                        <h6 class="box-title">Total</h6>
+                    </div>
+                    <div class="col-sm-2"  style="padding-left:11px;">
+                        <h6 class="box-title">Used</h6>
+                    </div>
+                    <div class="col-sm-2"  style="padding-left:11px;">
+                        <h6 class="box-title">Applied</h6>
+                    </div>
+                    <div class="col-sm-2"  style="padding-left:11px;">
+                        <h6 class="box-title">Balance</h6>
+                    </div>
+                </div>
+
+                @foreach (var item in Model)
+                {
+                    if (item.IsTimeBased == false)
+                    {
+
+                        <div class="row">
+                            <div class="col-sm-4">
+                                <p>@item.LeaveType</p>
+                            </div>
+                            <div class="col-sm-2" style="text-align: justify;">
+                                @Html.Label("", (item.AdjustLeaveBalance == false ? "NA" : item.TotalLeaves.ToString()))
+                            </div>
+                            <div class="col-sm-2" style="text-align: justify;">
+                                @Html.Label("", item.LeavesTaken.ToString())
+                            </div>
+                            <div class="col-sm-2" style="text-align: justify;">
+                                @Html.Label("", item.LeavesPendingApproval.ToString())
+                            </div>
+                            <div class="col-sm-2" style="text-align: justify;">
+                                @Html.Label("", (item.AdjustLeaveBalance == false ? "NA" : item.LeavesBalance.ToString()))
+                            </div>
+                        </div>
+
+                    }
+
+                }
+            </div>
+        </div>
+    </div>
+}

@@ -1,0 +1,156 @@
+﻿@model List<NLTD.EmployeePortal.LMS.Common.DisplayModel.LeaveItem>
+
+@{
+    <div id="@("alert_placeholder"+Model[0].UserId)"></div>
+    foreach (var item in Model)
+    {
+        <div class="row" id="Request-@item.LeaveId.ToString()" style="padding-bottom:1em">
+            <div class="col-sm-12">
+
+                @{
+                    if (item.isTimeBased == true)
+                    {
+                        <div class="alert alert-info">
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">x</span>
+                            </button>
+                            Total hours already approved in current month : @item.PermissionInMonth
+                        </div>
+                    }
+                }
+                <div class="box box-primary">
+                    <div class="box-body">
+                        <div class="row leave-list-item">
+                            <div class="col-sm-12">
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        Request Type: @Html.Label(item.LeaveTypeText)
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <span>Applied By: @Html.Label(item.AppliedByName)</span>
+                                    </div>
+                                    <div class="col-sm-2 pull-right">
+                                        <span class="pull-right">Applied On: @Html.Label(item.RequestDate.ToString("dd-MM-yyyy"))</span>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-3 pull-left">
+                                        @{
+                                            if (item.LeaveFromType == "A")
+                                            {
+                                                <span> From: @Html.Label(item.LeaveFromDate.ToString("dd-MM-yyyy"))</span>
+                                            }
+                                            else if (item.LeaveFromType == "F")
+                                            {
+                                                <span> From: @Html.Label(item.LeaveFromDate.ToString("dd-MM-yyyy") + " (First Half)")</span>
+                                            }
+                                            else if (item.LeaveFromType == "S")
+                                            {
+                                                <span> From: @Html.Label(item.LeaveFromDate.ToString("dd-MM-yyyy") + " (Second Half)")</span>
+                                            }
+                                        }
+                                    </div>
+                                    <div class="col-sm-3">
+                                        @{
+                                            if (item.LeaveUptoType == "A")
+                                            {
+                                                <span> To: @Html.Label(item.LeaveUptoDate.ToString("dd-MM-yyyy"))</span>
+                                            }
+                                            else if (item.LeaveUptoType == "F")
+                                            {
+                                                <span> To: @Html.Label(item.LeaveUptoDate.ToString("dd-MM-yyyy") + " (First Half)")</span>
+                                            }
+                                            else if (item.LeaveUptoType == "S")
+                                            {
+                                                <span> To: @Html.Label(item.LeaveUptoDate.ToString("dd-MM-yyyy") + " (Second Half)")</span>
+                                            }
+                                        }
+                                    </div>
+                                    @{
+                                        if (item.isTimeBased == true)
+                                        {
+                                            <div class="col-sm-3" style="padding-bottom:7px;">
+                                                <span> Time: @Html.Label(item.PermissionTime)</span>
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <div class="col-sm-3" style="top:-8px;left:-14px;">
+                                                <button type="button" class="btn btn-link" onclick="showLeaveDtlSplit(@item.LeaveId)"><span>No. Of Day(s)</span></button>
+                                                <div id="@("LeaveDtlSplit" + item.LeaveId)" style="position:absolute; width:480px;right:0; background-color: white; z-index:9999;float:left;display:none;"></div>
+                                                <span>: @Html.Label("", item.NumberOfDaysRequired.ToString("#.#"))</span>
+                                            </div>
+                                        }
+
+                                    }
+                                    <div class="col-sm-3">
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        @Html.Label("Reason", new { style = "font-weight:normal" })
+                                        <p style="font-weight:bold;">@item.Reason</p>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        @if (item.Status == "P")
+                                        {
+                                            @Html.Label("Approver Comments", new { style = "font-weight:normal" })
+                                            @Html.TextArea("Comment_" + @item.LeaveId.ToString(), item.Comments, new { style = "width:100%;", @rows = 3 })
+                                        }
+                                        else
+                                        {
+                                            <span> @Html.Label("Approver Comments", new { style = "font-weight:normal" }) : @item.Comments</span>
+                                            @Html.TextArea("Comment_" + @item.LeaveId.ToString(), null, new { style = "width:100%;", @rows = 3 })
+                                        }
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        @{
+                                            if (item.Status == "P")
+                                            {
+                                                <span class="pull-right text-purple">Current Status: @Html.Label("Pending")</span>
+                                            }
+                                            else if (item.Status == "A")
+                                            {
+                                                <span class="pull-right text-green">Current Status: @Html.Label("Approved")</span>
+                                            }
+                                            else if (item.Status == "R")
+                                            {
+                                                <span class="pull-right text-red">Current Status: @Html.Label("Rejected")</span>
+                                            }
+                                            else if (item.Status == "C")
+                                            {
+                                                <span class="pull-right text-maroon">Current Status: @Html.Label("Cancelled")</span>
+                                            }
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                    <div class="row">
+                        <div class="col-sm-6">
+                            @if (item.Status == "P")
+                            {
+                                <input type="button" value="REJECT" data-value="@item.LeaveId" onclick="RejectLeave(@item.LeaveId.ToString(),@Model[0].UserId)" class="pull-left btn btn-danger" />
+                            }
+                        </div>
+                        <div class="col-sm-6">
+                            @if (item.Status == "P")
+                            {
+                                <input type="button" value="APPROVE" data-value="@item.LeaveId" onclick="ApproveLeave(@item.LeaveId.ToString(),@Model[0].UserId)" class="pull-right btn btn-primary" />
+                            }
+                            else
+                            {
+                                <input type="button" value="CANCEL REQUEST" data-value="@item.LeaveId" onclick="CancelApprovedLeave(@item.LeaveId.ToString(),@Model[0].UserId)" class="pull-right btn btn-danger" />
+                            }
+                        </div>
+                    </div>
+            </div>
+        </div>
+
+                                        }
+}
