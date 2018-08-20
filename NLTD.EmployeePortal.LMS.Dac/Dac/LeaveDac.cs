@@ -2478,6 +2478,23 @@ namespace NLTD.EmployeePortal.LMS.Dac
                     {
                         qry.ToEmailId = qry.RequestorEmailId;
                     }
+                    else
+                    {
+                        qry.ToEmailId = qry.RequestorEmailId;                        
+                    }
+
+                    string onlyDirectAlerts = ConfigurationManager.AppSettings["OnlyDirectAlerts"].ToString();
+                    List<string> lstOptoutEmailAddress = onlyDirectAlerts.Split(',').ToList();
+
+
+                    foreach (var item in lstOptoutEmailAddress)
+                    {
+                        if (qryReportingTo.EmailAddress.ToUpper() != item.ToUpper())
+                        {
+                            //qry.CcEmailIds.ToList().RemoveAll(o => o.Equals(item, StringComparison.OrdinalIgnoreCase));
+                            qry.CcEmailIds.Remove(item);
+                        }
+                    }
 
                     if (qry.IsTimeBased)
                     {
