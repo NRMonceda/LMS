@@ -28,6 +28,9 @@
             <th>
                 @Html.DisplayName("Total EL Balance")
             </th>
+            <th hidden>
+                @Html.DisplayName("Leave Balance Id")
+            </th>
         </tr>
     </thead>
     <tbody>
@@ -60,6 +63,9 @@
                     <td>
                         @Html.DisplayFor(modelItem => item.NewELBalance)
                     </td>
+                    <td hidden>
+                        @Html.DisplayFor(modelItem => item.LeaveBalanceId)
+                    </td>
                 </tr>
             }
             else
@@ -88,6 +94,9 @@
                     </td>
                     <td>
                         @Html.DisplayFor(modelItem => item.NewELBalance)
+                    </td>
+                    <td hidden>
+                        @Html.DisplayFor(modelItem => item.LeaveBalanceId)
                     </td>
                 </tr>
             }

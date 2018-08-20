@@ -397,27 +397,7 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
         public ActionResult SaveLeaveBalance(List<EmployeeLeaveBalanceDetails> lst, Int64 EmpUserid)
         {
             string result = "";
-            if (ModelState.IsValid)
-            {
-                using (var client = new EmployeeLeaveBalanceClient())
-                {
-                    long LoginUserId = this.UserId;
-                    result = client.UpdateLeaveBalance(lst, EmpUserid, LoginUserId);
-                }
-            }
-            try
-            {
-                EmailHelper emailHelper = new EmailHelper();
-                #if DEBUG
-                    emailHelper.SendEmailforAddLeave(lst, EmpUserid);
-                #else
-		            BackgroundJob.Enqueue(() => emailHelper.SendEmailforAddLeave(lst, EmpUserid));
-                #endif
-            }
-            catch
-            {
-                throw;
-            }
+            result = UpdateLeaveBalance(lst);
             return Json(result);
         }
 
@@ -513,56 +493,42 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
             return Json("Downloaded");
         }
 
-        public ActionResult UpdateEarnedLeaves(List<ViewEmployeeProfileModel> ELCreditList)
+        public ActionResult UpdateEarnedLeaves(List<EmployeeLeaveBalanceDetails> ELCreditList)
         {
             string result = "";
             string lastRun = GetLastRunforEL();
-            if (ModelState.IsValid)
+            long loginUserId = this.UserId;
+            using (var client = new EmployeeLeaveBalanceClient())
+            {
+                result = client.UpdateEarnedLeaveLastRun(loginUserId, lastRun);
+            }
+            UpdateLeaveBalance(ELCreditList);
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
+
+        public string UpdateLeaveBalance(List<EmployeeLeaveBalanceDetails> lst)
+        {
+            string result = "";
+            try
             {
                 using (var client = new EmployeeLeaveBalanceClient())
                 {
-                    long loginUserId = this.UserId;
-                    result = client.UpdateEarnedLeaveCreditAll(ELCreditList, loginUserId, lastRun);
+                    long LoginUserId = this.UserId;
+                    result = client.UpdateLeaveBalance(lst, LoginUserId);
                 }
-            }
-            foreach (var item in ELCreditList)
-            {
-                if (item.ELCredit != null && item.ELCredit > 0)
-                {
-                    using (var context = new NLTDDbContext())
-                    {
-                        try
-                        {
-                            EmployeeLeaveBalance leaveBalance = context.EmployeeLeaveBalance.Where(x => x.UserId == item.UserId && x.LeaveTypeId == 2).FirstOrDefault();
-                            List<EmployeeLeaveBalanceDetails> lst = new List<EmployeeLeaveBalanceDetails>();
-                            lst = (from employee in context.EmployeeLeaveBalance
-                                   where employee.UserId == item.UserId & employee.LeaveTypeId == 2
-                                   select new EmployeeLeaveBalanceDetails
-                                   {
-                                       BalanceDays = item.CurrentEL,
-                                       CreditOrDebit = "C",
-                                       LeaveBalanceId = leaveBalance.LeaveBalanceId,
-                                       LeaveTypeId = 2,
-                                       NoOfDays = (Decimal)item.ELCredit,
-                                       Remarks = "EL Credited",
-                                       TotalDays = item.NewELBalance
-                                   }).ToList();
 
-                            EmailHelper emailHelper = new EmailHelper();
-                            #if DEBUG
-                                emailHelper.SendEmailforAddLeave(lst, item.UserId);
-                            #else
-		                        BackgroundJob.Enqueue(() => emailHelper.SendEmailforAddLeave(lst, EmpUserid));
-                            #endif
-                        }
-                        catch(Exception e)
-                        {
-                            throw;
-                        }
-                    }
-                }
+                EmailHelper emailHelper = new EmailHelper();
+                #if DEBUG
+                    emailHelper.SendEmailforAddLeave(lst);
+                #else
+		            BackgroundJob.Enqueue(() => emailHelper.SendEmailforAddLeave(lst));
+                #endif
             }
-            return Json(result, JsonRequestBehavior.AllowGet);
+            catch
+            {
+                throw;
+            }
+            return result;
         }
     }
 }

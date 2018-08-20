@@ -34,6 +34,8 @@ namespace NLTD.EmployeePortal.LMS.Common.DisplayModel
 
         public String CreditOrDebit { get; set; }
         public string Remarks { get; set; }
+
+        public String EmployeeId { get; set; }
     }
 
     public class LeaveBalanceEmpProfile

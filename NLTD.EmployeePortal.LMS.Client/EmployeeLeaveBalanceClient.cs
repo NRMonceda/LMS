@@ -21,19 +21,19 @@ namespace NLTD.EmployeePortal.LMS.Client
             }
         }
 
-        public string UpdateLeaveBalance(List<EmployeeLeaveBalanceDetails> empLeaveBalanceDetails, Int64 UserId, Int64 LoginUserId)
+        public string UpdateLeaveBalance(List<EmployeeLeaveBalanceDetails> empLeaveBalanceDetails, Int64 LoginUserId)
         {
             using (IEmployeeLeaveBalanceHelper helper = new EmployeeLeaveBalanceHelper())
             {
-                return helper.UpdateLeaveBalance(empLeaveBalanceDetails, UserId, LoginUserId);
+                return helper.UpdateLeaveBalance(empLeaveBalanceDetails, LoginUserId);
             }
         }
 
-        public string UpdateEarnedLeaveCreditAll(List<ViewEmployeeProfileModel> empsELCreditDetails, Int64 LoginUserId, string LastRun)
+        public string UpdateEarnedLeaveLastRun(Int64 LoginUserId, string LastRun)
         {
             using (IEmployeeLeaveBalanceHelper helper = new EmployeeLeaveBalanceHelper())
             {
-                return helper.UpdateEarnedLeaveCreditAll(empsELCreditDetails, LoginUserId, LastRun);
+                return helper.UpdateEarnedLeaveLastRun(LoginUserId, LastRun);
             }
         }
     }

@@ -69,7 +69,7 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
             return retModel;
         }
 
-        public string UpdateLeaveBalance(List<EmployeeLeaveBalanceDetails> empLeaveBalanceDetails, Int64 UserId, Int64 LoginUserId)
+        public string UpdateLeaveBalance(List<EmployeeLeaveBalanceDetails> empLeaveBalanceDetails, Int64 LoginUserId)
         {
             try
             {
@@ -94,7 +94,7 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
                         {
                             if (item.NoOfDays > 0)
                             {
-                                EmployeeLeaveBalance leaveBalance = context.EmployeeLeaveBalance.Where(x => x.UserId == UserId && x.LeaveTypeId == item.LeaveTypeId
+                                EmployeeLeaveBalance leaveBalance = context.EmployeeLeaveBalance.Where(x => x.UserId == item.UserId && x.LeaveTypeId == item.LeaveTypeId
                                 && x.LeaveBalanceId == item.LeaveBalanceId && x.Year == DateTime.Now.Year).FirstOrDefault();
 
                                 if (leaveBalance != null)
@@ -108,7 +108,7 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
                                 else
                                 {
                                     leaveBalance = new EmployeeLeaveBalance();
-                                    leaveBalance.UserId = UserId;
+                                    leaveBalance.UserId = Convert.ToInt64(item.UserId);
                                     leaveBalance.Year = DateTime.Now.Year;
                                     leaveBalance.LeaveTypeId = Convert.ToInt64(item.LeaveTypeId);
                                     leaveBalance.TotalDays = item.TotalDays;
@@ -124,7 +124,7 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
                                 }
 
                                 LeaveTransactionHistory leaveTransactionHistory = new LeaveTransactionHistory();
-                                leaveTransactionHistory.UserId = UserId;
+                                leaveTransactionHistory.UserId = Convert.ToInt64(item.UserId);
                                 leaveTransactionHistory.LeaveTypeId = Convert.ToInt64(item.LeaveTypeId);
                                 leaveTransactionHistory.LeaveId = -1;
                                 leaveTransactionHistory.TransactionDate = DateTime.Now;
@@ -153,7 +153,7 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
             }
         }
 
-        public string UpdateEarnedLeaveCreditAll(List<ViewEmployeeProfileModel> empsELCreditDetails, Int64 LoginUserId, String LastRun)
+        public string UpdateEarnedLeaveLastRun(Int64 LoginUserId, String LastRun)
         {
             try
             {
@@ -174,32 +174,6 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
 
                     if (isAuthorizedRole)
                     {
-                        foreach (var item in empsELCreditDetails)
-                        {
-                            if (item.NewELBalance > 0)
-                            {
-                                EmployeeLeaveBalance leaveBalance = context.EmployeeLeaveBalance.Where(x => x.UserId == item.UserId && x.LeaveTypeId == 2).FirstOrDefault();
-                                if (leaveBalance != null)
-                                {
-                                    leaveBalance.TotalDays = leaveBalance.TotalDays + item.ELCredit;
-                                    leaveBalance.ModifiedBy = LoginUserId;
-                                    leaveBalance.ModifiedOn = DateTime.Now;
-                                    leaveBalance.BalanceDays = leaveBalance.BalanceDays + item.ELCredit;
-                                    context.SaveChanges();
-                                }
-                                LeaveTransactionHistory leaveTransactionHistory = new LeaveTransactionHistory();
-                                leaveTransactionHistory.UserId = item.UserId;
-                                leaveTransactionHistory.LeaveTypeId = 2;
-                                leaveTransactionHistory.LeaveId = -1;
-                                leaveTransactionHistory.TransactionDate = DateTime.Now;
-                                leaveTransactionHistory.TransactionType = "C";
-                                leaveTransactionHistory.NumberOfDays = item.ELCredit.HasValue ? (decimal)item.ELCredit : 0;
-                                leaveTransactionHistory.TransactionBy = LoginUserId;
-                                leaveTransactionHistory.Remarks = null;
-                                context.LeaveTransactionHistory.Add(leaveTransactionHistory);
-                                context.SaveChanges();
-                            }
-                        }
                         string[] lastRunDates = LastRun.Split(' ');
                         LeaveType leaveType = new LeaveType();
                         leaveType.OfficeId = 1;

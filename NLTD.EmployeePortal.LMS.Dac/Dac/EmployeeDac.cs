@@ -258,7 +258,8 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
                                                Name = e.FirstName + " " + e.LastName,
                                                DOJ = e.DOJ.ToString(),
                                                ConfirmationDate = e.ConfirmationDate.ToString(),
-                                               CurrentEL = eb.BalanceDays
+                                               CurrentEL = eb.BalanceDays,
+                                               LeaveBalanceId = eb.LeaveBalanceId
                                            }
                                          ).FirstOrDefault();
                         if (empProfiles != null)

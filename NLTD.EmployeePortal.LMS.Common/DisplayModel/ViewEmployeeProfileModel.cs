@@ -61,5 +61,7 @@ namespace NLTD.EmployeePortal.LMS.Common.DisplayModel
         public bool IsConfirmation { get; set; }
 
         public string LastRun { get; set; }
+
+        public Int64? LeaveBalanceId { get; set; }
     }
 }

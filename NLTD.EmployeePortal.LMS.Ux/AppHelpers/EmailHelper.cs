@@ -152,7 +152,7 @@ namespace NLTD.EmployeePortal.LMS.Ux.AppHelpers
             }
         }
 
-        public void SendEmailforAddLeave(List<EmployeeLeaveBalanceDetails> lst, Int64 EmpUserid)
+        public void SendEmailforAddLeave(List<EmployeeLeaveBalanceDetails> lst)
         {
             try
             {
@@ -161,21 +161,24 @@ namespace NLTD.EmployeePortal.LMS.Ux.AppHelpers
                 {
                     for (int i = 0; i < lst.Count(); i++)
                     {
-                        EmailDataModel mdl;
-                        string helloUser = string.Empty;
-                        string description = string.Empty;
-                        leaveTypeId = Convert.ToInt64(lst[i].LeaveTypeId);
-                        using (var client = new LeaveClient())
+                        if (lst[i].NoOfDays > 0)
                         {
-                            mdl = client.GetEmailDataAddLeave(EmpUserid, leaveTypeId);
+                            EmailDataModel mdl;
+                            string helloUser = string.Empty;
+                            string description = string.Empty;
+                            leaveTypeId = Convert.ToInt64(lst[i].LeaveTypeId);
+                            using (var client = new LeaveClient())
+                            {
+                                mdl = client.GetEmailDataAddLeave(Convert.ToInt64(lst[i].UserId), leaveTypeId);
+                            }
+
+                            description = "Your " + mdl.LeaveTypeText + " has been updated.";
+
+                            string body = string.Empty;
+                            string transaction = lst[i].CreditOrDebit == "C" ? "Credit" : "Debit";
+                            body = this.PopulateBodyforAddLeave(mdl.RequestFor, description, mdl.EmpId, mdl.LeaveTypeText, lst[i].BalanceDays.ToString(), transaction, lst[i].NoOfDays.ToString(), lst[i].TotalDays.ToString(), lst[i].Remarks);
+                            this.SendHtmlFormattedEmail(mdl.RequestorEmailId, mdl.CcEmailIds, "LMS - Request for " + mdl.RequestFor + " - " + mdl.LeaveTypeText + " Updation", body);
                         }
-
-                        description = "Your " + mdl.LeaveTypeText + " has been updated.";
-
-                        string body = string.Empty;
-                        string transaction = lst[i].CreditOrDebit == "C" ? "Credit" : "Debit";
-                        body = this.PopulateBodyforAddLeave(mdl.RequestFor, description, mdl.EmpId, mdl.LeaveTypeText, lst[i].BalanceDays.ToString(), transaction, lst[i].NoOfDays.ToString(), lst[i].TotalDays.ToString(), lst[i].Remarks);
-                        this.SendHtmlFormattedEmail(mdl.RequestorEmailId, mdl.CcEmailIds, "LMS - Request for " + mdl.RequestFor + " - " + mdl.LeaveTypeText + " Updation", body);
                     }
                 }
             }

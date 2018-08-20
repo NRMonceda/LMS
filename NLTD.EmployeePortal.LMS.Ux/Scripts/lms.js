@@ -1179,6 +1179,7 @@ function SubmitLeaveBalanceForm(count) {
 
             things.push(
                 {
+                    UserId: $("#UserId").val(),
                     LeaveType: $("#LeaveType" + i).val(), BalanceDays: balanceDays,
                     CreditOrDebit: CreditOrDebit, NoOfDays: NoOfDays, TotalDays: $("#TotalDays" + i).val(),
                     LeaveTypeId: $("#LeaveTypeId" + i).val(), LeaveBalanceId: $("#LeaveBalanceId" + i).val(), Remarks: $("#Remarks" + i).val()
@@ -1459,10 +1460,14 @@ function processELCredit() {
     for (i = 0; i < data.length; i++) {
         jsonArr.push({
             UserId: data[i][0],
+            CreditOrDebit: "C",
+            LeaveTypeId: 2,
             EmployeeId: data[i][1],
-            CurrentEL: data[i][5],
-            ELCredit: data[i][6],
-            NewELBalance: data[i][7]
+            BalanceDays: data[i][5],
+            NoOfDays: data[i][6],
+            Remarks: "EL Credited",
+            TotalDays: data[i][7],
+            LeaveBalanceId: data[i][8]
         });
     }
     $.ajax({
