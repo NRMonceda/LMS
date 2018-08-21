@@ -403,20 +403,19 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
 
         public ActionResult EarnedLeaveCredit()
         {
-            string lastRun = GetLastRunforEL();
-             
-            string[] lastRunDates = lastRun.Split(' ');
-            DateTime elRunMonth = DateTime.ParseExact(lastRunDates[2], "dd-MM-yyyy", CultureInfo.InvariantCulture);
-            bool isCurrentMonth = DateTime.Now.Month == elRunMonth.Month;
+            DateTime lastCreditRun = GetlastCreditRunforEL();
+
+            DateTime ellastCreditRunMonth = lastCreditRun.AddDays(1);
+            bool isCurrentMonth = DateTime.Now.Month == ellastCreditRunMonth.Month;
             if (isCurrentMonth)
             {
-                ViewBag.LastRun = lastRun;
+                ViewBag.lastCreditRun = lastCreditRun;
                 ViewBag.CurrentRun = null;
             }
             else
             {
-                ViewBag.LastRun = lastRun;
-                ViewBag.CurrentRun = GetCurrentRunforEL(lastRunDates[2]);
+                ViewBag.lastCreditRun = lastCreditRun.ToString("MMM-yyyy");
+                ViewBag.CurrentRun = GetCurrentRunforEL(ellastCreditRunMonth.ToString("MMM-yyyy"));
             }
             if (this.IsAuthorized == "NoAuth")
             {
@@ -431,53 +430,51 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
 
         public ActionResult GetEarnedLeaveMasterDetail()
         {
-            IList<ViewEmployeeProfileModel> lstProfile = GetEmployeeELData();
+            IList<EmployeeProfile> lstProfile = GetEmployeeELData();
             return PartialView("EarnedLeaveCreditPartial", lstProfile);
         }
 
-        public static string GetLastRunforEL()
+        public static DateTime GetlastCreditRunforEL()
         {
-            string lastRun = null;
+            DateTime lastCreditRun;
             using (var context = new NLTDDbContext())
             {
                 List<LeaveTypesModel> LeaveTypes = (from l in context.LeaveType
-                                                    where l.LastRun != null
+                                                    where l.lastCreditRun != null
                                                     orderby l.Createdon descending
                                                     select new LeaveTypesModel
                                                     {
-                                                        LastRun = l.LastRun
+                                                        lastCreditRun = l.lastCreditRun
                                                     }).ToList();
-                lastRun = LeaveTypes.Select(s => s.LastRun).FirstOrDefault().ToString();
+                lastCreditRun = LeaveTypes.Select(s => (DateTime)s.lastCreditRun).FirstOrDefault();
             }
-            return lastRun;
+            return lastCreditRun;
         }
 
-        public static string GetCurrentRunforEL(string LastRun)
+        public static string GetCurrentRunforEL(string lastCreditRun)
         {
             var today = DateTime.Today;
             var month = new DateTime(today.Year, today.Month, 1);
-            var lastDate = month.AddDays(-1).ToString("dd-MM-yyyy", null);
-            DateTime elRunMonth = DateTime.ParseExact(LastRun, "dd-MM-yyyy", CultureInfo.InvariantCulture);
-            var firstDate = elRunMonth.AddDays(+1).ToString("dd-MM-yyyy", null);
-            string currentRun = firstDate + " to " + lastDate;
+            var lastDate = month.AddDays(-1).ToString("MMM-yyyy", null);
+            string currentRun = lastCreditRun + " to " + lastDate;
             return currentRun;
         }
 
-        public IList<ViewEmployeeProfileModel> GetEmployeeELData()
+        public IList<EmployeeProfile> GetEmployeeELData()
         {
-            IList<ViewEmployeeProfileModel> lstProfile = new List<ViewEmployeeProfileModel>();
-            string lastRun = GetLastRunforEL();
+            IList<EmployeeProfile> lstProfile = new List<EmployeeProfile>();
+            DateTime lastCreditRun = GetlastCreditRunforEL();
             using (var client = new EmployeeClient())
             {
-                lstProfile = client.GetEmployeeProfilesforEL(lastRun);
+                lstProfile = client.GetEmployeeProfilesforEL(lastCreditRun);
             }
             return lstProfile;
         }
 
         public ActionResult ExportExcelEarnedLeaveCreditDetails()
         {
-            IList<ViewEmployeeProfileModel> lstProfile = GetEmployeeELData();
-            List<ViewEmployeeProfileModel> excelData = new List<ViewEmployeeProfileModel>();
+            IList<EmployeeProfile> lstProfile = GetEmployeeELData();
+            List<EmployeeProfile> excelData = new List<EmployeeProfile>();
             excelData = lstProfile.ToList();
             if (excelData.Count > 0)
             {
@@ -493,15 +490,31 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
             return Json("Downloaded");
         }
 
-        public ActionResult UpdateEarnedLeaves(List<EmployeeLeaveBalanceDetails> ELCreditList)
+        public ActionResult UpdateEarnedLeaves()
         {
             string result = "";
-            string lastRun = GetLastRunforEL();
+            DateTime curDate = DateTime.Now.AddMonths(-1).AddDays(1 - DateTime.Now.Day);
+            DateTime lastCreditRun = curDate.AddMonths(1).AddDays(-1);
             long loginUserId = this.UserId;
             using (var client = new EmployeeLeaveBalanceClient())
             {
-                result = client.UpdateEarnedLeaveLastRun(loginUserId, lastRun);
+                result = client.UpdateEarnedLeavelastCreditRun(loginUserId, lastCreditRun);
             }
+            var lstProfile = GetEmployeeELData();
+            var ELCreditList = (from l in lstProfile
+                     select new EmployeeLeaveBalanceDetails
+                     {
+                         UserId = l.UserId,
+                         CreditOrDebit = "C",
+                         LeaveTypeId = 2,
+                         EmployeeId = l.EmployeeId,
+                         BalanceDays = l.CurrentEL,
+                         NoOfDays = l.ELCredit,
+                         Remarks = "EL Credit",
+                         TotalDays = l.NewELBalance,
+                         LeaveBalanceId = l.LeaveBalanceId
+                     }).ToList();
+
             UpdateLeaveBalance(ELCreditList);
             return Json(result, JsonRequestBehavior.AllowGet);
         }

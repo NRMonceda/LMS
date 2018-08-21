@@ -101,11 +101,11 @@ namespace NLTD.EmployeePortal.LMS.Client
             }
         }
 
-        public IList<ViewEmployeeProfileModel> GetEmployeeProfilesforEL(string lastRun)
+        public IList<EmployeeProfile> GetEmployeeProfilesforEL(DateTime lastCreditRun)
         {
             using (IEmployeeHelper helper = new EmployeeHelper())
             {
-                return helper.GetEmployeeProfilesforEL(lastRun);
+                return helper.GetEmployeeProfilesforEL(lastCreditRun);
             }
         }
     }

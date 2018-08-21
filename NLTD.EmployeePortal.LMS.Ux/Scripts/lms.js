@@ -1454,28 +1454,11 @@ function loadEarnedLeaveMasterDetails()
 
 function processELCredit() {
     $("#divLoading").show();
-    var tableELCredit = $('#earnedLeaveDetail').DataTable();
-    var data = tableELCredit.rows().data();
-    var jsonArr = [];
-    for (i = 0; i < data.length; i++) {
-        jsonArr.push({
-            UserId: data[i][0],
-            CreditOrDebit: "C",
-            LeaveTypeId: 2,
-            EmployeeId: data[i][1],
-            BalanceDays: data[i][5],
-            NoOfDays: data[i][6],
-            Remarks: "EL Credited",
-            TotalDays: data[i][7],
-            LeaveBalanceId: data[i][8]
-        });
-    }
     $.ajax({
             contentType: 'application/json; charset=utf-8',
             dataType: 'json',
             type: 'POST',
             url: '/Profile/UpdateEarnedLeaves',
-            data: JSON.stringify(jsonArr),
             success: function (result) {
                 if (result == "Saved") {
                     $("#elCreditMsgSuccess").show();

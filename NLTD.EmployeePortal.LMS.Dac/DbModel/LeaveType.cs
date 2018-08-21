@@ -23,7 +23,7 @@ namespace NLTD.EmployeePortal.LMS.Dac.DbModel
 
         public int SortOrder { get; set; }
 
-        public string LastRun { get; set; }
+        public DateTime lastCreditRun { get; set; }
 
         public DateTime Createdon { get; set; }
         public DateTime Modifiedon { get; set; }

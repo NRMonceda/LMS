@@ -153,7 +153,7 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
             }
         }
 
-        public string UpdateEarnedLeaveLastRun(Int64 LoginUserId, String LastRun)
+        public string UpdateEarnedLeavelastCreditRun(Int64 LoginUserId, DateTime lastCreditRun)
         {
             try
             {
@@ -174,7 +174,6 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
 
                     if (isAuthorizedRole)
                     {
-                        string[] lastRunDates = LastRun.Split(' ');
                         LeaveType leaveType = new LeaveType();
                         leaveType.OfficeId = 1;
                         leaveType.Type = "ELCredit";
@@ -182,7 +181,7 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
                         leaveType.ApplicableGender = "A";
                         leaveType.IsLeave = false;
                         leaveType.IsTimeBased = false;
-                        leaveType.LastRun = lastRunDates[2] + " to " + (DateTime.Now.ToString("dd-MM-yyyy")).ToString();
+                        leaveType.lastCreditRun = lastCreditRun;
                         leaveType.Createdon = DateTime.Now;
                         leaveType.CreatedBy = Convert.ToInt32(LoginUserId);
                         leaveType.Modifiedon = DateTime.Now;

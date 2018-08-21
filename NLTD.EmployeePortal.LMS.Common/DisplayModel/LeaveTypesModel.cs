@@ -10,6 +10,6 @@ namespace NLTD.EmployeePortal.LMS.Common.DisplayModel
 
         public bool IsTimeBased { get; set; }
 
-        public string LastRun { get; set; }
+        public DateTime? lastCreditRun { get; set; }
     }
 }

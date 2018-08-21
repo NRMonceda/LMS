@@ -10,6 +10,6 @@ namespace NLTD.EmployeePortal.LMS.Repository
 
         string UpdateLeaveBalance(List<EmployeeLeaveBalanceDetails> empLeaveBalanceDetails, Int64 LoginUserId);
 
-        string UpdateEarnedLeaveLastRun(Int64 LoginUserId, String LastRun);
+        string UpdateEarnedLeavelastCreditRun(Int64 LoginUserId, DateTime lastCreditRun);
     }
 }

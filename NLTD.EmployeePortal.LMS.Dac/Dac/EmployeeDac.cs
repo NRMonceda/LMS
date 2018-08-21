@@ -227,50 +227,45 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
             return result;
         }
 
-        public IList<ViewEmployeeProfileModel> GetEmployeeProfilesforEL(string lastRun)
+        public IList<EmployeeProfile> GetEmployeeProfilesforEL(DateTime lastCreditRun)
         {
-            IList<ViewEmployeeProfileModel> retModel = new List<ViewEmployeeProfileModel>();
-            string[] lastRunDates = lastRun.Split(' ');
-            DateTime lastRunDate = DateTime.ParseExact(lastRunDates[2], "dd-MM-yyyy", null);
-            DateTime curDate = DateTime.Now;
-            DateTime startDate = curDate.AddMonths(-1).AddDays(1 - curDate.Day);
-            DateTime lastMonth = startDate.AddMonths(1).AddDays(-1);
+            IList<EmployeeProfile> empProfileModel = new List<EmployeeProfile>();
+            DateTime curDate = DateTime.Now.AddMonths(-1).AddDays(1 - DateTime.Now.Day);
+            DateTime toDate = curDate.AddMonths(1).AddDays(-1);
 
             try
             {
                 using (var context = new NLTDDbContext())
                 {
                     var ids = (from e in context.Employee
-                               orderby e.FirstName
-                               select new { userId = e.UserId, iactive = e.IsActive }
+                               where e.IsActive == true
+                               select new { userId = e.UserId }
                              ).ToList();
 
-                    foreach (var memId in ids)
+                    foreach (var userId in ids)
                     {
                         var empProfiles = (from e in context.Employee
                                            join eb in context.EmployeeLeaveBalance on e.UserId equals eb.UserId
-                                           where eb.LeaveTypeId == 2 && e.UserId == memId.userId && memId.iactive == true
+                                           where eb.LeaveTypeId == 2 && e.UserId == userId.userId
                                            orderby e.FirstName
-                                           select new ViewEmployeeProfileModel
+                                           select new EmployeeProfile
                                            {
                                                UserId = e.UserId,
                                                EmployeeId = e.EmployeeId,
                                                Name = e.FirstName + " " + e.LastName,
-                                               DOJ = e.DOJ.ToString(),
-                                               ConfirmationDate = e.ConfirmationDate.ToString(),
-                                               CurrentEL = eb.BalanceDays,
+                                               DOJ = e.DOJ,
+                                               ConfirmationDate = e.ConfirmationDate,
+                                               CurrentEL = (long)eb.BalanceDays,
                                                LeaveBalanceId = eb.LeaveBalanceId
                                            }
                                          ).FirstOrDefault();
                         if (empProfiles != null)
                         {
-                            if (!string.IsNullOrEmpty(empProfiles.DOJ))
+                            if (empProfiles.DOJ != null)
                             {
-                                DateTime DOJ = DateTime.Parse(empProfiles.DOJ);
-                                empProfiles.DOJ = DOJ.ToString("dd-MM-yyyy");
-                                if (string.IsNullOrEmpty(empProfiles.ConfirmationDate))
+                                if (empProfiles.ConfirmationDate == null)
                                 {
-                                    int workedMonths = GetMonthDifference(DateTime.Now, DOJ);
+                                    int workedMonths = GetMonthDifference(DateTime.Now, Convert.ToDateTime(empProfiles.DOJ));
                                     if (workedMonths >= 6)
                                     {
                                         empProfiles.IsConfirmation = true;
@@ -278,23 +273,11 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
                                 }
                                 else
                                 {
-                                    DateTime DOC = DateTime.Parse(empProfiles.ConfirmationDate);
-                                    empProfiles.ConfirmationDate = DOC.ToString("dd-MM-yyyy");
-                                    if (lastRunDate > DOC)
-                                    {
-                                        empProfiles.ELCredit = GetMonthDifference(lastMonth, lastRunDate);
-                                    }
-                                    else
-                                    {
-                                        if (Convert.ToInt64(DOC.Day) < 16)
-                                            empProfiles.ELCredit = GetMonthDifference(DOC.AddMonths(1), lastMonth);
-                                        else
-                                            empProfiles.ELCredit = GetMonthDifference(DOC.AddMonths(-1), lastMonth);
-                                    }
+                                    empProfiles.ELCredit = GetELCredit(lastCreditRun.AddDays(1), toDate, Convert.ToDateTime(empProfiles.ConfirmationDate));
                                     empProfiles.NewELBalance = empProfiles.CurrentEL + empProfiles.ELCredit;
                                 }
                             }
-                            retModel.Add(empProfiles);
+                            empProfileModel.Add(empProfiles);
                         }
                     }
                 }
@@ -304,7 +287,27 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
                 throw;
             }
 
-            return retModel;
+            return empProfileModel;
+        }
+
+        public static int GetELCredit(DateTime fromDate, DateTime toDate, DateTime confirmationDate)
+        {
+            int elCredit = 0;
+            if (GetMonthDifference(toDate, fromDate) >= 1)
+            {
+                if (fromDate > confirmationDate)
+                {
+                    elCredit = GetMonthDifference(toDate, fromDate);
+                }
+                else
+                {
+                    if (Convert.ToInt64(confirmationDate.Day) < 15)
+                        elCredit = GetMonthDifference(toDate, confirmationDate.AddMonths(-1));
+                    else
+                        elCredit = GetMonthDifference(toDate, confirmationDate);
+                }
+            }
+            return elCredit;
         }
 
         public static int GetMonthDifference(DateTime startDate, DateTime endDate)
