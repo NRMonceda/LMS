@@ -97,7 +97,7 @@ namespace NLTD.EmployeePortal.LMS.Common.DisplayModel
 
         public string Name { get; set; }
 
-        public Int64 LeaveBalanceId { get; set; }
+        public Int64? LeaveBalanceId { get; set; }
 
         public bool IsConfirmation { get; set; }
     }

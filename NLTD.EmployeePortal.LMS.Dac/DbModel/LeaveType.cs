@@ -28,9 +28,9 @@ namespace NLTD.EmployeePortal.LMS.Dac.DbModel
         public DateTime Createdon { get; set; }
         public DateTime Modifiedon { get; set; }
 
-        public int CreatedBy { get; set; }
+        public long CreatedBy { get; set; }
 
-        public int ModifiedBy { get; set; }
+        public long ModifiedBy { get; set; }
 
     }
 }

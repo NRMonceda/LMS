@@ -231,54 +231,95 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
         {
             IList<EmployeeProfile> empProfileModel = new List<EmployeeProfile>();
             DateTime toDate = DateTime.Now.AddMonths(-1);
-
+            //int year = lastCreditRun.Year;
             try
             {
                 using (var context = new NLTDDbContext())
                 {
-                    var ids = (from e in context.Employee
-                               where e.IsActive == true
-                               select new { userId = e.UserId }
-                             ).ToList();
 
-                    foreach (var userId in ids)
+                    var empProfile = (from e in context.Employee
+                                      join eb in context.EmployeeLeaveBalance on e.UserId equals eb.UserId into leaveBal
+                                      from lb in leaveBal.DefaultIfEmpty()
+                                      where (lb != null ? lb.LeaveTypeId == 2 && lb.Year== lastCreditRun.Year : true) && e.IsActive==true
+                                      //orderby e.FirstName
+                                      select new EmployeeProfile
+                                      {
+                                          UserId = e.UserId,
+                                          EmployeeId = e.EmployeeId,
+                                          Name = e.FirstName + " " + e.LastName,
+                                          DOJ = e.DOJ,
+                                          ConfirmationDate = e.ConfirmationDate,
+                                          CurrentEL = lb.BalanceDays==null?0:(long)lb.BalanceDays,
+                                          LeaveBalanceId = lb.LeaveBalanceId
+                                      }
+                                         ).ToList();
+
+                    foreach (var profile in empProfile)
                     {
-                        var empProfiles = (from e in context.Employee
-                                           join eb in context.EmployeeLeaveBalance on e.UserId equals eb.UserId
-                                           where eb.LeaveTypeId == 2 && e.UserId == userId.userId
-                                           orderby e.FirstName
-                                           select new EmployeeProfile
-                                           {
-                                               UserId = e.UserId,
-                                               EmployeeId = e.EmployeeId,
-                                               Name = e.FirstName + " " + e.LastName,
-                                               DOJ = e.DOJ,
-                                               ConfirmationDate = e.ConfirmationDate,
-                                               CurrentEL = (long)eb.BalanceDays,
-                                               LeaveBalanceId = eb.LeaveBalanceId
-                                           }
-                                         ).FirstOrDefault();
-                        if (empProfiles != null)
+                        if (profile.DOJ != null)
                         {
-                            if (empProfiles.DOJ != null)
+                            if (profile.ConfirmationDate == null)
                             {
-                                if (empProfiles.ConfirmationDate == null)
+                                int workedMonths = GetMonthDifference(DateTime.Now, Convert.ToDateTime(profile.DOJ));
+                                if (workedMonths >= 6)
                                 {
-                                    int workedMonths = GetMonthDifference(DateTime.Now, Convert.ToDateTime(empProfiles.DOJ));
-                                    if (workedMonths >= 6)
-                                    {
-                                        empProfiles.IsConfirmation = true;
-                                    }
-                                }
-                                else
-                                {
-                                    empProfiles.ELCredit = GetELCredit(lastCreditRun.AddDays(1), toDate, Convert.ToDateTime(empProfiles.ConfirmationDate));
-                                    empProfiles.NewELBalance = empProfiles.CurrentEL + empProfiles.ELCredit;
+                                    profile.IsConfirmation = true;
                                 }
                             }
-                            empProfileModel.Add(empProfiles);
+                            else
+                            {
+                                profile.ELCredit = GetELCredit(lastCreditRun.AddDays(1), toDate, Convert.ToDateTime(profile.ConfirmationDate));
+                                profile.NewELBalance = profile.CurrentEL + profile.ELCredit;
+                            }
                         }
+                        empProfileModel.Add(profile);
                     }
+
+
+                    //var ids = (from e in context.Employee
+                    //           where e.IsActive == true
+                    //           select new { userId = e.UserId }
+                    //         ).ToList();
+
+                    //foreach (var userId in ids)
+                    //{
+                    //    var empProfiles = (from e in context.Employee
+                    //                       join eb in context.EmployeeLeaveBalance on e.UserId equals eb.UserId into leaveBal
+                    //                       from lb in leaveBal.DefaultIfEmpty()
+                    //                       where lb.LeaveTypeId == 2 && e.UserId == userId.userId
+                    //                       orderby e.FirstName
+                    //                       select new EmployeeProfile
+                    //                       {
+                    //                           UserId = e.UserId,
+                    //                           EmployeeId = e.EmployeeId,
+                    //                           Name = e.FirstName + " " + e.LastName,
+                    //                           DOJ = e.DOJ,
+                    //                           ConfirmationDate = e.ConfirmationDate,
+                    //                           CurrentEL = (long)lb.BalanceDays,
+                    //                           LeaveBalanceId = lb.LeaveBalanceId
+                    //                       }
+                    //                     ).FirstOrDefault();
+                    //    if (empProfiles != null)
+                    //    {
+                    //        if (empProfiles.DOJ != null)
+                    //        {
+                    //            if (empProfiles.ConfirmationDate == null)
+                    //            {
+                    //                int workedMonths = GetMonthDifference(DateTime.Now, Convert.ToDateTime(empProfiles.DOJ));
+                    //                if (workedMonths >= 6)
+                    //                {
+                    //                    empProfiles.IsConfirmation = true;
+                    //                }
+                    //            }
+                    //            else
+                    //            {
+                    //                empProfiles.ELCredit = GetELCredit(lastCreditRun.AddDays(1), toDate, Convert.ToDateTime(empProfiles.ConfirmationDate));
+                    //                empProfiles.NewELBalance = empProfiles.CurrentEL + empProfiles.ELCredit;
+                    //            }
+                    //        }
+                    //        empProfileModel.Add(empProfiles);
+                    //    }
+                    //}
                 }
             }
             catch (Exception)

@@ -183,7 +183,7 @@ namespace NLTD.EmployeePortal.LMS.Ux.AppHelpers
                 }
             }
             catch (Exception ex)
-            {
+            {                
                 Elmah.ErrorLog.GetDefault(null).Log(new Elmah.Error(ex));
                 throw;
             }

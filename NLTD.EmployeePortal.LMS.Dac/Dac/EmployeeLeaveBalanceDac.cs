@@ -157,44 +157,25 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
         {
             try
             {
-                bool isAuthorizedRole = false;
+                int isSaved = 0;
                 using (var context = new NLTDDbContext())
                 {
-                    var isAuthorized = (from e in context.Employee
-                                        join r in context.EmployeeRole on e.EmployeeRoleId equals r.RoleId
-                                        where e.UserId == LoginUserId
-                                        select new { r.Role }
-                                  ).FirstOrDefault();
 
-                    if (isAuthorized != null)
-                    {
-                        if (isAuthorized.Role.ToUpper() == "HR")
-                            isAuthorizedRole = true;
-                    }
+                    var leaveType = context.LeaveType.Where(x => x.Type.ToUpper() == "EARNED LEAVE").FirstOrDefault();
 
-                    if (isAuthorizedRole)
+                    if (leaveType != null)
                     {
-                        LeaveType leaveType = new LeaveType();
-                        leaveType.OfficeId = 1;
-                        leaveType.Type = "ELCredit";
-                        leaveType.AdjustLeaveBalance = false;
-                        leaveType.ApplicableGender = "A";
-                        leaveType.IsLeave = false;
-                        leaveType.IsTimeBased = false;
                         leaveType.lastCreditRun = lastCreditRun;
-                        leaveType.Createdon = DateTime.Now;
-                        leaveType.CreatedBy = Convert.ToInt32(LoginUserId);
-                        leaveType.Modifiedon = DateTime.Now;
-                        leaveType.ModifiedBy = Convert.ToInt32(LoginUserId);
-                        context.LeaveType.Add(leaveType);
-                        context.SaveChanges();
-                    }
-                    else
-                    {
-                        return "Need Role";
-                    }
+                        leaveType.ModifiedBy = LoginUserId;
+                        leaveType.Modifiedon = System.DateTime.Now;
+                        isSaved = context.SaveChanges();
+
+                    }                    
                 }
-                return "Saved";
+                if (isSaved > 0)
+                    return "Saved";
+                else
+                    return  "Failed";
             }
             catch (Exception ex)
             {

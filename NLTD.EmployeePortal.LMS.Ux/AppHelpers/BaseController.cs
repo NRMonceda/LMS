@@ -36,7 +36,7 @@ namespace NLTD.EmployeePortal.LMS.Ux.AppHelpers
 
                 var windowsLoginName = identity.Name.ToUpper();
                 #if DEBUG
-                //windowsLoginName = "CORP\\Umag";
+                windowsLoginName = "CORP\\UMAGESWARI";
                 #endif
                 if (Request.QueryString["Username"] != null)
                 {
