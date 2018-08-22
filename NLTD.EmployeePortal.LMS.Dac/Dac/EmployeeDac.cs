@@ -230,8 +230,7 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
         public IList<EmployeeProfile> GetEmployeeProfilesforEL(DateTime lastCreditRun)
         {
             IList<EmployeeProfile> empProfileModel = new List<EmployeeProfile>();
-            DateTime curDate = DateTime.Now.AddMonths(-1).AddDays(1 - DateTime.Now.Day);
-            DateTime toDate = curDate.AddMonths(1).AddDays(-1);
+            DateTime toDate = DateTime.Now.AddMonths(-1);
 
             try
             {
