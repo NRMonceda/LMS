@@ -69,7 +69,7 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
             return retModel;
         }
 
-        public string UpdateLeaveBalance(List<EmployeeLeaveBalanceDetails> empLeaveBalanceDetails, Int64 UserId, Int64 LoginUserId)
+        public string UpdateLeaveBalance(List<EmployeeLeaveBalanceDetails> empLeaveBalanceDetails, Int64 LoginUserId)
         {
             try
             {
@@ -94,7 +94,7 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
                         {
                             if (item.NoOfDays > 0)
                             {
-                                EmployeeLeaveBalance leaveBalance = context.EmployeeLeaveBalance.Where(x => x.UserId == UserId && x.LeaveTypeId == item.LeaveTypeId
+                                EmployeeLeaveBalance leaveBalance = context.EmployeeLeaveBalance.Where(x => x.UserId == item.UserId && x.LeaveTypeId == item.LeaveTypeId
                                 && x.LeaveBalanceId == item.LeaveBalanceId && x.Year == DateTime.Now.Year).FirstOrDefault();
 
                                 if (leaveBalance != null)
@@ -108,7 +108,7 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
                                 else
                                 {
                                     leaveBalance = new EmployeeLeaveBalance();
-                                    leaveBalance.UserId = UserId;
+                                    leaveBalance.UserId = Convert.ToInt64(item.UserId);
                                     leaveBalance.Year = DateTime.Now.Year;
                                     leaveBalance.LeaveTypeId = Convert.ToInt64(item.LeaveTypeId);
                                     leaveBalance.TotalDays = item.TotalDays;
@@ -124,7 +124,7 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
                                 }
 
                                 LeaveTransactionHistory leaveTransactionHistory = new LeaveTransactionHistory();
-                                leaveTransactionHistory.UserId = UserId;
+                                leaveTransactionHistory.UserId = Convert.ToInt64(item.UserId);
                                 leaveTransactionHistory.LeaveTypeId = Convert.ToInt64(item.LeaveTypeId);
                                 leaveTransactionHistory.LeaveId = -1;
                                 leaveTransactionHistory.TransactionDate = DateTime.Now;
@@ -146,6 +146,55 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
                     return "Saved";
                 else
                     return "Failed";
+            }
+            catch (Exception ex)
+            {
+                return ex.Message;
+            }
+        }
+
+        public string UpdateEarnedLeavelastCreditRun(Int64 LoginUserId, DateTime lastCreditRun)
+        {
+            try
+            {
+                bool isAuthorizedRole = false;
+                using (var context = new NLTDDbContext())
+                {
+                    var isAuthorized = (from e in context.Employee
+                                        join r in context.EmployeeRole on e.EmployeeRoleId equals r.RoleId
+                                        where e.UserId == LoginUserId
+                                        select new { r.Role }
+                                  ).FirstOrDefault();
+
+                    if (isAuthorized != null)
+                    {
+                        if (isAuthorized.Role.ToUpper() == "HR")
+                            isAuthorizedRole = true;
+                    }
+
+                    if (isAuthorizedRole)
+                    {
+                        LeaveType leaveType = new LeaveType();
+                        leaveType.OfficeId = 1;
+                        leaveType.Type = "ELCredit";
+                        leaveType.AdjustLeaveBalance = false;
+                        leaveType.ApplicableGender = "A";
+                        leaveType.IsLeave = false;
+                        leaveType.IsTimeBased = false;
+                        leaveType.lastCreditRun = lastCreditRun;
+                        leaveType.Createdon = DateTime.Now;
+                        leaveType.CreatedBy = Convert.ToInt32(LoginUserId);
+                        leaveType.Modifiedon = DateTime.Now;
+                        leaveType.ModifiedBy = Convert.ToInt32(LoginUserId);
+                        context.LeaveType.Add(leaveType);
+                        context.SaveChanges();
+                    }
+                    else
+                    {
+                        return "Need Role";
+                    }
+                }
+                return "Saved";
             }
             catch (Exception ex)
             {

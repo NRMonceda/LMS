@@ -40,6 +40,14 @@ namespace NLTD.EmployeePortal.LMS.Client
             }
         }
 
+        public EmailDataModel GetEmailDataAddLeave(Int64 userID, Int64? leaveTypeID)
+        {
+            using (ILeaveHelper helper = new LeaveHelper())
+            {
+                return helper.GetEmailDataAddLeave(userID, leaveTypeID);
+            }
+        }
+
         public void Dispose()
         {
             //Nothing to impement...

@@ -85,6 +85,30 @@ namespace NLTD.EmployeePortal.LMS.Ux.AppHelpers
             return body;
         }
 
+        private string PopulateBodyforAddLeave(string userName, string description, string empId, string leaveType, string leaveBalance, string transaction, string days, string totalBalance, string remarks)
+        {
+            string body = string.Empty;
+
+            using (var stream = new FileStream(HostingEnvironment.MapPath("~/EmailTemplateAddLeave.html"), FileMode.Open, FileAccess.Read, FileShare.Read))
+            {
+                StreamReader reader = new StreamReader(stream);
+                body = reader.ReadToEnd();
+            }
+
+            body = body.Replace("{HelloUser}", " " + userName);
+            body = body.Replace("{Description}", description);
+            body = body.Replace("{RequestFor}", userName);
+            body = body.Replace("{EmpId}", empId);
+            body = body.Replace("{LeaveType}", leaveType);
+            body = body.Replace("{LeaveBalance}", leaveBalance);
+            body = body.Replace("{Transaction}", transaction);
+            body = body.Replace("{Days}", days);
+            body = body.Replace("{TotalBalance}", totalBalance);
+            body = body.Replace("{Remarks}", remarks);
+
+            return body;
+        }
+
         public void SendEmail(Int64 leaveId, string actionName)
         {
             try
@@ -123,6 +147,43 @@ namespace NLTD.EmployeePortal.LMS.Ux.AppHelpers
             catch (Exception ex)
             {
                 LogError(ex, leaveId);
+                Elmah.ErrorLog.GetDefault(null).Log(new Elmah.Error(ex));
+                throw;
+            }
+        }
+
+        public void SendEmailforAddLeave(List<EmployeeLeaveBalanceDetails> lst)
+        {
+            try
+            {
+                Int64 leaveTypeId = 0;
+                if (lst.Count() > 0)
+                {
+                    for (int i = 0; i < lst.Count(); i++)
+                    {
+                        if (lst[i].NoOfDays > 0)
+                        {
+                            EmailDataModel mdl;
+                            string helloUser = string.Empty;
+                            string description = string.Empty;
+                            leaveTypeId = Convert.ToInt64(lst[i].LeaveTypeId);
+                            using (var client = new LeaveClient())
+                            {
+                                mdl = client.GetEmailDataAddLeave(Convert.ToInt64(lst[i].UserId), leaveTypeId);
+                            }
+
+                            description = "Your " + mdl.LeaveTypeText + " has been updated.";
+
+                            string body = string.Empty;
+                            string transaction = lst[i].CreditOrDebit == "C" ? "Credit" : "Debit";
+                            body = this.PopulateBodyforAddLeave(mdl.RequestFor, description, mdl.EmpId, mdl.LeaveTypeText, lst[i].BalanceDays.ToString(), transaction, lst[i].NoOfDays.ToString(), lst[i].TotalDays.ToString(), lst[i].Remarks);
+                            this.SendHtmlFormattedEmail(mdl.RequestorEmailId, mdl.CcEmailIds, "LMS - Request for " + mdl.RequestFor + " - " + mdl.LeaveTypeText + " Updation", body);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
                 Elmah.ErrorLog.GetDefault(null).Log(new Elmah.Error(ex));
                 throw;
             }

@@ -227,6 +227,95 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
             return result;
         }
 
+        public IList<EmployeeProfile> GetEmployeeProfilesforEL(DateTime lastCreditRun)
+        {
+            IList<EmployeeProfile> empProfileModel = new List<EmployeeProfile>();
+            DateTime toDate = DateTime.Now.AddMonths(-1);
+
+            try
+            {
+                using (var context = new NLTDDbContext())
+                {
+                    var ids = (from e in context.Employee
+                               where e.IsActive == true
+                               select new { userId = e.UserId }
+                             ).ToList();
+
+                    foreach (var userId in ids)
+                    {
+                        var empProfiles = (from e in context.Employee
+                                           join eb in context.EmployeeLeaveBalance on e.UserId equals eb.UserId
+                                           where eb.LeaveTypeId == 2 && e.UserId == userId.userId
+                                           orderby e.FirstName
+                                           select new EmployeeProfile
+                                           {
+                                               UserId = e.UserId,
+                                               EmployeeId = e.EmployeeId,
+                                               Name = e.FirstName + " " + e.LastName,
+                                               DOJ = e.DOJ,
+                                               ConfirmationDate = e.ConfirmationDate,
+                                               CurrentEL = (long)eb.BalanceDays,
+                                               LeaveBalanceId = eb.LeaveBalanceId
+                                           }
+                                         ).FirstOrDefault();
+                        if (empProfiles != null)
+                        {
+                            if (empProfiles.DOJ != null)
+                            {
+                                if (empProfiles.ConfirmationDate == null)
+                                {
+                                    int workedMonths = GetMonthDifference(DateTime.Now, Convert.ToDateTime(empProfiles.DOJ));
+                                    if (workedMonths >= 6)
+                                    {
+                                        empProfiles.IsConfirmation = true;
+                                    }
+                                }
+                                else
+                                {
+                                    empProfiles.ELCredit = GetELCredit(lastCreditRun.AddDays(1), toDate, Convert.ToDateTime(empProfiles.ConfirmationDate));
+                                    empProfiles.NewELBalance = empProfiles.CurrentEL + empProfiles.ELCredit;
+                                }
+                            }
+                            empProfileModel.Add(empProfiles);
+                        }
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
+            return empProfileModel;
+        }
+
+        public static int GetELCredit(DateTime fromDate, DateTime toDate, DateTime confirmationDate)
+        {
+            int elCredit = 0;
+            if (GetMonthDifference(toDate, fromDate) >= 1)
+            {
+                if (fromDate > confirmationDate)
+                {
+                    elCredit = GetMonthDifference(toDate, fromDate);
+                }
+                else
+                {
+                    if (Convert.ToInt64(confirmationDate.Day) < 15)
+                        elCredit = GetMonthDifference(toDate, confirmationDate.AddMonths(-1));
+                    else
+                        elCredit = GetMonthDifference(toDate, confirmationDate);
+                }
+            }
+            return elCredit;
+        }
+
+        public static int GetMonthDifference(DateTime startDate, DateTime endDate)
+        {
+            int monthsApart = 12 * (startDate.Year - endDate.Year) + startDate.Month - endDate.Month;
+            monthsApart = monthsApart >= 0 ? monthsApart : 0;
+            return monthsApart;
+        }
+
         public IList<ViewEmployeeProfileModel> GetTeamProfiles(Int64 userId, bool onlyReportedToMe, Int64? paramUserId, string requestMenuUser, bool hideInactiveEmp)
         {
             IList<ViewEmployeeProfileModel> retModel = new List<ViewEmployeeProfileModel>();

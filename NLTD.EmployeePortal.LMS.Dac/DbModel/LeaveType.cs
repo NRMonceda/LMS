@@ -22,5 +22,15 @@ namespace NLTD.EmployeePortal.LMS.Dac.DbModel
         public bool IsTimeBased { get; set; }
 
         public int SortOrder { get; set; }
+
+        public DateTime lastCreditRun { get; set; }
+
+        public DateTime Createdon { get; set; }
+        public DateTime Modifiedon { get; set; }
+
+        public int CreatedBy { get; set; }
+
+        public int ModifiedBy { get; set; }
+
     }
 }

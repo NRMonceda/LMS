@@ -21,11 +21,19 @@ namespace NLTD.EmployeePortal.LMS.Dac.DbHelper
             }
         }
 
-        public string UpdateLeaveBalance(List<EmployeeLeaveBalanceDetails> empLeaveBalanceDetails, Int64 UserId, Int64 LoginUserId)
+        public string UpdateLeaveBalance(List<EmployeeLeaveBalanceDetails> empLeaveBalanceDetails, Int64 LoginUserId)
         {
             using (var dac = new EmployeeLeaveBalanceDac())
             {
-                return dac.UpdateLeaveBalance(empLeaveBalanceDetails, UserId, LoginUserId);
+                return dac.UpdateLeaveBalance(empLeaveBalanceDetails, LoginUserId);
+            }
+        }
+
+        public string UpdateEarnedLeavelastCreditRun(Int64 LoginUserId, DateTime lastCreditRun)
+        {
+            using (var dac = new EmployeeLeaveBalanceDac())
+            {
+                return dac.UpdateEarnedLeavelastCreditRun(LoginUserId, lastCreditRun);
             }
         }
     }

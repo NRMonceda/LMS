@@ -1,10 +1,13 @@
 ﻿using NLTD.EmployeePortal.LMS.Client;
 using NLTD.EmployeePortal.LMS.Common.DisplayModel;
 using NLTD.EmployeePortal.LMS.Common.QueryModel;
+using NLTD.EmployeePortal.LMS.Dac;
+using NLTD.EmployeePortal.LMS.Dac.DbModel;
 using NLTD.EmployeePortal.LMS.Ux.AppHelpers;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Net.Mail;
 using System.Text.RegularExpressions;
@@ -394,16 +397,151 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
         public ActionResult SaveLeaveBalance(List<EmployeeLeaveBalanceDetails> lst, Int64 EmpUserid)
         {
             string result = "";
-            if (ModelState.IsValid)
+            result = UpdateLeaveBalance(lst);
+            return Json(result);
+        }
+
+        public ActionResult EarnedLeaveCredit()
+        {
+            DateTime lastCreditRun = GetlastCreditRunforEL();
+
+            DateTime ellastCreditRunMonth = lastCreditRun.AddDays(1);
+            bool isCurrentMonth = DateTime.Now.Month == ellastCreditRunMonth.Month;
+            if (isCurrentMonth)
+            {
+                ViewBag.lastCreditRun = lastCreditRun;
+                ViewBag.CurrentRun = null;
+            }
+            else
+            {
+                ViewBag.lastCreditRun = lastCreditRun.ToString("MMM-yyyy");
+                ViewBag.CurrentRun = GetCurrentRunforEL(ellastCreditRunMonth.ToString("MMM-yyyy"));
+            }
+            if (this.IsAuthorized == "NoAuth")
+            {
+                Response.Redirect("~/Home/Unauthorized");
+                return null;
+            }
+            else
+            {
+                return View("EarnedLeaveCredit");
+            }
+        }
+
+        public ActionResult GetEarnedLeaveMasterDetail()
+        {
+            IList<EmployeeProfile> lstProfile = GetEmployeeELData();
+            return PartialView("EarnedLeaveCreditPartial", lstProfile);
+        }
+
+        public static DateTime GetlastCreditRunforEL()
+        {
+            DateTime lastCreditRun;
+            using (var context = new NLTDDbContext())
+            {
+                List<LeaveTypesModel> LeaveTypes = (from l in context.LeaveType
+                                                    where l.lastCreditRun != null
+                                                    orderby l.Createdon descending
+                                                    select new LeaveTypesModel
+                                                    {
+                                                        lastCreditRun = l.lastCreditRun
+                                                    }).ToList();
+                lastCreditRun = LeaveTypes.Select(s => (DateTime)s.lastCreditRun).FirstOrDefault();
+            }
+            return lastCreditRun;
+        }
+
+        public static string GetCurrentRunforEL(string lastCreditRun)
+        {
+            var today = DateTime.Today;
+            var month = new DateTime(today.Year, today.Month, 1);
+            var lastDate = month.AddDays(-1).ToString("MMM-yyyy", null);
+            string currentRun = lastCreditRun + " to " + lastDate;
+            return currentRun;
+        }
+
+        public IList<EmployeeProfile> GetEmployeeELData()
+        {
+            IList<EmployeeProfile> lstProfile = new List<EmployeeProfile>();
+            DateTime lastCreditRun = GetlastCreditRunforEL();
+            using (var client = new EmployeeClient())
+            {
+                lstProfile = client.GetEmployeeProfilesforEL(lastCreditRun);
+            }
+            return lstProfile;
+        }
+
+        public ActionResult ExportExcelEarnedLeaveCreditDetails()
+        {
+            IList<EmployeeProfile> lstProfile = GetEmployeeELData();
+            List<EmployeeProfile> excelData = new List<EmployeeProfile>();
+            excelData = lstProfile.ToList();
+            if (excelData.Count > 0)
+            {
+                string[] columns = { "EmployeeId", "Name", "DOJ", "ConfirmationDate", "CurrentEL", "ELCredit", "NewELBalance" };
+                byte[] filecontent = ExcelExportHelper.ExportPermissionsExcel(excelData, "", false, columns);
+                return File(filecontent, ExcelExportHelper.ExcelContentType, "ELCreditReport_" + System.DateTime.Now + ".xlsx");
+            }
+            else
+            {
+                ViewBag.ErrorMsg = "Excel file is not generated as no data returned.";
+                return View("EarnedLeaveCredit");
+            }
+            return Json("Downloaded");
+        }
+
+        public ActionResult UpdateEarnedLeaves()
+        {
+            string result = "";
+            DateTime curDate = DateTime.Now.AddMonths(-1).AddDays(1 - DateTime.Now.Day);
+            DateTime lastCreditRun = curDate.AddMonths(1).AddDays(-1);
+            long loginUserId = this.UserId;
+            using (var client = new EmployeeLeaveBalanceClient())
+            {
+                result = client.UpdateEarnedLeavelastCreditRun(loginUserId, lastCreditRun);
+            }
+            var lstProfile = GetEmployeeELData();
+            var ELCreditList = (from l in lstProfile
+                     select new EmployeeLeaveBalanceDetails
+                     {
+                         UserId = l.UserId,
+                         CreditOrDebit = "C",
+                         LeaveTypeId = 2,
+                         EmployeeId = l.EmployeeId,
+                         BalanceDays = l.CurrentEL,
+                         NoOfDays = l.ELCredit,
+                         Remarks = "EL Credit",
+                         TotalDays = l.NewELBalance,
+                         LeaveBalanceId = l.LeaveBalanceId
+                     }).ToList();
+
+            UpdateLeaveBalance(ELCreditList);
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
+
+        public string UpdateLeaveBalance(List<EmployeeLeaveBalanceDetails> lst)
+        {
+            string result = "";
+            try
             {
                 using (var client = new EmployeeLeaveBalanceClient())
                 {
                     long LoginUserId = this.UserId;
-                    result = client.UpdateLeaveBalance(lst, EmpUserid, LoginUserId);
+                    result = client.UpdateLeaveBalance(lst, LoginUserId);
                 }
-            }
 
-            return Json(result);
+                EmailHelper emailHelper = new EmailHelper();
+                #if DEBUG
+                    emailHelper.SendEmailforAddLeave(lst);
+                #else
+		            BackgroundJob.Enqueue(() => emailHelper.SendEmailforAddLeave(lst));
+                #endif
+            }
+            catch
+            {
+                throw;
+            }
+            return result;
         }
     }
 }

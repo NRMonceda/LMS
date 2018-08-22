@@ -27,5 +27,7 @@ namespace NLTD.EmployeePortal.LMS.Repository
         string ReportingToName(Int64 userId);
 
         IList<ViewEmployeeProfileModel> GetTeamProfiles(Int64 userId, bool onlyReportedToMe, Int64? paramUserId, string requestMenuUser, bool hideInactiveEmp);
+
+        IList<EmployeeProfile> GetEmployeeProfilesforEL(DateTime lastCreditRun);
     }
 }

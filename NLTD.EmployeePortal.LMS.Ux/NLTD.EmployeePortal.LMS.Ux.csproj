@@ -394,6 +394,9 @@
     <Content Include="css\LMS.css" />
     <Content Include="EmailCCTemplate.html" />
     <Content Include="EmailTemplate.html" />
+    <Content Include="EmailTemplateAddLeave.html" />
+    <Content Include="EmailTemplateAddLeave_files\colorschememapping.xml" />
+    <Content Include="EmailTemplateAddLeave_files\filelist.xml" />
     <Content Include="ErrorLog\ErrorLog.txt" />
     <Content Include="favicon.ico" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
@@ -563,6 +566,7 @@
     <Content Include="Content\DataTables\css\semanticui.scss" />
     <Content Include="Content\DataTables\css\mixins.scss" />
     <Content Include="Content\DataTables\css\common.scss" />
+    <Content Include="EmailTemplateAddLeave_files\themedata.thmx" />
     <None Include="Properties\PublishProfiles\LMS For Prod.pubxml" />
     <None Include="Properties\PublishProfiles\LMS Local.pubxml" />
     <Content Include="Scripts\bootstrap.js" />
@@ -636,9 +640,8 @@
     <Content Include="Scripts\DataTables\responsive.bootstrap.js" />
     <Content Include="Scripts\DataTables\responsive.bootstrap.min.js" />
     <Content Include="Scripts\DataTables\responsive.bootstrap4.js" />
-    <Content Include="Scripts\DataTables\responsive.bootstrap4.min.js" />   
+    <Content Include="Scripts\DataTables\responsive.bootstrap4.min.js" />
     <Content Include="Scripts\DataTables\responsive.foundation.min.js" />
-
     <Content Include="Scripts\DataTables\responsive.jqueryui.min.js" />
     <Content Include="Scripts\DataTables\responsive.semanticui.js" />
     <Content Include="Scripts\DataTables\responsive.semanticui.min.js" />
@@ -763,11 +766,12 @@
     <Content Include="Views\Report\ShiftBasedLateAndEarlyRptPartial.cshtml" />
     <Content Include="Views\Dashboard\DashboardAttendancePartial.cshtml" />
     <Content Include="Views\Dashboard\DashboardAttendancePartial.cshtml" />
-     <Content Include="Views\Admin\OverTimePermissions.cshtml" />
+    <Content Include="Views\Admin\OverTimePermissions.cshtml" />
     <Content Include="Views\Admin\ViewOverTimePermissionDetailPartial.cshtml" />
     <Content Include="Views\Attendance\AccessCardAttendance.cshtml" />
     <Content Include="Views\Admin\EmployeeAcessCardAttendanceDtlPartial.cshtml" />
-
+    <Content Include="Views\Profile\EarnedLeaveCredit.cshtml" />
+    <Content Include="Views\Profile\EarnedLeaveCreditPartial.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -786,6 +790,10 @@
     <ProjectReference Include="..\NLTD.EmployeePortal.LMS.Common\NLTD.EmployeePortal.LMS.Common.csproj">
       <Project>{62668ace-a9bd-4dae-a59b-2cd560db4acf}</Project>
       <Name>NLTD.EmployeePortal.LMS.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\NLTD.EmployeePortal.LMS.Dac\NLTD.EmployeePortal.LMS.Dac.csproj">
+      <Project>{779A6702-63A3-46D2-A529-E155D1C93974}</Project>
+      <Name>NLTD.EmployeePortal.LMS.Dac</Name>
     </ProjectReference>
     <ProjectReference Include="..\NLTD.EmployeePortal.LMS.Repository\NLTD.EmployeePortal.LMS.Repository.csproj">
       <Project>{77D27C9B-1EA3-4A01-91AA-BDC3B1757D10}</Project>
@@ -807,7 +815,7 @@
     <VisualStudio>
       <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
         <WebProjectProperties>
-          <UseIIS>True</UseIIS>
+          <UseIIS>False</UseIIS>
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>55457</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>

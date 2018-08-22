@@ -896,7 +896,7 @@ namespace NLTD.EmployeePortal.LMS.Dac
                                                         LeaveTypeId = types.LeaveTypeId,
                                                         LeaveTypeText = types.Type,
                                                         IsTimeBased = types.IsTimeBased
-                                                    }).ToList(); 
+                                                    }).ToList();
                 return LeaveTypes;
             }
         }
@@ -2457,7 +2457,8 @@ namespace NLTD.EmployeePortal.LMS.Dac
                     foreach (var item in hrEmail)
                     {
                         qry.CcEmailIds.Add(item.EmailId);
-                    }                    
+                    }
+
                     var qryReportingTo = context.Employee.Where(x => x.UserId == qry.ReportingToId).FirstOrDefault();
                     if (qryReportingTo == null)
                     {
@@ -2468,16 +2469,14 @@ namespace NLTD.EmployeePortal.LMS.Dac
                         qry.ReportingToName = qryReportingTo.FirstName + " " + qryReportingTo.LastName;
                         qry.ToEmailId = qryReportingTo.EmailAddress;
                     }
-
                     if (actionName == "Pending")
                     {
                         qry.CcEmailIds.Remove(qry.ToEmailId);
                         qry.CcEmailIds.Add(qry.RequestorEmailId);
-                       
                     }
                     else
                     {
-                        qry.ToEmailId = qry.RequestorEmailId;                        
+                        qry.ToEmailId = qry.RequestorEmailId;
                     }
 
                     string onlyDirectAlerts = ConfigurationManager.AppSettings["OnlyDirectAlerts"].ToString();
@@ -2533,6 +2532,45 @@ namespace NLTD.EmployeePortal.LMS.Dac
                     retMdl = qry;
                 }
 
+                return retMdl;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public EmailDataModel GetEmailDataAddLeave(Int64 userID, Int64? leaveTypeID)
+        {
+            EmailDataModel retMdl = new EmailDataModel();
+            try
+            {
+                using (var context = new NLTDDbContext())
+                {
+                    var qry = (from e in context.Employee
+                               join lt in context.LeaveType on leaveTypeID equals lt.LeaveTypeId
+                               where e.UserId == userID
+                               select new EmailDataModel
+                               {
+                                   RequestFor = e.FirstName + " " + e.LastName,
+                                   EmpId = e.EmployeeId,
+                                   ReportingToId = e.ReportingToId,
+                                   RequestorEmailId = e.EmailAddress,
+                                   LeaveTypeText = lt.Type
+                               }
+                            ).FirstOrDefault();
+                    qry.CcEmailIds = GetHigherApproversEmailIds(qry.ReportingToId);
+                    var hrEmail = (from e in context.Employee
+                                   join er in context.EmployeeRole on e.EmployeeRoleId equals er.RoleId
+                                   where (er.Role == "HR" || er.Role == "Admin") && e.IsActive == true
+                                   select new { EmailId = e.EmailAddress }
+                                 ).ToList();
+                    foreach (var item in hrEmail)
+                    {
+                        qry.CcEmailIds.Add(item.EmailId);
+                    }
+                    retMdl = qry;
+                }
                 return retMdl;
             }
             catch (Exception)
