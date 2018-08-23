@@ -177,7 +177,7 @@ namespace NLTD.EmployeePortal.LMS.Ux.AppHelpers
                             string body = string.Empty;
                             string transaction = lst[i].CreditOrDebit == "C" ? "Credit" : "Debit";
                             body = this.PopulateBodyforAddLeave(mdl.RequestFor, description, mdl.EmpId, mdl.LeaveTypeText, lst[i].BalanceDays.ToString(), transaction, lst[i].NoOfDays.ToString(), lst[i].TotalDays.ToString(), lst[i].Remarks);
-                            this.SendHtmlFormattedEmail(mdl.RequestorEmailId, mdl.CcEmailIds, "LMS - Request for " + mdl.RequestFor + " - " + mdl.LeaveTypeText + " Updation", body);
+                            this.SendHtmlFormattedEmail(mdl.RequestorEmailId, mdl.CcEmailIds, "LMS - " + mdl.RequestFor + " - " + mdl.LeaveTypeText + " Updated", body);
                         }
                     }
                 }

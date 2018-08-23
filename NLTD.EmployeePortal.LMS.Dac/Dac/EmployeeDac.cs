@@ -241,7 +241,7 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
                                       join eb in context.EmployeeLeaveBalance on e.UserId equals eb.UserId into leaveBal
                                       from lb in leaveBal.DefaultIfEmpty()
                                       where (lb != null ? lb.LeaveTypeId == 2 && lb.Year== lastCreditRun.Year : true) && e.IsActive==true
-                                      //orderby e.FirstName
+                                      orderby e.FirstName
                                       select new EmployeeProfile
                                       {
                                           UserId = e.UserId,
@@ -352,7 +352,7 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
 
         public static int GetMonthDifference(DateTime startDate, DateTime endDate)
         {
-            int monthsApart = 12 * (startDate.Year - endDate.Year) + startDate.Month - endDate.Month;
+            int monthsApart = startDate.Month - endDate.Month;
             monthsApart = monthsApart >= 0 ? monthsApart : 0;
             return monthsApart;
         }

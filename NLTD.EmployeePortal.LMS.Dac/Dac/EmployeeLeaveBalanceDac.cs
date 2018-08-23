@@ -74,6 +74,7 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
             try
             {
                 int isSaved = 0; bool isAuthorizedRole = false;
+                DateTime curDate = DateTime.Now.AddMonths(-1).AddDays(1 - DateTime.Now.Day);
                 using (var context = new NLTDDbContext())
                 {
                     var isAuthorized = (from e in context.Employee
@@ -90,50 +91,79 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
 
                     if (isAuthorizedRole)
                     {
-                        foreach (var item in empLeaveBalanceDetails)
+                        using (var transaction = context.Database.BeginTransaction())
                         {
-                            if (item.NoOfDays > 0)
+                            foreach (var item in empLeaveBalanceDetails)
                             {
-                                EmployeeLeaveBalance leaveBalance = context.EmployeeLeaveBalance.Where(x => x.UserId == item.UserId && x.LeaveTypeId == item.LeaveTypeId
-                                && x.LeaveBalanceId == item.LeaveBalanceId && x.Year == DateTime.Now.Year).FirstOrDefault();
-
-                                if (leaveBalance != null)
+                                if (item.NoOfDays > 0)
                                 {
-                                    leaveBalance.TotalDays = item.CreditOrDebit == "C" ? (leaveBalance.TotalDays + item.NoOfDays) : (leaveBalance.TotalDays - item.NoOfDays);
-                                    leaveBalance.ModifiedBy = LoginUserId;
-                                    leaveBalance.ModifiedOn = DateTime.Now;
-                                    leaveBalance.BalanceDays = item.TotalDays;
-                                    isSaved = context.SaveChanges();
-                                }
-                                else
-                                {
-                                    leaveBalance = new EmployeeLeaveBalance();
-                                    leaveBalance.UserId = Convert.ToInt64(item.UserId);
-                                    leaveBalance.Year = DateTime.Now.Year;
-                                    leaveBalance.LeaveTypeId = Convert.ToInt64(item.LeaveTypeId);
-                                    leaveBalance.TotalDays = item.TotalDays;
-                                    leaveBalance.LeaveTakenDays = 0;
-                                    leaveBalance.PendingApprovalDays = 0;
-                                    leaveBalance.BalanceDays = item.TotalDays;
-                                    leaveBalance.CreatedBy = LoginUserId;
-                                    leaveBalance.CreatedOn = DateTime.Now;
-                                    leaveBalance.ModifiedBy = LoginUserId;
-                                    leaveBalance.ModifiedOn = DateTime.Now;
-                                    context.EmployeeLeaveBalance.Add(leaveBalance);
-                                    isSaved = context.SaveChanges();
-                                }
+                                    EmployeeLeaveBalance leaveBalance = context.EmployeeLeaveBalance.Where(x => x.UserId == item.UserId && x.LeaveTypeId == item.LeaveTypeId
+                                    && x.LeaveBalanceId == item.LeaveBalanceId && x.Year == DateTime.Now.Year).FirstOrDefault();
 
-                                LeaveTransactionHistory leaveTransactionHistory = new LeaveTransactionHistory();
-                                leaveTransactionHistory.UserId = Convert.ToInt64(item.UserId);
-                                leaveTransactionHistory.LeaveTypeId = Convert.ToInt64(item.LeaveTypeId);
-                                leaveTransactionHistory.LeaveId = -1;
-                                leaveTransactionHistory.TransactionDate = DateTime.Now;
-                                leaveTransactionHistory.TransactionType = item.CreditOrDebit;
-                                leaveTransactionHistory.NumberOfDays = item.NoOfDays;
-                                leaveTransactionHistory.TransactionBy = LoginUserId;
-                                leaveTransactionHistory.Remarks = item.Remarks;
-                                context.LeaveTransactionHistory.Add(leaveTransactionHistory);
-                                isSaved = context.SaveChanges();
+                                    if (leaveBalance != null)
+                                    {
+                                        leaveBalance.TotalDays = item.CreditOrDebit == "C" ? (leaveBalance.TotalDays + item.NoOfDays) : (leaveBalance.TotalDays - item.NoOfDays);
+                                        leaveBalance.ModifiedBy = LoginUserId;
+                                        leaveBalance.ModifiedOn = DateTime.Now;
+                                        leaveBalance.BalanceDays = item.TotalDays;
+                                        isSaved = context.SaveChanges();
+                                    }
+                                    else
+                                    {
+                                        leaveBalance = new EmployeeLeaveBalance();
+                                        leaveBalance.UserId = Convert.ToInt64(item.UserId);
+                                        leaveBalance.Year = DateTime.Now.Year;
+                                        leaveBalance.LeaveTypeId = Convert.ToInt64(item.LeaveTypeId);
+                                        leaveBalance.TotalDays = item.TotalDays;
+                                        leaveBalance.LeaveTakenDays = 0;
+                                        leaveBalance.PendingApprovalDays = 0;
+                                        leaveBalance.BalanceDays = item.TotalDays;
+                                        leaveBalance.CreatedBy = LoginUserId;
+                                        leaveBalance.CreatedOn = DateTime.Now;
+                                        leaveBalance.ModifiedBy = LoginUserId;
+                                        leaveBalance.ModifiedOn = DateTime.Now;
+                                        context.EmployeeLeaveBalance.Add(leaveBalance);
+                                        isSaved = context.SaveChanges();
+                                    }
+
+                                    LeaveTransactionHistory leaveTransactionHistory = new LeaveTransactionHistory();
+                                    leaveTransactionHistory.UserId = Convert.ToInt64(item.UserId);
+                                    leaveTransactionHistory.LeaveTypeId = Convert.ToInt64(item.LeaveTypeId);
+                                    leaveTransactionHistory.LeaveId = -1;
+                                    leaveTransactionHistory.TransactionDate = DateTime.Now;
+                                    leaveTransactionHistory.TransactionType = item.CreditOrDebit;
+                                    leaveTransactionHistory.NumberOfDays = item.NoOfDays;
+                                    leaveTransactionHistory.TransactionBy = LoginUserId;
+                                    leaveTransactionHistory.Remarks = item.Remarks;
+                                    context.LeaveTransactionHistory.Add(leaveTransactionHistory);
+                                    isSaved = context.SaveChanges();
+                                    if (isSaved > 0)
+                                        continue;
+                                    else
+                                        break;
+                                }
+                            }
+
+                            if (isSaved > 0)
+                            {
+                                var leaveType = context.LeaveType.Where(x => x.Type.ToUpper() == "EARNED LEAVE").FirstOrDefault();
+
+                                if (leaveType != null)
+                                {
+                                    leaveType.lastCreditRun = curDate.AddMonths(1).AddDays(-1);
+                                    leaveType.ModifiedBy = LoginUserId;
+                                    leaveType.Modifiedon = System.DateTime.Now;
+                                    isSaved = context.SaveChanges();
+
+                                }                               
+                            }
+                            if (isSaved > 0)
+                            {
+                                transaction.Commit();
+                            }
+                            else
+                            {
+                                transaction.Rollback();
                             }
                         }
                     }
@@ -153,34 +183,6 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
             }
         }
 
-        public string UpdateEarnedLeavelastCreditRun(Int64 LoginUserId, DateTime lastCreditRun)
-        {
-            try
-            {
-                int isSaved = 0;
-                using (var context = new NLTDDbContext())
-                {
-
-                    var leaveType = context.LeaveType.Where(x => x.Type.ToUpper() == "EARNED LEAVE").FirstOrDefault();
-
-                    if (leaveType != null)
-                    {
-                        leaveType.lastCreditRun = lastCreditRun;
-                        leaveType.ModifiedBy = LoginUserId;
-                        leaveType.Modifiedon = System.DateTime.Now;
-                        isSaved = context.SaveChanges();
-
-                    }                    
-                }
-                if (isSaved > 0)
-                    return "Saved";
-                else
-                    return  "Failed";
-            }
-            catch (Exception ex)
-            {
-                return ex.Message;
-            }
-        }
+        
     }
 }

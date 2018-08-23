@@ -2417,7 +2417,34 @@ namespace NLTD.EmployeePortal.LMS.Dac
                 retString = "Valid";
             return retString;
         }
+        public IList<string> FilterOptoutEmail(IList<string> lstCCEmail, long? reportingToUserId)
+        {
+            try
+            {
+                if (lstCCEmail.Count > 0 && reportingToUserId!=null)
+                {
+                    IList<string> filteredCCEmail = new List<string>();
+                    string onlyDirectAlerts = ConfigurationManager.AppSettings["OnlyDirectAlerts"].ToString();
+                    List<string> lstOptoutEmailAddress = onlyDirectAlerts.Split(',').ToList();
+                    using (var context = new NLTDDbContext())
+                    {
+                        var qryReportingTo = context.Employee.Where(x => x.UserId == reportingToUserId).FirstOrDefault();
 
+                        foreach (var item in lstOptoutEmailAddress)
+                        {
+                            if (qryReportingTo.EmailAddress.ToUpper() != item.ToUpper())
+                            {
+                                //qry.CcEmailIds.ToList().RemoveAll(o => o.Equals(item, StringComparison.OrdinalIgnoreCase));
+                                lstCCEmail.Remove(item);
+                            }
+                        }
+                    }
+                }
+            }
+            catch { throw; }
+
+            return lstCCEmail;
+        }
         public EmailDataModel GetEmailData(Int64 leaveId, string actionName)
         {
             EmailDataModel retMdl = new EmailDataModel();
@@ -2479,18 +2506,8 @@ namespace NLTD.EmployeePortal.LMS.Dac
                         qry.ToEmailId = qry.RequestorEmailId;
                     }
 
-                    string onlyDirectAlerts = ConfigurationManager.AppSettings["OnlyDirectAlerts"].ToString();
-                    List<string> lstOptoutEmailAddress = onlyDirectAlerts.Split(',').ToList();
-
-
-                    foreach (var item in lstOptoutEmailAddress)
-                    {
-                        if (qryReportingTo.EmailAddress.ToUpper() != item.ToUpper())
-                        {
-                            //qry.CcEmailIds.ToList().RemoveAll(o => o.Equals(item, StringComparison.OrdinalIgnoreCase));
-                            qry.CcEmailIds.Remove(item);
-                        }
-                    }
+                    //optout
+                    qry.CcEmailIds=FilterOptoutEmail(qry.CcEmailIds, qry.ReportingToId);
 
                     if (qry.IsTimeBased)
                     {
@@ -2569,6 +2586,9 @@ namespace NLTD.EmployeePortal.LMS.Dac
                     {
                         qry.CcEmailIds.Add(item.EmailId);
                     }
+                    //optout                    
+                    qry.CcEmailIds = FilterOptoutEmail(qry.CcEmailIds, qry.ReportingToId);
+
                     retMdl = qry;
                 }
                 return retMdl;

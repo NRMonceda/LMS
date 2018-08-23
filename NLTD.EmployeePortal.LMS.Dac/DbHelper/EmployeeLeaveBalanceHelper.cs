@@ -28,13 +28,6 @@ namespace NLTD.EmployeePortal.LMS.Dac.DbHelper
                 return dac.UpdateLeaveBalance(empLeaveBalanceDetails, LoginUserId);
             }
         }
-
-        public string UpdateEarnedLeavelastCreditRun(Int64 LoginUserId, DateTime lastCreditRun)
-        {
-            using (var dac = new EmployeeLeaveBalanceDac())
-            {
-                return dac.UpdateEarnedLeavelastCreditRun(LoginUserId, lastCreditRun);
-            }
-        }
+       
     }
 }

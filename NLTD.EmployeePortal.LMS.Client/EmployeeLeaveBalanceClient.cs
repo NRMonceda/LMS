@@ -28,13 +28,6 @@ namespace NLTD.EmployeePortal.LMS.Client
                 return helper.UpdateLeaveBalance(empLeaveBalanceDetails, LoginUserId);
             }
         }
-
-        public string UpdateEarnedLeavelastCreditRun(Int64 LoginUserId, DateTime lastCreditRun)
-        {
-            using (IEmployeeLeaveBalanceHelper helper = new EmployeeLeaveBalanceHelper())
-            {
-                return helper.UpdateEarnedLeavelastCreditRun(LoginUserId, lastCreditRun);
-            }
-        }
+        
     }
 }
