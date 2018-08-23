@@ -58,7 +58,7 @@ namespace NLTD.EmployeePortal.LMS.Common.DisplayModel
 
         public Decimal? NewELBalance { get; set; }
 
-        public bool IsConfirmation { get; set; }
+        public bool IsConfirmationPending { get; set; }
 
         public string lastCreditRun { get; set; }
 

@@ -176,6 +176,11 @@
           <icon></icon>
         </MenuItem>
         <MenuItem>
+          <title>Earned Leave Credit</title>
+          <url>/Profile/EarnedLeaveCredit</url>
+          <icon></icon>
+        </MenuItem>
+        <MenuItem>
           <title>Add Leave Balance</title>
           <url>/Profile/SearchLeaveBalanceProfile</url>
           <icon></icon>
@@ -189,12 +194,7 @@
           <title>Access Card Report</title>
           <url>/Attendance/AccessCardAttendance</url>
           <icon></icon>
-        </MenuItem>
-        <MenuItem>
-          <title>Earned Leave Credit</title>
-          <url>/Profile/EarnedLeaveCredit</url>
-          <icon></icon>
-        </MenuItem>
+        </MenuItem>        
       </level1item>
     </MenuItem>
   </menuitem>

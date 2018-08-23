@@ -36,7 +36,7 @@
     <tbody>
         @foreach (var item in Model)
         {
-            if (item.IsConfirmation == true)
+            if (item.IsConfirmationPending == true)
             {
                 <tr style="background-color:red;">
                     <td hidden>

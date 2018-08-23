@@ -231,16 +231,21 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
         {
             IList<EmployeeProfile> empProfileModel = new List<EmployeeProfile>();
             DateTime toDate = DateTime.Now.AddMonths(-1);
-            //int year = lastCreditRun.Year;
             try
             {
+                Int32 year = lastCreditRun.Year;
+                long leaveTypeId = 2;
+
                 using (var context = new NLTDDbContext())
                 {
-
                     var empProfile = (from e in context.Employee
-                                      join eb in context.EmployeeLeaveBalance on e.UserId equals eb.UserId into leaveBal
+                                      join elb in context.EmployeeLeaveBalance on
+                                      new { p1 = e.UserId, p2 = year, p3 = leaveTypeId }
+                                      equals
+                                      new { p1 = elb.UserId, p2 = elb.Year , p3=elb.LeaveTypeId}
+                                      into leaveBal
                                       from lb in leaveBal.DefaultIfEmpty()
-                                      where (lb != null ? lb.LeaveTypeId == 2 && lb.Year== lastCreditRun.Year : true) && e.IsActive==true
+                                      where e.IsActive == true
                                       orderby e.FirstName
                                       select new EmployeeProfile
                                       {
@@ -249,10 +254,10 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
                                           Name = e.FirstName + " " + e.LastName,
                                           DOJ = e.DOJ,
                                           ConfirmationDate = e.ConfirmationDate,
-                                          CurrentEL = lb.BalanceDays==null?0:(long)lb.BalanceDays,
+                                          CurrentEL = lb.BalanceDays == null ? 0 : (long)lb.BalanceDays,
                                           LeaveBalanceId = lb.LeaveBalanceId
                                       }
-                                         ).ToList();
+                                      ).ToList();
 
                     foreach (var profile in empProfile)
                     {
@@ -260,10 +265,9 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
                         {
                             if (profile.ConfirmationDate == null)
                             {
-                                int workedMonths = GetMonthDifference(DateTime.Now, Convert.ToDateTime(profile.DOJ));
-                                if (workedMonths >= 6)
+                                if (DateTime.Now > Convert.ToDateTime(profile.DOJ).AddMonths(6))
                                 {
-                                    profile.IsConfirmation = true;
+                                    profile.IsConfirmationPending = true;
                                 }
                             }
                             else
@@ -274,52 +278,6 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
                         }
                         empProfileModel.Add(profile);
                     }
-
-
-                    //var ids = (from e in context.Employee
-                    //           where e.IsActive == true
-                    //           select new { userId = e.UserId }
-                    //         ).ToList();
-
-                    //foreach (var userId in ids)
-                    //{
-                    //    var empProfiles = (from e in context.Employee
-                    //                       join eb in context.EmployeeLeaveBalance on e.UserId equals eb.UserId into leaveBal
-                    //                       from lb in leaveBal.DefaultIfEmpty()
-                    //                       where lb.LeaveTypeId == 2 && e.UserId == userId.userId
-                    //                       orderby e.FirstName
-                    //                       select new EmployeeProfile
-                    //                       {
-                    //                           UserId = e.UserId,
-                    //                           EmployeeId = e.EmployeeId,
-                    //                           Name = e.FirstName + " " + e.LastName,
-                    //                           DOJ = e.DOJ,
-                    //                           ConfirmationDate = e.ConfirmationDate,
-                    //                           CurrentEL = (long)lb.BalanceDays,
-                    //                           LeaveBalanceId = lb.LeaveBalanceId
-                    //                       }
-                    //                     ).FirstOrDefault();
-                    //    if (empProfiles != null)
-                    //    {
-                    //        if (empProfiles.DOJ != null)
-                    //        {
-                    //            if (empProfiles.ConfirmationDate == null)
-                    //            {
-                    //                int workedMonths = GetMonthDifference(DateTime.Now, Convert.ToDateTime(empProfiles.DOJ));
-                    //                if (workedMonths >= 6)
-                    //                {
-                    //                    empProfiles.IsConfirmation = true;
-                    //                }
-                    //            }
-                    //            else
-                    //            {
-                    //                empProfiles.ELCredit = GetELCredit(lastCreditRun.AddDays(1), toDate, Convert.ToDateTime(empProfiles.ConfirmationDate));
-                    //                empProfiles.NewELBalance = empProfiles.CurrentEL + empProfiles.ELCredit;
-                    //            }
-                    //        }
-                    //        empProfileModel.Add(empProfiles);
-                    //    }
-                    //}
                 }
             }
             catch (Exception)
@@ -341,8 +299,8 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
                 }
                 else
                 {
-                    if (Convert.ToInt64(confirmationDate.Day) < 15)
-                        elCredit = GetMonthDifference(toDate, confirmationDate.AddMonths(-1));
+                    if (Convert.ToInt64(confirmationDate.Day) > 15)
+                        elCredit = GetMonthDifference(toDate, confirmationDate) - 1;
                     else
                         elCredit = GetMonthDifference(toDate, confirmationDate);
                 }
@@ -350,10 +308,9 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
             return elCredit;
         }
 
-        public static int GetMonthDifference(DateTime startDate, DateTime endDate)
+        public static int GetMonthDifference(DateTime toDate, DateTime fromDate)
         {
-            int monthsApart = startDate.Month - endDate.Month;
-            monthsApart = monthsApart >= 0 ? monthsApart : 0;
+            int monthsApart = (toDate.Year * 12 + toDate.Month) - (fromDate.Year * 12 + fromDate.Month) + 1;
             return monthsApart;
         }
 
