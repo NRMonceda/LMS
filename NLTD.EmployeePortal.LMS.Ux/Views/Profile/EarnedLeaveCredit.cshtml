@@ -39,7 +39,7 @@ else
         <div class="col-sm-12">
             <div class="box box-primary">
                 <div class="box-header with-border">
-                    <h3 class="box-title"> <b>Earned Leave Credit</b></h3>
+                    <h3 class="box-title">Earned Leave Credit</h3>
                 </div>
                 <div class="box-body" id="idELStatus">
                     <div class="row">
@@ -67,7 +67,7 @@ else
             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                 <span aria-hidden="true">x</span>
             </button>
-            Earned leave has been already credited.
+            Previous Earned Leave Credit was processed till: @ViewBag.lastCreditRun
         </div>
     }
     else
@@ -78,7 +78,7 @@ else
                 <form id="frmexportEL" method="post" action='@Url.Action("ExportExcelEarnedLeaveCreditDetails")'>
                     <div class="box-footer">
                         <div class="col-sm-10">
-                            Earned Leave Last Credit Run: <b>@ViewBag.lastCreditRun </b>
+                            Previous Earned Leave Credit was processed till: <b>@ViewBag.lastCreditRun </b>
                         </div>
                         <div class="col-sm-2">
                             <input type='submit' class="btn btn-primary" value='EXPORT TO EXCEL' onclick="return exportExcelEarnedLeaveDetails()" />
@@ -99,7 +99,7 @@ else
         <button type="button" class="close" data-dismiss="alert" aria-label="Close">
             <span aria-hidden="true">x</span>
         </button>
-        Earned leave has been credited from @ViewBag.CurrentRun
+        Earned leave has been credited for @ViewBag.CurrentRun
     </div>
 
 

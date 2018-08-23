@@ -409,7 +409,7 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
             bool isCurrentMonth = DateTime.Now.Month == ellastCreditRunMonth.Month;
             if (isCurrentMonth)
             {
-                ViewBag.lastCreditRun = lastCreditRun;
+                ViewBag.lastCreditRun = lastCreditRun.ToString("MMM-yyyy");
                 ViewBag.CurrentRun = null;
             }
             else
