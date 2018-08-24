@@ -511,7 +511,7 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
                          LeaveBalanceId = l.LeaveBalanceId
                      }).ToList();
 
-            result=UpdateLeaveBalance(ELCreditList);
+            result=UpdateLeaveBalance(ELCreditList,true);
             //using (var client = new EmployeeLeaveBalanceClient())
             //{
             //    result = client.UpdateEarnedLeavelastCreditRun(loginUserId, lastCreditRun);
@@ -519,7 +519,7 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
             return Json(result, JsonRequestBehavior.AllowGet);
         }
 
-        public string UpdateLeaveBalance(List<EmployeeLeaveBalanceDetails> lst)
+        public string UpdateLeaveBalance(List<EmployeeLeaveBalanceDetails> lst, bool isElCredit = false)
         {
             string result = "";
             try
@@ -527,7 +527,7 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
                 using (var client = new EmployeeLeaveBalanceClient())
                 {
                     long LoginUserId = this.UserId;
-                    result = client.UpdateLeaveBalance(lst, LoginUserId);
+                    result = client.UpdateLeaveBalance(lst, LoginUserId, isElCredit);
                 }
 
                 EmailHelper emailHelper = new EmailHelper();

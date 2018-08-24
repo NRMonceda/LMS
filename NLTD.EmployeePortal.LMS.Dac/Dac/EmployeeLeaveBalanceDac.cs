@@ -69,7 +69,7 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
             return retModel;
         }
 
-        public string UpdateLeaveBalance(List<EmployeeLeaveBalanceDetails> empLeaveBalanceDetails, Int64 LoginUserId)
+        public string UpdateLeaveBalance(List<EmployeeLeaveBalanceDetails> empLeaveBalanceDetails, Int64 LoginUserId,bool isElCredit=false)
         {
             try
             {
@@ -93,12 +93,24 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
                     {
                         using (var transaction = context.Database.BeginTransaction())
                         {
+                            int creditYear = Convert.ToDateTime(context.LeaveType.Where(x => x.Type == "Earned Leave").FirstOrDefault().lastCreditRun).Year;
+
                             foreach (var item in empLeaveBalanceDetails)
                             {
                                 if (item.NoOfDays > 0)
                                 {
-                                    EmployeeLeaveBalance leaveBalance = context.EmployeeLeaveBalance.Where(x => x.UserId == item.UserId && x.LeaveTypeId == item.LeaveTypeId
-                                    && x.LeaveBalanceId == item.LeaveBalanceId && x.Year == DateTime.Now.Year).FirstOrDefault();
+                                    EmployeeLeaveBalance leaveBalance;
+                                    if (isElCredit == false)
+                                    {
+                                        leaveBalance = context.EmployeeLeaveBalance.Where(x => x.UserId == item.UserId && x.LeaveTypeId == item.LeaveTypeId
+                                        && x.LeaveBalanceId == item.LeaveBalanceId && x.Year == DateTime.Now.Year).FirstOrDefault();
+                                    }
+                                    else
+                                    {
+                                        leaveBalance = context.EmployeeLeaveBalance.Where(x => x.UserId == item.UserId && x.LeaveTypeId == item.LeaveTypeId
+                                        && x.LeaveBalanceId == item.LeaveBalanceId && x.Year == creditYear).FirstOrDefault();                                       
+                                        
+                                    }                                    
 
                                     if (leaveBalance != null)
                                     {
@@ -112,7 +124,14 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
                                     {
                                         leaveBalance = new EmployeeLeaveBalance();
                                         leaveBalance.UserId = Convert.ToInt64(item.UserId);
-                                        leaveBalance.Year = DateTime.Now.Year;
+                                        if (isElCredit == false)
+                                        {
+                                            leaveBalance.Year = DateTime.Now.Year;
+                                        }
+                                        else
+                                        {                                            
+                                            leaveBalance.Year = creditYear;
+                                        }
                                         leaveBalance.LeaveTypeId = Convert.ToInt64(item.LeaveTypeId);
                                         leaveBalance.TotalDays = item.TotalDays;
                                         leaveBalance.LeaveTakenDays = 0;
