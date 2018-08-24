@@ -409,12 +409,12 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
             bool isCurrentMonth = DateTime.Now.Month == ellastCreditRunMonth.Month;
             if (isCurrentMonth)
             {
-                ViewBag.lastCreditRun = lastCreditRun.ToString("MMM-yyyy");
+                ViewBag.lastCreditRun = lastCreditRun.AddMonths(-1).ToString("MMM-yyyy");
                 ViewBag.CurrentRun = null;
             }
             else
             {
-                ViewBag.lastCreditRun = lastCreditRun.ToString("MMM-yyyy");
+                ViewBag.lastCreditRun = lastCreditRun.AddMonths(-1).ToString("MMM-yyyy");
                 ViewBag.CurrentRun = GetCurrentRunforEL(ellastCreditRunMonth.ToString("MMM-yyyy"));
             }
             if (this.IsAuthorized == "NoAuth")
@@ -430,7 +430,7 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
 
         public ActionResult GetEarnedLeaveMasterDetail()
         {
-            IList<EmployeeProfile> lstProfile = GetEmployeeELData();
+            IList<ElCreditModel> lstProfile = GetEmployeeELData();
             return PartialView("EarnedLeaveCreditPartial", lstProfile);
         }
 
@@ -459,9 +459,9 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
             return currentRun;
         }
 
-        public IList<EmployeeProfile> GetEmployeeELData()
+        public IList<ElCreditModel> GetEmployeeELData()
         {
-            IList<EmployeeProfile> lstProfile = new List<EmployeeProfile>();
+            IList<ElCreditModel> lstProfile = new List<ElCreditModel>();
             DateTime lastCreditRun = GetlastCreditRunforEL();
             using (var client = new EmployeeClient())
             {
@@ -472,13 +472,13 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
 
         public ActionResult ExportExcelEarnedLeaveCreditDetails()
         {
-            IList<EmployeeProfile> lstProfile = GetEmployeeELData();
-            List<EmployeeProfile> excelData = new List<EmployeeProfile>();
+            IList<ElCreditModel> lstProfile = GetEmployeeELData();
+            List<ElCreditModel> excelData = new List<ElCreditModel>();
             excelData = lstProfile.ToList();
             if (excelData.Count > 0)
             {
-                string[] columns = { "EmployeeId", "Name", "DOJ", "ConfirmationDate", "CurrentEL", "ELCredit", "NewELBalance" };
-                byte[] filecontent = ExcelExportHelper.ExportPermissionsExcel(excelData, "", false, columns);
+                string[] columns = { "Emp Id", "Name", "Joining Date", "Confirmation Date", "Existing EL Balance", "EL Credit", "Total EL Balance" };
+                byte[] filecontent = ExcelExportHelper.ExportExcelELCredit(excelData, "", false, columns);
                 return File(filecontent, ExcelExportHelper.ExcelContentType, "ELCreditReport_" + System.DateTime.Now + ".xlsx");
             }
             else

@@ -227,9 +227,9 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
             return result;
         }
 
-        public IList<EmployeeProfile> GetEmployeeProfilesforEL(DateTime lastCreditRun)
+        public IList<ElCreditModel> GetEmployeeProfilesforEL(DateTime lastCreditRun)
         {
-            IList<EmployeeProfile> empProfileModel = new List<EmployeeProfile>();
+            IList<ElCreditModel> empProfileModel = new List<ElCreditModel>();
             DateTime toDate = DateTime.Now.AddMonths(-1);
             try
             {
@@ -247,7 +247,7 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
                                       from lb in leaveBal.DefaultIfEmpty()
                                       where e.IsActive == true
                                       orderby e.FirstName
-                                      select new EmployeeProfile
+                                      select new ElCreditModel
                                       {
                                           UserId = e.UserId,
                                           EmployeeId = e.EmployeeId,

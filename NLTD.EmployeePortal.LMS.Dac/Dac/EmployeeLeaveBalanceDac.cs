@@ -150,7 +150,7 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
 
                                 if (leaveType != null)
                                 {
-                                    leaveType.lastCreditRun = curDate.AddMonths(1).AddDays(-1);
+                                    leaveType.lastCreditRun = System.DateTime.Now;
                                     leaveType.ModifiedBy = LoginUserId;
                                     leaveType.Modifiedon = System.DateTime.Now;
                                     isSaved = context.SaveChanges();

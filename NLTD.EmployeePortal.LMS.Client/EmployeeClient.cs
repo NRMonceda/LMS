@@ -101,7 +101,7 @@ namespace NLTD.EmployeePortal.LMS.Client
             }
         }
 
-        public IList<EmployeeProfile> GetEmployeeProfilesforEL(DateTime lastCreditRun)
+        public IList<ElCreditModel> GetEmployeeProfilesforEL(DateTime lastCreditRun)
         {
             using (IEmployeeHelper helper = new EmployeeHelper())
             {
