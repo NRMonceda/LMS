@@ -69,7 +69,7 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
             return retModel;
         }
 
-        public string UpdateLeaveBalance(List<EmployeeLeaveBalanceDetails> empLeaveBalanceDetails, Int64 LoginUserId,bool isElCredit=false)
+        public string UpdateLeaveBalance(List<EmployeeLeaveBalanceDetails> empLeaveBalanceDetails, Int64 LoginUserId, bool isElCredit = false)
         {
             try
             {
@@ -108,9 +108,8 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
                                     else
                                     {
                                         leaveBalance = context.EmployeeLeaveBalance.Where(x => x.UserId == item.UserId && x.LeaveTypeId == item.LeaveTypeId
-                                        && x.LeaveBalanceId == item.LeaveBalanceId && x.Year == creditYear).FirstOrDefault();                                       
-                                        
-                                    }                                    
+                                        && x.LeaveBalanceId == item.LeaveBalanceId && x.Year == creditYear).FirstOrDefault();
+                                    }
 
                                     if (leaveBalance != null)
                                     {
@@ -129,7 +128,7 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
                                             leaveBalance.Year = DateTime.Now.Year;
                                         }
                                         else
-                                        {                                            
+                                        {
                                             leaveBalance.Year = creditYear;
                                         }
                                         leaveBalance.LeaveTypeId = Convert.ToInt64(item.LeaveTypeId);
@@ -173,8 +172,7 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
                                     leaveType.ModifiedBy = LoginUserId;
                                     leaveType.Modifiedon = System.DateTime.Now;
                                     isSaved = context.SaveChanges();
-
-                                }                               
+                                }
                             }
                             if (isSaved > 0)
                             {
@@ -201,7 +199,5 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
                 return ex.Message;
             }
         }
-
-        
     }
 }

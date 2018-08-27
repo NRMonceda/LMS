@@ -32,6 +32,7 @@ namespace NLTD.EmployeePortal.LMS.Common.DisplayModel
         {
             get; set;
         }
+
         public string Reason { get; set; }
 
         public string Status { get; set; }

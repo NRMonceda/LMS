@@ -28,6 +28,5 @@ namespace NLTD.EmployeePortal.LMS.Client
                 return helper.UpdateLeaveBalance(empLeaveBalanceDetails, LoginUserId, isElCredit);
             }
         }
-        
     }
 }

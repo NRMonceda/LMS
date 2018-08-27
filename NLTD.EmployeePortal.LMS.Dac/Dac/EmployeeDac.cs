@@ -240,9 +240,9 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
                 {
                     var empProfile = (from e in context.Employee
                                       join elb in context.EmployeeLeaveBalance on
-                                      new {p1 = e.UserId, p2 = year, p3 = leaveTypeId }
+                                      new { p1 = e.UserId, p2 = year, p3 = leaveTypeId }
                                       equals
-                                      new {p1 = elb.UserId, p2 = elb.Year , p3=elb.LeaveTypeId}
+                                      new { p1 = elb.UserId, p2 = elb.Year, p3 = elb.LeaveTypeId }
                                       into leaveBal
                                       from lb in leaveBal.DefaultIfEmpty()
                                       where e.IsActive == true
@@ -297,7 +297,7 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
                 {
                     elCredit = GetMonthDifference(toDate, fromDate);
                 }
-                else
+                else if (toDate > confirmationDate)
                 {
                     if (Convert.ToInt64(confirmationDate.Day) > 15)
                         elCredit = GetMonthDifference(toDate, confirmationDate) - 1;
