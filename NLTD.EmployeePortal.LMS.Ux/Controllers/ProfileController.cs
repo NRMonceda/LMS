@@ -12,6 +12,7 @@ using System.Linq;
 using System.Net.Mail;
 using System.Text.RegularExpressions;
 using System.Web.Mvc;
+using Hangfire;
 
 namespace NLTD.EmployeePortal.LMS.Ux.Controllers
 {
@@ -531,15 +532,15 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
                 }
 
                 EmailHelper emailHelper = new EmailHelper();
-                #if DEBUG
+                //#if DEBUG
                 try
                 {
                     emailHelper.SendEmailforAddLeave(lst);
                 }
                 catch { }
-                #else
-		            BackgroundJob.Enqueue(() => emailHelper.SendEmailforAddLeave(lst));
-                #endif
+              //  #else
+		            //BackgroundJob.Enqueue(() => emailHelper.SendEmailforAddLeave(lst));
+              //  #endif
             }
             catch
             {

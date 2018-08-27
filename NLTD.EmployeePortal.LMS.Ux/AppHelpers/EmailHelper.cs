@@ -1,4 +1,5 @@
 ﻿using Elmah;
+using Hangfire;
 using NLTD.EmployeePortal.LMS.Client;
 using NLTD.EmployeePortal.LMS.Common.DisplayModel;
 using System;
@@ -14,15 +15,17 @@ namespace NLTD.EmployeePortal.LMS.Ux.AppHelpers
 {
     public class EmailHelper
     {
-        private string mailUserName = ConfigurationManager.AppSettings["UserName"];
-        private string mailHost = ConfigurationManager.AppSettings["Host"];
-        private bool mailEnableSsl = Convert.ToBoolean(ConfigurationManager.AppSettings["EnableSsl"]);
-        private string mailPassword = ConfigurationManager.AppSettings["Password"];
-        private int mailPort = int.Parse(ConfigurationManager.AppSettings["Port"]);
-        private string mailBaseUrl = ConfigurationManager.AppSettings["LMSUrl"];
+        string mailBaseUrlBody = ConfigurationManager.AppSettings["LMSUrl"];
 
-        private void SendHtmlFormattedEmail(string recepientEmail, IList<string> ccEmail, string subject, string body)
+        public void SendHtmlFormattedEmail(string recepientEmail, IList<string> ccEmail, string subject, string body)
         {
+            string mailUserName = ConfigurationManager.AppSettings["UserName"];
+            string mailHost = ConfigurationManager.AppSettings["Host"];
+            bool mailEnableSsl = Convert.ToBoolean(ConfigurationManager.AppSettings["EnableSsl"]);
+            string mailPassword = ConfigurationManager.AppSettings["Password"];
+            int mailPort = int.Parse(ConfigurationManager.AppSettings["Port"]);
+            string mailBaseUrl = ConfigurationManager.AppSettings["LMSUrl"];
+
             using (MailMessage mailMessage = new MailMessage())
             {
                 mailMessage.From = new MailAddress(mailUserName);
@@ -45,7 +48,7 @@ namespace NLTD.EmployeePortal.LMS.Ux.AppHelpers
                 smtp.UseDefaultCredentials = true;
                 smtp.Credentials = NetworkCred;
                 smtp.Port = mailPort;
-                smtp.Send(mailMessage);
+                smtp.Send(mailMessage);                
             }
         }
 
@@ -80,7 +83,7 @@ namespace NLTD.EmployeePortal.LMS.Ux.AppHelpers
             body = body.Replace("{Description}", description);
             body = body.Replace("{Reason}", reason);
             body = body.Replace("{ApproverComments}", approverComments);
-            body = body.Replace("{ManageLink}", mailBaseUrl + "/Leaves/ManageLeaveRequest");
+            body = body.Replace("{ManageLink}", mailBaseUrlBody + "/Leaves/ManageLeaveRequest");
 
             return body;
         }
@@ -109,7 +112,7 @@ namespace NLTD.EmployeePortal.LMS.Ux.AppHelpers
             return body;
         }
 
-        public void SendEmail(Int64 leaveId, string actionName)
+        public void SendRequestEmail(Int64 leaveId, string actionName)
         {
             try
             {
@@ -142,7 +145,9 @@ namespace NLTD.EmployeePortal.LMS.Ux.AppHelpers
 
                 body = this.PopulateBody(helloUser, description, mdl.RequestFor, mdl.EmpId, mdl.LeaveTypeText, mdl.Date, mdl.Duration, mdl.Reason, mdl.ReportingToName, mdl.ApproverComments, actionName);
 
-                this.SendHtmlFormattedEmail(mdl.ToEmailId, mdl.CcEmailIds, "LMS - Request from " + mdl.RequestFor + " - " + actionName, body);
+
+                 SendEmail(mdl.ToEmailId, mdl.CcEmailIds, "LMS - Request from " + mdl.RequestFor + " - " + actionName, body);
+                
             }
             catch (Exception ex)
             {
@@ -150,6 +155,15 @@ namespace NLTD.EmployeePortal.LMS.Ux.AppHelpers
                 Elmah.ErrorLog.GetDefault(null).Log(new Elmah.Error(ex));
                 throw;
             }
+        }
+
+        public void SendEmail(string recepientEmail, IList<string> ccEmail, string subject, string body)
+        {
+#if DEBUG
+            SendHtmlFormattedEmail(mdl.ToEmailId, mdl.CcEmailIds, "LMS - Request from " + mdl.RequestFor + " - " + actionName, body);
+#else
+            BackgroundJob.Enqueue(() => this.SendHtmlFormattedEmail(recepientEmail, ccEmail, subject, body));
+#endif
         }
 
         public void SendEmailforAddLeave(List<EmployeeLeaveBalanceDetails> lst)
@@ -177,7 +191,9 @@ namespace NLTD.EmployeePortal.LMS.Ux.AppHelpers
                             string body = string.Empty;
                             string transaction = lst[i].CreditOrDebit == "C" ? "Credit" : "Debit";
                             body = this.PopulateBodyforAddLeave(mdl.RequestFor, description, mdl.EmpId, mdl.LeaveTypeText, lst[i].BalanceDays.ToString(), transaction, lst[i].NoOfDays.ToString(), lst[i].TotalDays.ToString(), lst[i].Remarks);
-                            this.SendHtmlFormattedEmail(mdl.RequestorEmailId, mdl.CcEmailIds, "LMS - " + mdl.RequestFor + " - " + mdl.LeaveTypeText + " Updated", body);
+
+                            SendEmail(mdl.RequestorEmailId, mdl.CcEmailIds, "LMS - " + mdl.RequestFor + " - " + mdl.LeaveTypeText + " Updated", body);
+                            
                         }
                     }
                 }
