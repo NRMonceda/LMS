@@ -138,7 +138,7 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
 
             for (int i = 0; i < ShiftQueryModelList.Count(); i++)
             {
-                decimal permissionCountOfficial = 0, permissionCountPersonal = 0, LeaveDayQty = 0, WorkFromHomeDayQty = 0; 
+                decimal permissionCountOfficial = 0, permissionCountPersonal = 0, LeaveDayQty = 0, WorkFromHomeDayQty = 0;
                 TimeSheetModel TimeSheetModelObj = new TimeSheetModel();
                 DateTime shiftFromDateTime = ShiftQueryModelList[i].ShiftDate.Add(ShiftQueryModelList[i].ShiftFromtime.Add(new TimeSpan(-BeforeShiftBuffer, 0, 0)));
                 DateTime shiftEndDateTime = ShiftQueryModelList[i].ShiftDate.Add(ShiftQueryModelList[i].ShiftTotime.Add(new TimeSpan(AfterShiftBuffer, 0, 0)));
@@ -177,7 +177,6 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
                         }
                     }
 
-
                     if (employeeLeaveList.Select(e => e.LeaveType == PersonalPermisionLabel).Count() > 0)
                     {
                         foreach (var permissionTime in employeeLeaveList)
@@ -186,7 +185,6 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
                             {
                                 permissionCountPersonal += permissionTime.PermissionCount;
                             }
-
                         }
                     }
 
@@ -293,7 +291,6 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
                 TimeSheetModelObj.WorkFromHomeDayQty = WorkFromHomeDayQty;
                 TimeSheetModelObj.PermissionCount = permissionCountPersonal;
 
-
                 TimeSheetModelObj.permissionCountOfficial = permissionCountOfficial;
                 TimeSheetModelObj.permissionCountPersonal = permissionCountPersonal;
 
@@ -341,7 +338,7 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
 
             string LMSPermissionStatus = string.Empty;
             string LMSLeaveStatus = string.Empty;
-            string getLMSStatus = string.Empty;           
+            string getLMSStatus = string.Empty;
 
             try
             {
@@ -383,7 +380,6 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
                                     {
                                         LMSPermissionStatus = LMSPermissionStatus + ", OT: " + Status.PermissionCount + "hrs";
                                     }
-
                                 }
                             }
                             else
@@ -411,7 +407,7 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
                         }
                     }
                 }
-                getLMSStatus = LMSLeaveStatus + (LMSLeaveStatus.Length > 0 && LMSPermissionStatus.Length > 0 ? ", " : "") + LMSPermissionStatus;                
+                getLMSStatus = LMSLeaveStatus + (LMSLeaveStatus.Length > 0 && LMSPermissionStatus.Length > 0 ? ", " : "") + LMSPermissionStatus;
             }
             catch (Exception)
             {

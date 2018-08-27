@@ -9,6 +9,5 @@ namespace NLTD.EmployeePortal.LMS.Repository
         IList<LeaveBalanceEmpProfile> GetLeaveBalanceEmpProfile(Int64 UserId);
 
         string UpdateLeaveBalance(List<EmployeeLeaveBalanceDetails> empLeaveBalanceDetails, Int64 LoginUserId, bool isElCredit = false);
-        
     }
 }

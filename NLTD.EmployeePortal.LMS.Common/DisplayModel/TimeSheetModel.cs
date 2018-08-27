@@ -30,7 +30,6 @@ namespace NLTD.EmployeePortal.LMS.Common.DisplayModel
 
         public decimal PermissionCount { get; set; }
 
-        public decimal WorkFromHomeDayQty    { get; set; }
-
+        public decimal WorkFromHomeDayQty { get; set; }
     }
 }
