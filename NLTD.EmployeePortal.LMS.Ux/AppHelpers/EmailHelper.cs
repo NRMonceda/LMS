@@ -160,7 +160,7 @@ namespace NLTD.EmployeePortal.LMS.Ux.AppHelpers
         public void SendEmail(string recepientEmail, IList<string> ccEmail, string subject, string body)
         {
 #if DEBUG
-            SendHtmlFormattedEmail(mdl.ToEmailId, mdl.CcEmailIds, "LMS - Request from " + mdl.RequestFor + " - " + actionName, body);
+            SendHtmlFormattedEmail(recepientEmail, ccEmail, subject, body);
 #else
             BackgroundJob.Enqueue(() => this.SendHtmlFormattedEmail(recepientEmail, ccEmail, subject, body));
 #endif
