@@ -19,37 +19,46 @@ namespace NLTD.EmployeePortal.LMS.Ux.AppHelpers
 
         public void SendHtmlFormattedEmail(string recepientEmail, IList<string> ccEmail, string subject, string body)
         {
-            string mailUserName = ConfigurationManager.AppSettings["UserName"];
-            string mailHost = ConfigurationManager.AppSettings["Host"];
-            bool mailEnableSsl = Convert.ToBoolean(ConfigurationManager.AppSettings["EnableSsl"]);
-            string mailPassword = ConfigurationManager.AppSettings["Password"];
-            int mailPort = int.Parse(ConfigurationManager.AppSettings["Port"]);
-            string mailBaseUrl = ConfigurationManager.AppSettings["LMSUrl"];
-
-            using (MailMessage mailMessage = new MailMessage())
+            try
             {
-                mailMessage.From = new MailAddress(mailUserName);
-                mailMessage.Subject = subject;
-                mailMessage.Body = body;
-                mailMessage.IsBodyHtml = true;
-                mailMessage.To.Add(new MailAddress(recepientEmail));
+                string mailUserName = ConfigurationManager.AppSettings["UserName"];
+                string mailHost = ConfigurationManager.AppSettings["Host"];
+                bool mailEnableSsl = Convert.ToBoolean(ConfigurationManager.AppSettings["EnableSsl"]);
+                string mailPassword = ConfigurationManager.AppSettings["Password"];
+                int mailPort = int.Parse(ConfigurationManager.AppSettings["Port"]);
+                string mailBaseUrl = ConfigurationManager.AppSettings["LMSUrl"];
 
-                foreach (var item in ccEmail)
+                using (MailMessage mailMessage = new MailMessage())
                 {
-                    mailMessage.CC.Add(item);
-                }
+                    mailMessage.From = new MailAddress(mailUserName);
+                    mailMessage.Subject = subject;
+                    mailMessage.Body = body;
+                    mailMessage.IsBodyHtml = true;
+                    mailMessage.To.Add(new MailAddress(recepientEmail));
 
-                SmtpClient smtp = new SmtpClient();
-                smtp.Host = mailHost;
-                smtp.EnableSsl = mailEnableSsl;
-                System.Net.NetworkCredential NetworkCred = new System.Net.NetworkCredential();
-                NetworkCred.UserName = mailUserName;
-                NetworkCred.Password = mailPassword;
-                smtp.UseDefaultCredentials = true;
-                smtp.Credentials = NetworkCred;
-                smtp.Port = mailPort;
-                smtp.Send(mailMessage);                
+                    foreach (var item in ccEmail)
+                    {
+                        mailMessage.CC.Add(item);
+                    }
+
+                    SmtpClient smtp = new SmtpClient();
+                    smtp.Host = mailHost;
+                    smtp.EnableSsl = mailEnableSsl;
+                    System.Net.NetworkCredential NetworkCred = new System.Net.NetworkCredential();
+                    NetworkCred.UserName = mailUserName;
+                    NetworkCred.Password = mailPassword;
+                    smtp.UseDefaultCredentials = true;
+                    smtp.Credentials = NetworkCred;
+                    smtp.Port = mailPort;
+                    smtp.Send(mailMessage);
+                }
             }
+             catch (Exception ex)
+            {
+                LogError(ex);
+            }
+            finally { }
+        
         }
 
         private string PopulateBody(string userName, string description, string requestFor, string empId, string requestType, string range, string duration, string reason, string approverName, string approverComments, string actionName)
@@ -159,11 +168,21 @@ namespace NLTD.EmployeePortal.LMS.Ux.AppHelpers
 
         public void SendEmail(string recepientEmail, IList<string> ccEmail, string subject, string body)
         {
+            try
+            {
 #if DEBUG
-            SendHtmlFormattedEmail(recepientEmail, ccEmail, subject, body);
+                SendHtmlFormattedEmail(recepientEmail, ccEmail, subject, body);
 #else
-            BackgroundJob.Enqueue(() => this.SendHtmlFormattedEmail(recepientEmail, ccEmail, subject, body));
+            BackgroundJob.Enqueue(() => SendHtmlFormattedEmail(recepientEmail, ccEmail, subject, body));
+                
+
 #endif
+            }
+            catch(Exception ex)
+            {
+                LogError(ex);
+            }
+            finally { }
         }
 
         public void SendEmailforAddLeave(List<EmployeeLeaveBalanceDetails> lst)
@@ -205,7 +224,7 @@ namespace NLTD.EmployeePortal.LMS.Ux.AppHelpers
             }
         }
 
-        private void LogError(Exception ex, Int64 leaveId)
+        private void LogError(Exception ex, Int64 leaveId=0)
         {
             try
             {
