@@ -57,7 +57,6 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
                                                            Name = (e.FirstName + " " + e.LastName)
                                                        }).OrderByDescending(e => e.InOutDate).ToList();
                     }
-
                 }
                 else
                 {
@@ -222,10 +221,8 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
                                                                    CardID = ea.CardID,
                                                                    InOut = (ea.InOut ? "Out" : "In"),
                                                                    Name = (d.UserId == 0 ? "Visiter" : (d.FirstName + " " + d.LastName))
-
-
                                                                }).OrderBy(e => e.CardID).ToList();
-                            }                            
+                            }
                         }
                     }
                 }

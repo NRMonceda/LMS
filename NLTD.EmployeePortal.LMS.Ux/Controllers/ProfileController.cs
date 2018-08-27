@@ -512,10 +512,6 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
                      }).ToList();
 
             result=UpdateLeaveBalance(ELCreditList,true);
-            //using (var client = new EmployeeLeaveBalanceClient())
-            //{
-            //    result = client.UpdateEarnedLeavelastCreditRun(loginUserId, lastCreditRun);
-            //}
             return Json(result, JsonRequestBehavior.AllowGet);
         }
 

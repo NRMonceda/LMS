@@ -60,7 +60,7 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
                                 }
                             }
                         }
-                        
+
                         var groupedLeaveList = transactionDetails.GroupBy(u => u.LeaveTypeId)
                                                               .Select(grp => new { LeaveTypeId = grp.Key, leaveTransactionHistoryModel = grp.ToList() })
                                                               .ToList();
@@ -156,11 +156,11 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
                                      EndDate = ld.LeaveDate,
                                      LeaveType = lt.Type,
                                      LeaveDayQty = ld.LeaveDayQty,
-                                     StartDateType=l.StartDateType,
-                                     EndDateType=l.EndDateType,
+                                     StartDateType = l.StartDateType,
+                                     EndDateType = l.EndDateType,
                                      LeaveTypeId = l.LeaveTypeId,
-                                     IsLeave=lt.IsLeave,
-                                     WorkFromHomeDayQty= ld.LeaveDayQty
+                                     IsLeave = lt.IsLeave,
+                                     WorkFromHomeDayQty = ld.LeaveDayQty
                                  }
                                  ).ToList();
 
@@ -176,12 +176,12 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
                                                               LeaveType = lt.Type,
                                                               TimeFrom = ld.TimeFrom,
                                                               TimeTo = ld.TimeTo,
-                                                              LeaveTypeId=l.LeaveTypeId,
-                                                              IsLeave=lt.IsLeave
+                                                              LeaveTypeId = l.LeaveTypeId,
+                                                              IsLeave = lt.IsLeave
                                                           }
                                  ).ToList();
 
-                    PermissionList.ForEach(pl => pl.PermissionCount = Math.Round((decimal)(lv.calculateDuration(pl.TimeFrom, pl.TimeTo).TotalMinutes) / 60,2));
+                    PermissionList.ForEach(pl => pl.PermissionCount = Math.Round((decimal)(lv.calculateDuration(pl.TimeFrom, pl.TimeTo).TotalMinutes) / 60, 2));
 
                     if (PermissionList.Count > 0)
                         leaveList.AddRange(PermissionList);

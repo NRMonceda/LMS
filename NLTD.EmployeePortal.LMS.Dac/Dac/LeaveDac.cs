@@ -603,7 +603,6 @@ namespace NLTD.EmployeePortal.LMS.Dac
                                   Comments = l.Comments,
                                   PermissionInMonth = (l.isTimeBased == false) ? "" : ReturnPermissionHoursPerMonth(l.LeaveFromDate.Month, l.UserId, l.LeaveTypeId),
                                   AppliedByName = e.FirstName + " " + e.LastName
-                                  
                               }).ToList();
 
                 var pdLeaveId = (from items in LeaveItems
@@ -1763,7 +1762,6 @@ namespace NLTD.EmployeePortal.LMS.Dac
             return permissions;
         }
 
-
         public IList<PermissionDetailsModel> GetOverTimePermissionDetail(Int64? paramUserId, string reqUsr, DateTime? startDate, DateTime? endDate, bool OnlyReportedToMe, Int64 LeadId)
         {
             IList<PermissionDetailsModel> permissions = new List<PermissionDetailsModel>();
@@ -1884,6 +1882,7 @@ namespace NLTD.EmployeePortal.LMS.Dac
             }
             return permissions;
         }
+
         public string ReturnMonthName(int month)
         {
             switch (month)
@@ -2417,11 +2416,12 @@ namespace NLTD.EmployeePortal.LMS.Dac
                 retString = "Valid";
             return retString;
         }
+
         public IList<string> FilterOptoutEmail(IList<string> lstCCEmail, long? reportingToUserId)
         {
             try
             {
-                if (lstCCEmail.Count > 0 && reportingToUserId!=null)
+                if (lstCCEmail.Count > 0 && reportingToUserId != null)
                 {
                     IList<string> filteredCCEmail = new List<string>();
                     string onlyDirectAlerts = ConfigurationManager.AppSettings["OnlyDirectAlerts"].ToString();
@@ -2445,6 +2445,7 @@ namespace NLTD.EmployeePortal.LMS.Dac
 
             return lstCCEmail;
         }
+
         public EmailDataModel GetEmailData(Int64 leaveId, string actionName)
         {
             EmailDataModel retMdl = new EmailDataModel();
@@ -2507,7 +2508,7 @@ namespace NLTD.EmployeePortal.LMS.Dac
                     }
 
                     //optout
-                    qry.CcEmailIds=FilterOptoutEmail(qry.CcEmailIds, qry.ReportingToId);
+                    qry.CcEmailIds = FilterOptoutEmail(qry.CcEmailIds, qry.ReportingToId);
 
                     if (qry.IsTimeBased)
                     {
@@ -2586,7 +2587,7 @@ namespace NLTD.EmployeePortal.LMS.Dac
                     {
                         qry.CcEmailIds.Add(item.EmailId);
                     }
-                    //optout                    
+                    //optout
                     qry.CcEmailIds = FilterOptoutEmail(qry.CcEmailIds, qry.ReportingToId);
 
                     retMdl = qry;

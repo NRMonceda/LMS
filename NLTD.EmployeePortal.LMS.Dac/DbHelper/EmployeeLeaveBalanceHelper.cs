@@ -28,6 +28,5 @@ namespace NLTD.EmployeePortal.LMS.Dac.DbHelper
                 return dac.UpdateLeaveBalance(empLeaveBalanceDetails, LoginUserId, isElCredit);
             }
         }
-       
     }
 }

@@ -1441,6 +1441,8 @@ function loadEarnedLeaveMasterDetails()
     $("#divForEarnedLeaveCreditAllocation").load('/Profile/GetEarnedLeaveMasterDetail',
         function () {
             $("#earnedLeaveDetail").dataTable({
+                "paging": false,
+                aaSorting: [1, 'asc'],
                 columnDefs: [
                     { targets: 'no-sort', orderable: false }
                 ]
