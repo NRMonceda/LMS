@@ -186,13 +186,13 @@ namespace NLTD.EmployeePortal.LMS.Ux.AppHelpers
                                 mdl = client.GetEmailDataAddLeave(Convert.ToInt64(lst[i].UserId), leaveTypeId);
                             }
 
-                            description = "Your " + mdl.LeaveTypeText + " has been updated.";
+                            description = "Your " + mdl.LeaveTypeText + " balance has been updated.";
 
                             string body = string.Empty;
                             string transaction = lst[i].CreditOrDebit == "C" ? "Credit" : "Debit";
                             body = this.PopulateBodyforAddLeave(mdl.RequestFor, description, mdl.EmpId, mdl.LeaveTypeText, lst[i].BalanceDays.ToString(), transaction, lst[i].NoOfDays.ToString(), lst[i].TotalDays.ToString(), lst[i].Remarks);
 
-                            SendEmail(mdl.RequestorEmailId, mdl.CcEmailIds, "LMS - " + mdl.RequestFor + " - " + mdl.LeaveTypeText + " Updated", body);
+                            SendEmail(mdl.RequestorEmailId, mdl.CcEmailIds, "LMS - " + mdl.RequestFor + " - " + mdl.LeaveTypeText + " balance updated", body);
                             
                         }
                     }
