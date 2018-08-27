@@ -1,0 +1,81 @@
+﻿<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <style>
+        table {
+            font-family: Calibri;
+            font-size: 10pt;
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        td, th {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+        }
+
+        tr:nth-child(even) {
+            background-color: #dddddd;
+        }
+    </style>
+    <title>LMS Alert</title>
+</head>
+<body style="font-family:Calibri;font-size:10pt;">
+
+    <!--<div style="border-top:3px solid #22BCE5">&nbsp;</div>-->
+    <span>
+        Hello{HelloUser},<br /><br />
+        {Description}<br />
+    </span>
+
+    <table>
+
+        <tr>
+            <td>Name</td>
+            <td>{RequestFor}</td>
+        </tr>
+        <tr>
+            <td>Employee Id</td>
+            <td>{EmpId}</td>
+        </tr>
+        <tr>
+            <td>Leave Type</td>
+            <td>{LeaveType}</td>
+        </tr>
+        <tr>
+            <td>Existing Leave Balance</td>
+            <td>{LeaveBalance}</td>
+        </tr>
+        <tr>
+            <td>Transaction Type</td>
+            <td>{Transaction}</td>
+        </tr>
+        <tr>
+            <td>No of Days</td>
+            <td>{Days}</td>
+        </tr>
+        <tr>
+            <td>Total Leave Balance</td>
+            <td>{TotalBalance}</td>
+        </tr>
+        <tr>
+            <td>Remarks</td>
+            <td>{Remarks}</td>
+        </tr>
+    </table>
+
+    <br />    
+
+    <br />
+    <span>
+        Thanks
+        <br />
+        LMS
+
+        <br />
+        <br />
+        *** This is an automated message from LMS. Please do not reply to this email id. ***
+    </span>
+</body>
+</html>

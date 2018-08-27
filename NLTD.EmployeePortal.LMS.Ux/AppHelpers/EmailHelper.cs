@@ -101,7 +101,7 @@ namespace NLTD.EmployeePortal.LMS.Ux.AppHelpers
         {
             string body = string.Empty;
 
-            using (var stream = new FileStream(HostingEnvironment.MapPath("~/EmailTemplateAddLeave.html"), FileMode.Open, FileAccess.Read, FileShare.Read))
+            using (var stream = new FileStream(HostingEnvironment.MapPath("~/EmailTemplateCreditLeave.html"), FileMode.Open, FileAccess.Read, FileShare.Read))
             {
                 StreamReader reader = new StreamReader(stream);
                 body = reader.ReadToEnd();
@@ -173,8 +173,7 @@ namespace NLTD.EmployeePortal.LMS.Ux.AppHelpers
 #if DEBUG
                 SendHtmlFormattedEmail(recepientEmail, ccEmail, subject, body);
 #else
-            BackgroundJob.Enqueue(() => SendHtmlFormattedEmail(recepientEmail, ccEmail, subject, body));
-                
+            BackgroundJob.Enqueue(() => SendHtmlFormattedEmail(recepientEmail, ccEmail, subject, body));                
 
 #endif
             }

@@ -394,7 +394,6 @@
     <Content Include="css\LMS.css" />
     <Content Include="EmailCCTemplate.html" />
     <Content Include="EmailTemplate.html" />
-    <Content Include="EmailTemplateAddLeave.html" />
     <Content Include="EmailTemplateAddLeave_files\colorschememapping.xml" />
     <Content Include="EmailTemplateAddLeave_files\filelist.xml" />
     <Content Include="ErrorLog\ErrorLog.txt" />
@@ -665,6 +664,7 @@
     <Content Include="Scripts\site.js" />
     <Content Include="Scripts\site.min.js" />
     <Content Include="static\s.html" />
+    <Content Include="EmailTemplateCreditLeave.html" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
