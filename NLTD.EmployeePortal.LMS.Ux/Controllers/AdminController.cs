@@ -431,7 +431,7 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
             excelData = LeaveRequests.ToList();
             if (excelData.Count > 0)
             {
-                string[] columns = { "EmpId", "Name", "Month", "PermissionType", "PermissionDate", "TimeFrom", "TimeTo", "Duration",  "Reason", "Status", "ApproverComments" };
+                string[] columns = { "EmpId", "Name", "Month", "PermissionType", "PermissionDate", "TimeFrom", "TimeTo", "Duration", "Reason", "Status", "ApproverComments" };
                 byte[] filecontent = ExcelExportHelper.ExportPermissionsExcel(excelData, "", false, columns);
                 return File(filecontent, ExcelExportHelper.ExcelContentType, "PermissionsReport_" + System.DateTime.Now + ".xlsx");
             }
@@ -740,7 +740,7 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
             }
         }
 
-public ActionResult ExportAccessCardAttendanceToExcel(EmployeeAttendanceQueryModel EmployeeAttendanceQueryModelObj, string RequestLevelPerson)
+        public ActionResult ExportAccessCardAttendanceToExcel(EmployeeAttendanceQueryModel EmployeeAttendanceQueryModelObj, string RequestLevelPerson)
         {
             List<EmployeeAttendanceModel> excelData = GetAccessCardEmployeeAttendanceList(EmployeeAttendanceQueryModelObj.CardID.ToString(), (EmployeeAttendanceQueryModelObj.FromDate == DateTime.MinValue ? "" : EmployeeAttendanceQueryModelObj.FromDate.ToString()),
                 (EmployeeAttendanceQueryModelObj.ToDate == DateTime.MinValue ? "" : EmployeeAttendanceQueryModelObj.ToDate.ToString()), RequestLevelPerson).ToList();
@@ -765,6 +765,7 @@ public ActionResult ExportAccessCardAttendanceToExcel(EmployeeAttendanceQueryMod
                 return View("~/Views/Attendance/AccessCardAttendance.cshtml", data);
             }
         }
+
         public ActionResult MyOverTimePermissions()
         {
             PermissionQueryModel mdl = new PermissionQueryModel();
@@ -887,7 +888,7 @@ public ActionResult ExportAccessCardAttendanceToExcel(EmployeeAttendanceQueryMod
             excelData = LeaveRequests.ToList();
             if (excelData.Count > 0)
             {
-                string[] columns = { "Emp Id", "Name", "Month", "Over Time Date", "Time From", "Time To", "Duration",  "Reason", "Status", "Approver Comments", "Reporting Manager" };
+                string[] columns = { "Emp Id", "Name", "Month", "Over Time Date", "Time From", "Time To", "Duration", "Reason", "Status", "Approver Comments", "Reporting Manager" };
                 byte[] filecontent = ExcelExportHelper.ExportOverTimeExcel(excelData, "", false, columns);
                 return File(filecontent, ExcelExportHelper.ExcelContentType, "OverTimeReport_" + System.DateTime.Now + ".xlsx");
             }
@@ -899,6 +900,5 @@ public ActionResult ExportAccessCardAttendanceToExcel(EmployeeAttendanceQueryMod
                 return View("OverTimePermissions", qryMdl);
             }
         }
-        
     }
 }

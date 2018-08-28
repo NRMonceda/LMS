@@ -12,8 +12,7 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
         {
             //Nothing to implement...
         }
-
-        //Added by Tamil
+        
         public IList<LeaveBalanceEmpProfile> GetLeaveBalanceEmpProfile(Int64 userId)
         {
             IList<LeaveBalanceEmpProfile> retModel = new List<LeaveBalanceEmpProfile>();

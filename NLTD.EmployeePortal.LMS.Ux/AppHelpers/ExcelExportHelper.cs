@@ -147,6 +147,7 @@ namespace NLTD.EmployeePortal.LMS.Ux.AppHelpers
 
             return result;
         }
+
         public static byte[] ExportExcelELCredit(DataTable dataTable, string heading = "", bool showSrNo = false, params string[] columnsToTake)
         {
             byte[] result = null;
@@ -250,6 +251,7 @@ namespace NLTD.EmployeePortal.LMS.Ux.AppHelpers
 
             return result;
         }
+
         public static byte[] ExportExcel<T>(List<T> data, string Heading = "", bool showSlno = false, params string[] ColumnsToTake)
         {
             return ExportExcel(ListToDataTable<T>(data), Heading, showSlno, ColumnsToTake);
@@ -259,8 +261,6 @@ namespace NLTD.EmployeePortal.LMS.Ux.AppHelpers
         {
             return ExportExcelELCredit(ListToDataTable<T>(data), Heading, showSlno, ColumnsToTake);
         }
-
-
 
         public static byte[] ExportPermissionsExcel(DataTable dataTable, string heading = "", bool showSrNo = false, params string[] columnsToTake)
         {
@@ -1301,6 +1301,7 @@ namespace NLTD.EmployeePortal.LMS.Ux.AppHelpers
             }
             return result;
         }
+
         public static byte[] ExportAttendanceExcel(List<EmployeeAttendanceModel> data, string heading = "", bool showSrNo = false, params string[] columnsToTake)
         {
             byte[] result = null;

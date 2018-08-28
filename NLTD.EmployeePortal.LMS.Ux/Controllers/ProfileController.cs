@@ -1,4 +1,5 @@
-﻿using NLTD.EmployeePortal.LMS.Client;
+﻿using Hangfire;
+using NLTD.EmployeePortal.LMS.Client;
 using NLTD.EmployeePortal.LMS.Common.DisplayModel;
 using NLTD.EmployeePortal.LMS.Common.QueryModel;
 using NLTD.EmployeePortal.LMS.Dac;
@@ -12,7 +13,6 @@ using System.Linq;
 using System.Net.Mail;
 using System.Text.RegularExpressions;
 using System.Web.Mvc;
-using Hangfire;
 
 namespace NLTD.EmployeePortal.LMS.Ux.Controllers
 {
@@ -214,17 +214,6 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
             bool isValid = true;
             if (ModelState.IsValid)
             {
-                /*Commented on 4 Jan 2018 as Email Address and Corp Id are not mandatory.
-                if (employee.LogonId.Trim().Length < 5) {
-                    employee.ErrorMesage = "Logon Id should start with CORP\\";
-                    isValid = false;
-                }
-                else if (employee.LogonId.Substring(0, 5).ToUpper() != "CORP\\") {
-                    employee.ErrorMesage = "Logon Id should start with CORP\\";
-                    isValid = false;
-                }
-                */
-
                 Regex regex = new Regex(@"^[\w!#$%&'*+\-/=?\^_`{|}~]+(\.[\w!#$%&'*+\-/=?\^_`{|}~]+)*" + "@" + @"((([\-\w]+\.)+[a-zA-Z]{2,4})|(([0-9]{1,3}\.){3}[0-9]{1,3}))$");
                 if (employee.EmailAddress != null)
                 {
@@ -368,7 +357,6 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
             return PartialView("EmployeeLmsProfileNamesPartial", lstProfile);
         }
 
-        //Added by Tamil
         public ActionResult SearchLeaveBalanceProfile()
         {
             EmployeeProfileSearchModel mdl = new EmployeeProfileSearchModel();
@@ -405,19 +393,9 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
         public ActionResult EarnedLeaveCredit()
         {
             DateTime lastCreditRun = GetlastCreditRunforEL();
+            ViewBag.CurrentRun = GetCurrentRunforEL(lastCreditRun);
+            ViewBag.lastCreditProcess = lastCreditRun.AddMonths(-1).ToString("MMM-yyyy");
 
-            DateTime ellastCreditRunMonth = lastCreditRun.AddDays(1);
-            bool isCurrentMonth = DateTime.Now.Month == ellastCreditRunMonth.Month;
-            if (isCurrentMonth)
-            {
-                ViewBag.lastCreditRun = lastCreditRun.AddMonths(-1).ToString("MMM-yyyy");
-                ViewBag.CurrentRun = null;
-            }
-            else
-            {
-                ViewBag.lastCreditRun = lastCreditRun.AddMonths(-1).ToString("MMM-yyyy");
-                ViewBag.CurrentRun = GetCurrentRunforEL(ellastCreditRunMonth.ToString("MMM-yyyy"));
-            }
             if (this.IsAuthorized == "NoAuth")
             {
                 Response.Redirect("~/Home/Unauthorized");
@@ -441,7 +419,7 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
             using (var context = new NLTDDbContext())
             {
                 List<LeaveTypesModel> LeaveTypes = (from l in context.LeaveType
-                                                    where l.Type== "Earned Leave"                                                    
+                                                    where l.Type == "Earned Leave"
                                                     select new LeaveTypesModel
                                                     {
                                                         lastCreditRun = l.lastCreditRun
@@ -451,12 +429,19 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
             return lastCreditRun;
         }
 
-        public static string GetCurrentRunforEL(string lastCreditRun)
+        public static string GetCurrentRunforEL(DateTime lastCreditRun)
         {
-            var today = DateTime.Today;
-            var month = new DateTime(today.Year, today.Month, 1);
-            var lastDate = month.AddDays(-1).ToString("MMM-yyyy", null);
-            string currentRun = lastCreditRun + " to " + lastDate;
+            string currentRun;
+            DateTime today = DateTime.Today;
+            if (today.Month == lastCreditRun.Month)
+            {
+                currentRun = "";
+            }
+            else
+            {
+                DateTime prevMonth = new DateTime(today.Year, today.Month, 1).AddDays(-1);
+                currentRun = lastCreditRun.ToString("MMM-yyyy") + " to " + prevMonth.ToString("MMM-yyyy");
+            }
             return currentRun;
         }
 
@@ -499,20 +484,20 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
 
             var lstProfile = GetEmployeeELData();
             var ELCreditList = (from l in lstProfile
-                     select new EmployeeLeaveBalanceDetails
-                     {
-                         UserId = l.UserId,
-                         CreditOrDebit = "C",
-                         LeaveTypeId = 2,
-                         EmployeeId = l.EmployeeId,
-                         BalanceDays = l.CurrentEL,
-                         NoOfDays = l.ELCredit,
-                         Remarks = "EL Credit",
-                         TotalDays = l.NewELBalance,
-                         LeaveBalanceId = l.LeaveBalanceId
-                     }).ToList();
+                                select new EmployeeLeaveBalanceDetails
+                                {
+                                    UserId = l.UserId,
+                                    CreditOrDebit = "C",
+                                    LeaveTypeId = 2,
+                                    EmployeeId = l.EmployeeId,
+                                    BalanceDays = l.CurrentEL,
+                                    NoOfDays = l.ELCredit,
+                                    Remarks = "EL Credit",
+                                    TotalDays = l.NewELBalance,
+                                    LeaveBalanceId = l.LeaveBalanceId
+                                }).ToList();
 
-            result=UpdateLeaveBalance(ELCreditList,true);
+            result = UpdateLeaveBalance(ELCreditList, true);
             return Json(result, JsonRequestBehavior.AllowGet);
         }
 
@@ -528,15 +513,11 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
                 }
 
                 EmailHelper emailHelper = new EmailHelper();
-                //#if DEBUG
                 try
                 {
                     emailHelper.SendEmailforAddLeave(lst);
                 }
                 catch { }
-              //  #else
-		            //BackgroundJob.Enqueue(() => emailHelper.SendEmailforAddLeave(lst));
-              //  #endif
             }
             catch
             {

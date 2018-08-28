@@ -61,13 +61,13 @@ else
             @ViewBag.ErrorMsg
         </div>
     }
-    else if (ViewBag.CurrentRun == null)
+    else if (ViewBag.CurrentRun == "")
     {
         <div class="alert alert-danger">
             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                 <span aria-hidden="true">x</span>
             </button>
-            Previous Earned Leave Credit was processed till: @ViewBag.lastCreditRun
+            Previous Earned Leave Credit was processed till: @ViewBag.lastCreditProcess
         </div>
     }
     else
@@ -78,7 +78,7 @@ else
                 <form id="frmexportEL" method="post" action='@Url.Action("ExportExcelEarnedLeaveCreditDetails")'>
                     <div class="box-footer">
                         <div class="col-sm-10">
-                            Previous Earned Leave Credit was processed till: <b>@ViewBag.lastCreditRun </b>
+                            Previous Earned Leave Credit was processed till: <b>@ViewBag.lastCreditProcess </b>
                         </div>
                         <div class="col-sm-2">
                             <input type='submit' class="btn btn-primary" value='EXPORT TO EXCEL' onclick="return exportExcelEarnedLeaveDetails()" />

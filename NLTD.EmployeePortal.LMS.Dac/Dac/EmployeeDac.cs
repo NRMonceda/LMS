@@ -231,6 +231,7 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
         {
             IList<ElCreditModel> empProfileModel = new List<ElCreditModel>();
             DateTime toDate = DateTime.Now.AddMonths(-1);
+            lastCreditRun = new DateTime(lastCreditRun.Year, lastCreditRun.Month, 1);
             try
             {
                 Int32 year = lastCreditRun.Year;
@@ -272,7 +273,7 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
                             }
                             else
                             {
-                                profile.ELCredit = GetELCredit(lastCreditRun.AddDays(1), toDate, Convert.ToDateTime(profile.ConfirmationDate));
+                                profile.ELCredit = GetELCredit(lastCreditRun, toDate, Convert.ToDateTime(profile.ConfirmationDate));
                                 profile.NewELBalance = profile.CurrentEL + profile.ELCredit;
                             }
                         }

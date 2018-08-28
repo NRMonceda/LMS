@@ -15,7 +15,7 @@ namespace NLTD.EmployeePortal.LMS.Ux.AppHelpers
 {
     public class EmailHelper
     {
-        string mailBaseUrlBody = ConfigurationManager.AppSettings["LMSUrl"];
+        private string mailBaseUrlBody = ConfigurationManager.AppSettings["LMSUrl"];
 
         public void SendHtmlFormattedEmail(string recepientEmail, IList<string> ccEmail, string subject, string body)
         {
@@ -53,12 +53,11 @@ namespace NLTD.EmployeePortal.LMS.Ux.AppHelpers
                     smtp.Send(mailMessage);
                 }
             }
-             catch (Exception ex)
+            catch (Exception ex)
             {
                 LogError(ex);
             }
             finally { }
-        
         }
 
         private string PopulateBody(string userName, string description, string requestFor, string empId, string requestType, string range, string duration, string reason, string approverName, string approverComments, string actionName)
@@ -154,9 +153,7 @@ namespace NLTD.EmployeePortal.LMS.Ux.AppHelpers
 
                 body = this.PopulateBody(helloUser, description, mdl.RequestFor, mdl.EmpId, mdl.LeaveTypeText, mdl.Date, mdl.Duration, mdl.Reason, mdl.ReportingToName, mdl.ApproverComments, actionName);
 
-
-                 SendEmail(mdl.ToEmailId, mdl.CcEmailIds, "LMS - Request from " + mdl.RequestFor + " - " + actionName, body);
-                
+                SendEmail(mdl.ToEmailId, mdl.CcEmailIds, "LMS - Request from " + mdl.RequestFor + " - " + actionName, body);
             }
             catch (Exception ex)
             {
@@ -173,11 +170,11 @@ namespace NLTD.EmployeePortal.LMS.Ux.AppHelpers
 #if DEBUG
                 SendHtmlFormattedEmail(recepientEmail, ccEmail, subject, body);
 #else
-            BackgroundJob.Enqueue(() => SendHtmlFormattedEmail(recepientEmail, ccEmail, subject, body));                
+            BackgroundJob.Enqueue(() => SendHtmlFormattedEmail(recepientEmail, ccEmail, subject, body));
 
 #endif
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 LogError(ex);
             }
@@ -211,19 +208,18 @@ namespace NLTD.EmployeePortal.LMS.Ux.AppHelpers
                             body = this.PopulateBodyforAddLeave(mdl.RequestFor, description, mdl.EmpId, mdl.LeaveTypeText, lst[i].BalanceDays.ToString(), transaction, lst[i].NoOfDays.ToString(), lst[i].TotalDays.ToString(), lst[i].Remarks);
 
                             SendEmail(mdl.RequestorEmailId, mdl.CcEmailIds, "LMS - " + mdl.RequestFor + " - " + mdl.LeaveTypeText + " balance updated", body);
-                            
                         }
                     }
                 }
             }
             catch (Exception ex)
-            {                
+            {
                 Elmah.ErrorLog.GetDefault(null).Log(new Elmah.Error(ex));
                 throw;
             }
         }
 
-        private void LogError(Exception ex, Int64 leaveId=0)
+        private void LogError(Exception ex, Int64 leaveId = 0)
         {
             try
             {
