@@ -478,11 +478,11 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
         public ActionResult UpdateEarnedLeaves()
         {
             string result = "";
-            DateTime curDate = DateTime.Now.AddMonths(-1).AddDays(1 - DateTime.Now.Day);
-            DateTime lastCreditRun = curDate.AddMonths(1).AddDays(-1);
-            long loginUserId = this.UserId;
+            DateTime lastCreditRun = GetlastCreditRunforEL();
+            string remarks = "EL Credit for " + GetCurrentRunforEL(lastCreditRun);
 
             var lstProfile = GetEmployeeELData();
+
             var ELCreditList = (from l in lstProfile
                                 select new EmployeeLeaveBalanceDetails
                                 {
@@ -492,7 +492,7 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
                                     EmployeeId = l.EmployeeId,
                                     BalanceDays = l.CurrentEL,
                                     NoOfDays = l.ELCredit,
-                                    Remarks = "EL Credit",
+                                    Remarks = remarks,
                                     TotalDays = l.NewELBalance,
                                     LeaveBalanceId = l.LeaveBalanceId
                                 }).ToList();

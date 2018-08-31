@@ -2423,7 +2423,6 @@ namespace NLTD.EmployeePortal.LMS.Dac
             {
                 if (lstCCEmail.Count > 0 && reportingToUserId != null)
                 {
-                    IList<string> filteredCCEmail = new List<string>();
                     string onlyDirectAlerts = ConfigurationManager.AppSettings["OnlyDirectAlerts"].ToString();
                     List<string> lstOptoutEmailAddress = onlyDirectAlerts.Split(',').ToList();
                     using (var context = new NLTDDbContext())
@@ -2434,7 +2433,6 @@ namespace NLTD.EmployeePortal.LMS.Dac
                         {
                             if (qryReportingTo.EmailAddress.ToUpper() != item.ToUpper())
                             {
-                                //qry.CcEmailIds.ToList().RemoveAll(o => o.Equals(item, StringComparison.OrdinalIgnoreCase));
                                 lstCCEmail.Remove(item);
                             }
                         }

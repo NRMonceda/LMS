@@ -105,17 +105,6 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
             }
 
             ReportClient reportClient = new ReportClient();
-            //if (!string.IsNullOrEmpty(Name))
-            //{
-            //    IEmployeeHelper EmployeeHelper = new EmployeeClient();
-            //    Int64 UserID = EmployeeHelper.GetUserId(Name);
-
-            //    if (UserID > 0)
-            //    {
-            //        lateAndEarlyRpt = EmployeeAttendanceHelperObj.GetMyTimeSheet(UserID, startDateFormatted, endDateFormatted);
-            //    }
-            //}
-            //else
             {
                 noOfLateInMonth = reportClient.GetLateReport(this.UserId, startDateFormatted, endDateFormatted, OnlyReportedToMe);
             }

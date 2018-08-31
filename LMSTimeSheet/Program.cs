@@ -32,15 +32,15 @@ namespace LMSTimeSheet
                 //Adding new TimeSheet Details
                 if (accessResults.Rows.Count > 0)
                 {
-                    WriteLog("Adding MSAccess " + accessResults.Rows.Count + " rows To LMS Database");
+                    WriteLog("Adding MS Access " + accessResults.Rows.Count + " rows To LMS Database");
 
                     BulkInsertToTimeSheet(lmsConnection, accessResults);
 
-                    WriteLog("Processed MSAccess " + accessResults.Rows.Count + " rows To LMS Database");
+                    WriteLog("Processed MS Access " + accessResults.Rows.Count + " rows To LMS Database");
                 }
                 else
                 {
-                    WriteLog("No MsAccessRecord for Processing Timesheet");
+                    WriteLog("No MS Access Record for Processing Timesheet");
                 }
 
                 WriteLog("Mapping Employee with Timesheet");
@@ -99,14 +99,14 @@ namespace LMSTimeSheet
 
         private static DataTable GetMsAccessDetails(string msAccessConnection, int lastUpdatedTransaction)
         {
-            WriteLog("Processing MsAccessDetails");
+            WriteLog("Processing MS Access Details");
 
             DataTable accessResults = new DataTable();
             using (OleDbConnection conn = new OleDbConnection(msAccessConnection))
             {
                 string strSqlquery = "";
 
-                WriteLog("Processing transactions from " + lastUpdatedTransaction + " onwards from MSAccess Database");
+                WriteLog("Processing transactions from " + lastUpdatedTransaction + " onwards from MS Access Database");
                 strSqlquery = "SELECT Trans.Tid, Trans.CARDID, Trans.Dt, CBool(Trans.InOut), NULL, Trans.Tid FROM Trans WHERE Trans.Tid > " + lastUpdatedTransaction;
 
                 OleDbCommand cmd = new OleDbCommand(strSqlquery, conn);

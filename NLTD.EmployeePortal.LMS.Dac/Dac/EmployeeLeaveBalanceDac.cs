@@ -72,8 +72,9 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
         {
             try
             {
-                int isSaved = 0; bool isAuthorizedRole = false;
-                DateTime curDate = DateTime.Now.AddMonths(-1).AddDays(1 - DateTime.Now.Day);
+                int isSaved = 0;
+                bool isAuthorizedRole = false;
+
                 using (var context = new NLTDDbContext())
                 {
                     var isAuthorized = (from e in context.Employee

@@ -26,7 +26,6 @@ namespace NLTD.EmployeePortal.LMS.Ux.AppHelpers
                 bool mailEnableSsl = Convert.ToBoolean(ConfigurationManager.AppSettings["EnableSsl"]);
                 string mailPassword = ConfigurationManager.AppSettings["Password"];
                 int mailPort = int.Parse(ConfigurationManager.AppSettings["Port"]);
-                string mailBaseUrl = ConfigurationManager.AppSettings["LMSUrl"];
 
                 using (MailMessage mailMessage = new MailMessage())
                 {
@@ -193,7 +192,6 @@ namespace NLTD.EmployeePortal.LMS.Ux.AppHelpers
                         if (lst[i].NoOfDays > 0)
                         {
                             EmailDataModel mdl;
-                            string helloUser = string.Empty;
                             string description = string.Empty;
                             leaveTypeId = Convert.ToInt64(lst[i].LeaveTypeId);
                             using (var client = new LeaveClient())

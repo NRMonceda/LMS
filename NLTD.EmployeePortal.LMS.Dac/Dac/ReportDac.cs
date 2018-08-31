@@ -56,7 +56,6 @@ namespace NLTD.EmployeePortal.LMS.Dac
             // To Get all the employee profile under the manager or lead
             EmployeeDac EmployeeDacObj = new EmployeeDac();
             string userRole = string.Empty;
-            TimeSheetDac timeSheetDac = new TimeSheetDac();
             // To get the employee role, whether he is the Team lead or HR Or admin
             try
             {
