@@ -1365,28 +1365,46 @@ function loadEarnedLeaveMasterDetails() {
 }
 
 function processELCredit() {
-    $("#divLoading").show();
-    $.ajax({
-        contentType: 'application/json; charset=utf-8',
-        dataType: 'json',
-        type: 'POST',
-        url: '/Profile/UpdateEarnedLeaves',
-        success: function (result) {
-            if (result == "Saved") {
-                $("#elCreditMsgSuccess").show();
-                $("#divLoading").hide();
-                $("#idELStatus").hide();
-                $("#divForEarnedLeaveCreditAllocation").hide();
-                $("#elCreditOperaions").hide();
-            }
-            else {
-                $("#elCreditMsgError").show();
-                Clearshowalert(result, "alert alert-danger");
+    bootbox.confirm({
+        title: "Confirm EL Credit Process",
+        message: "Are you sure you want to process the EL Credit?",
+        buttons: {
+            cancel: {
+                label: '<i class="fa fa-times"></i> Cancel'
+            },
+            confirm: {
+                label: '<i class="fa fa-check"></i> Confirm'
             }
         },
-        failure: function (response) {
-            $("#elCreditMsgError").show();
-            Clearshowalert(response.message, "alert alert-danger");
+        callback: function (result) {
+            if (result == true) {
+                $("#divLoading").show();
+                $.ajax({
+                    contentType: 'application/json; charset=utf-8',
+                    dataType: 'json',
+                    type: 'POST',
+                    url: '/Profile/UpdateEarnedLeaves',
+                    success: function (result) {
+                        if (result == "Saved") {
+                            $("#elCreditMsgSuccess").show();
+                            $("#divLoading").hide();
+                            $("#idELStatus").hide();
+                            $("#divForEarnedLeaveCreditAllocation").hide();
+                            $("#elCreditOperaions").hide();
+                        }
+                        else {
+                            $("#elCreditMsgError").show();
+                            $("#divLoading").hide();
+                            Clearshowalert(result, "alert alert-danger");
+                        }
+                    },
+                    failure: function (response) {
+                        $("#elCreditMsgError").show();
+                        $("#divLoading").hide();
+                        Clearshowalert(response.message, "alert alert-danger");
+                    }
+                });
+            }
         }
     });
 }

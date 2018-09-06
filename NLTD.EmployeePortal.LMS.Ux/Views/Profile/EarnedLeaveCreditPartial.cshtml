@@ -36,41 +36,18 @@
     <tbody>
         @foreach (var item in Model)
         {
-            if (item.IsConfirmationPending == true)
+            if (item.ConfirmationDate == null && DateTime.Now > Convert.ToDateTime(item.DOJ).AddMonths(6))
             {
-                <tr style="background-color:red;">
-                    <td hidden>
-                        @Html.DisplayFor(modelItem => item.UserId)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.EmployeeId)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Name)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.DOJ)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.ConfirmationDate)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.CurrentEL)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.ELCredit)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.NewELBalance)
-                    </td>
-                    <td hidden>
-                        @Html.DisplayFor(modelItem => item.LeaveBalanceId)
-                    </td>
-                </tr>
+                @:<tr style="background-color:red;">
+            }
+            else if (item.NewELBalance >= 25)
+            {
+                @:<tr style="background-color:#00BCD4;">                    
             }
             else
             {
-                <tr>
+                @:<tr>
+            }
                     <td hidden>
                         @Html.DisplayFor(modelItem => item.UserId)
                     </td>
@@ -98,8 +75,7 @@
                     <td hidden>
                         @Html.DisplayFor(modelItem => item.LeaveBalanceId)
                     </td>
-                </tr>
-            }
+                @:</tr>
         }
     </tbody>
 </table>

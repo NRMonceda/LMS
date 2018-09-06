@@ -262,20 +262,10 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
 
                     foreach (var profile in empProfile)
                     {
-                        if (profile.DOJ != null)
+                        if (profile.DOJ != null && profile.ConfirmationDate != null)
                         {
-                            if (profile.ConfirmationDate == null)
-                            {
-                                if (DateTime.Now > Convert.ToDateTime(profile.DOJ).AddMonths(6))
-                                {
-                                    profile.IsConfirmationPending = true;
-                                }
-                            }
-                            else
-                            {
-                                profile.ELCredit = GetELCredit(lastCreditRun, toDate, Convert.ToDateTime(profile.ConfirmationDate));
-                                profile.NewELBalance = profile.CurrentEL + profile.ELCredit;
-                            }
+                            profile.ELCredit = GetELCredit(lastCreditRun, toDate, Convert.ToDateTime(profile.ConfirmationDate));
+                            profile.NewELBalance = profile.CurrentEL + profile.ELCredit;
                         }
                         empProfileModel.Add(profile);
                     }
