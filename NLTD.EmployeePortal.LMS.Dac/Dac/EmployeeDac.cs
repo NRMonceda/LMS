@@ -109,6 +109,25 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
             return profile;
         }
 
+        public string GetEmployeeRole(Int64 userId)
+        {
+            string userRole;
+            using (var context = new NLTDDbContext())
+            {
+                userRole = (from emp in context.Employee
+                            join role in context.EmployeeRole on emp.EmployeeRoleId equals role.RoleId
+                            where emp.UserId == userId
+                            select role.Role).FirstOrDefault();
+            }
+
+            if (userRole == null)
+            {
+                userRole = "";
+            }
+
+            return userRole.ToUpper();
+        }
+
         public List<EmployeeProfile> GetReportingEmployeeProfile(Int64 userId, string role, bool myDirectEmployees)
         {
             List<EmployeeProfile> employeeProfileList = new List<EmployeeProfile>();
@@ -327,15 +346,12 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
                     }
                     else
                     {
-                        var leadinfo = (from emp in context.Employee
-                                        join role in context.EmployeeRole on emp.EmployeeRoleId equals role.RoleId
-                                        where emp.UserId == userId
-                                        select new { RoleName = role.Role }).FirstOrDefault();
-                        if (leadinfo != null)
+                        string userRole = GetEmployeeRole(userId);
+                        if (userRole != "")
                         {
                             if (requestMenuUser == "Admin")
                             {
-                                if (leadinfo.RoleName.ToUpper() == "ADMIN" || leadinfo.RoleName.ToUpper() == "HR")
+                                if (userRole == "ADMIN" || userRole == "HR")
                                 {
                                     if (hideInactiveEmp == true)
                                     {
@@ -349,7 +365,7 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
                             }
                             else if (requestMenuUser == "Team")
                             {
-                                if (leadinfo.RoleName.ToUpper() == "ADMIN" || leadinfo.RoleName.ToUpper() == "HR")
+                                if (userRole == "ADMIN" || userRole == "HR")
                                 {
                                     if (paramUserId > 0)
                                     {
@@ -759,24 +775,14 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
             int isSaved = 0;
             string retMsg = string.Empty;
             bool noChanges = false;
-            bool isAuthorizedRole = false;
             string remarks = string.Empty;
             try
             {
-                using (var context = new NLTDDbContext())
+                EmployeeDac employeeDac = new EmployeeDac();
+                string userRole = employeeDac.GetEmployeeRole(ModifiedBy);
+                if (userRole == "HR")
                 {
-                    var isAuthorized = (from e in context.Employee
-                                        join r in context.EmployeeRole on e.EmployeeRoleId equals r.RoleId
-                                        where e.UserId == ModifiedBy
-                                        select new { r.Role }
-                                      ).FirstOrDefault();
-
-                    if (isAuthorized != null)
-                    {
-                        if (isAuthorized.Role.ToUpper() == "HR")
-                            isAuthorizedRole = true;
-                    }
-                    if (isAuthorizedRole)
+                    using (var context = new NLTDDbContext())
                     {
                         employee = context.Employee.Where(e => e.EmployeeId.ToUpper() == profile.EmployeeId).FirstOrDefault();
                         if (profile.Mode == "Add")
@@ -1141,10 +1147,10 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
                             return retMsg;
                         }
                     }
-                    else
-                    {
-                        return "NeedRole";
-                    }
+                }
+                else
+                {
+                    return "NeedRole";
                 }
             }
             catch (Exception)
@@ -1203,10 +1209,6 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
                     if (empPrf.Count() != 0)
                         newEmpId = empPrf.Select(int.Parse).ToList().Max();
 
-                    //var empPrf = (from max in context.Employee
-                    //              where !String.IsNullOrEmpty(max.EmployeeId)
-                    //              select Convert.ToInt32(max.EmployeeId)).Max();
-
                     if (empPrf == null)
                         return "0";
                     else
@@ -1234,9 +1236,13 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
                                 select new { FirstName = r.FirstName, LastName = r.LastName }
                                        ).FirstOrDefault();
                     if (user == null)
+                    {
                         return "";
+                    }
                     else
+                    {
                         return user.FirstName + " " + user.LastName;
+                    }
                 }
                 catch (Exception)
                 {
@@ -1245,9 +1251,9 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
             }
         }
 
-        public List<Int64> GetDirectEmployees(Int64 userID)
+        public IList<Int64> GetDirectEmployees(Int64 userID)
         {
-            List<Int64> userIDList = new List<Int64>();
+            IList<Int64> userIDList = new List<Int64>();
             try
             {
                 using (var context = new NLTDDbContext())

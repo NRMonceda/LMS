@@ -13,11 +13,11 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
             //Nothing to dispose..
         }
 
-        public IList<LeaveTransactionDetail> GetTransactionLog(string Name, string RequestMenuUser, long LeaduserId)
+        public IList<LeaveTransactionDetail> GetTransactionLog(string Name, string RequestMenuUser, long leadUserId)
         {
             IList<LeaveTransactionDetail> retModel = new List<LeaveTransactionDetail>();
             LeaveDac lv = new LeaveDac();
-            IList<Int64> empList = lv.GetEmployeesReporting(LeaduserId);
+            IList<Int64> empList = lv.GetEmployeesReporting(leadUserId);
             try
             {
                 using (var context = new NLTDDbContext())
@@ -28,31 +28,26 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
                     if (RequestMenuUser != "My")
                         userId = employeeDac.GetUserId(Name);
 
-                    if (userId > 0 || (RequestMenuUser == "My" && LeaduserId > 0))
+                    if (userId > 0 || (RequestMenuUser == "My" && leadUserId > 0))
                     {
-                        string ReportingTo = (RequestMenuUser == "My" && LeaduserId > 0) ? employeeDac.ReportingToName(LeaduserId) : employeeDac.ReportingToName(userId);
+                        string ReportingTo = (RequestMenuUser == "My" && leadUserId > 0) ? employeeDac.ReportingToName(leadUserId) : employeeDac.ReportingToName(userId);
 
                         List<LeaveTransactionHistoryModel> transactionDetails = new List<LeaveTransactionHistoryModel>();
                         if (RequestMenuUser == "My")
                         {
-                            transactionDetails = getTransactionDetails(context, LeaduserId);
+                            transactionDetails = getTransactionDetails(context, leadUserId);
                         }
                         if (RequestMenuUser == "Team")
                         {
-                            var leadinfo = (from emp in context.Employee
-                                            join role in context.EmployeeRole on emp.EmployeeRoleId equals role.RoleId
-                                            where emp.UserId == LeaduserId
-                                            select new { RoleName = role.Role }).FirstOrDefault();
+                            string leadRole = employeeDac.GetEmployeeRole(leadUserId);
 
-                            if (leadinfo.RoleName.ToUpper() == "ADMIN" || leadinfo.RoleName.ToUpper() == "HR")
+                            if (leadRole == "ADMIN" || leadRole == "HR")
                             {
                                 transactionDetails = getTransactionDetails(context, userId);
                             }
                             else
                             {
                                 var user = empList.Where(x => x == userId).FirstOrDefault();
-
-                                //var found = FindControlRecursively(user, userId);
 
                                 if (user > 0)
                                 {

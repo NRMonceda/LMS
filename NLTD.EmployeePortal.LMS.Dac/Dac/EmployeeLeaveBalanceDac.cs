@@ -12,7 +12,7 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
         {
             //Nothing to implement...
         }
-        
+
         public IList<LeaveBalanceEmpProfile> GetLeaveBalanceEmpProfile(Int64 userId)
         {
             IList<LeaveBalanceEmpProfile> retModel = new List<LeaveBalanceEmpProfile>();
@@ -73,23 +73,12 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
             try
             {
                 int isSaved = 0;
-                bool isAuthorizedRole = false;
 
                 using (var context = new NLTDDbContext())
                 {
-                    var isAuthorized = (from e in context.Employee
-                                        join r in context.EmployeeRole on e.EmployeeRoleId equals r.RoleId
-                                        where e.UserId == LoginUserId
-                                        select new { r.Role }
-                                  ).FirstOrDefault();
-
-                    if (isAuthorized != null)
-                    {
-                        if (isAuthorized.Role.ToUpper() == "HR")
-                            isAuthorizedRole = true;
-                    }
-
-                    if (isAuthorizedRole)
+                    EmployeeDac employeeDac = new EmployeeDac();
+                    string userRole = employeeDac.GetEmployeeRole(LoginUserId);
+                    if (userRole == "HR")
                     {
                         using (var transaction = context.Database.BeginTransaction())
                         {
@@ -162,7 +151,7 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
                                 }
                             }
 
-                            if (isSaved > 0)
+                            if (isSaved > 0 && isElCredit == true)
                             {
                                 var leaveType = context.LeaveType.Where(x => x.Type.ToUpper() == "EARNED LEAVE").FirstOrDefault();
 

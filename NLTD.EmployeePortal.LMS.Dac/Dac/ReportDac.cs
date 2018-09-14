@@ -54,19 +54,15 @@ namespace NLTD.EmployeePortal.LMS.Dac
             List<ReportLateMonth> reportLateMonthlst = new List<ReportLateMonth>();
             List<NoOfLateInMonth> noOfLateInMonth = new List<NoOfLateInMonth>();
             // To Get all the employee profile under the manager or lead
-            EmployeeDac EmployeeDacObj = new EmployeeDac();
-            string userRole = string.Empty;
+            EmployeeDac employeeDac = new EmployeeDac();
+            string leadRole = employeeDac.GetEmployeeRole(UserID);
+
             // To get the employee role, whether he is the Team lead or HR Or admin
             try
             {
-                using (NLTDDbContext context = new NLTDDbContext())
-                {
-                    userRole = (from emp in context.Employee
-                                join role in context.EmployeeRole on emp.EmployeeRoleId equals role.RoleId
-                                where emp.UserId == UserID
-                                select role.Role).FirstOrDefault();
-                }
-                List<EmployeeProfile> employeesUnderManager = EmployeeDacObj.GetReportingEmployeeProfile(UserID, userRole, myDirectEmployees).OrderBy(m => m.FirstName).ToList();
+
+
+                List<EmployeeProfile> employeesUnderManager = employeeDac.GetReportingEmployeeProfile(UserID, leadRole, myDirectEmployees).OrderBy(m => m.FirstName).ToList();
                 for (int i = 0; i < employeesUnderManager.Count; i++)
                 {
                     string Name = employeesUnderManager[i].FirstName + " " + employeesUnderManager[i].LastName;

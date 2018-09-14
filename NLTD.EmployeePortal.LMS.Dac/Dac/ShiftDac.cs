@@ -21,12 +21,10 @@ namespace NLTD.EmployeePortal.LMS.Dac
                 {
                     if (RequestMenuUser == "Admin")
                     {
-                        var leadinfo = (from emp in context.Employee
-                                        join role in context.EmployeeRole on emp.EmployeeRoleId equals role.RoleId
-                                        where emp.UserId == UserId
-                                        select new { RoleName = role.Role }).FirstOrDefault();
+                        EmployeeDac employeeDac = new EmployeeDac();
+                        string leadRole = employeeDac.GetEmployeeRole(UserId);
 
-                        if (leadinfo.RoleName.ToUpper() == "ADMIN" || leadinfo.RoleName.ToUpper() == "HR")
+                        if (leadRole == "ADMIN" || leadRole == "HR")
                         {
                             lstShiftAllocation = (from sm in context.ShiftMapping
                                                   join s in context.ShiftMaster on sm.ShiftID equals s.ShiftID
@@ -94,12 +92,10 @@ namespace NLTD.EmployeePortal.LMS.Dac
             {
                 using (var context = new NLTDDbContext())
                 {
-                    var leadinfo = (from emp in context.Employee
-                                    join role in context.EmployeeRole on emp.EmployeeRoleId equals role.RoleId
-                                    where emp.UserId == UserId
-                                    select new { RoleName = role.Role }).FirstOrDefault();
+                    EmployeeDac employeeDac = new EmployeeDac();
+                    string leadRole = employeeDac.GetEmployeeRole(UserId);
 
-                    if (leadinfo.RoleName.ToUpper() == "ADMIN" || leadinfo.RoleName.ToUpper() == "HR")
+                    if (leadRole == "ADMIN" || leadRole == "HR")
                     {
                         lstShiftEmployees = (from e in context.Employee
                                              where e.IsActive == true
@@ -351,17 +347,14 @@ namespace NLTD.EmployeePortal.LMS.Dac
                     {
                         string ReportingTo = (RequestMenuUser == "My" && LeaduserId > 0) ? employeeDac.ReportingToName(LeaduserId) : employeeDac.ReportingToName(userId);
 
-                        var leadinfo = (from emp in context.Employee
-                                        join role in context.EmployeeRole on emp.EmployeeRoleId equals role.RoleId
-                                        where emp.UserId == LeaduserId
-                                        select new { RoleName = role.Role }).FirstOrDefault();
+                        string leadRole = employeeDac.GetEmployeeRole(LeaduserId);
 
                         List<ShiftAllocation> shiftDetails = new List<ShiftAllocation>();
                         if (RequestMenuUser == "My")
                         {
                             shiftDetails = getShiftDetails(context, LeaduserId);
                         }
-                        else if (leadinfo.RoleName.ToUpper() == "ADMIN" || leadinfo.RoleName.ToUpper() == "HR")
+                        else if (leadRole == "ADMIN" || leadRole == "HR")
                         {
                             shiftDetails = getShiftDetails(context, userId);
                         }

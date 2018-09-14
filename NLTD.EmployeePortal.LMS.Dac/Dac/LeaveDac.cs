@@ -205,17 +205,14 @@ namespace NLTD.EmployeePortal.LMS.Dac
                     }
                     else
                     {
-                        var leadinfo = (from emp in context.Employee
-                                        join role in context.EmployeeRole on emp.EmployeeRoleId equals role.RoleId
-                                        where emp.UserId == UserId
-                                        select new { RoleName = role.Role }).FirstOrDefault();
+                        EmployeeDac employeeDac = new EmployeeDac();
+                        string leadRole = employeeDac.GetEmployeeRole(UserId);
 
-                        if (leadinfo != null)
+                        if (leadRole != "")
                         {
                             if (reqUsr == "Team")
                             {
-                                //lstSummary = LeaveItemsquery.Where(t => empList.Contains(t.UserId)).ToList();
-                                if (leadinfo.RoleName.ToUpper() == "ADMIN" || leadinfo.RoleName.ToUpper() == "HR")
+                                if (leadRole == "ADMIN" || leadRole == "HR")
                                 {
                                     if (paramUserId > 0)
                                     {
@@ -256,14 +253,6 @@ namespace NLTD.EmployeePortal.LMS.Dac
                             }
                         }
                     }
-                    //if (paramUserId != null && paramUserId != 0)
-                    //{
-                    //        if (lstSummary.Count > 0)
-                    //        {
-                    //            lstSummary = lstSummary.Where(x => x.UserId == paramUserId).ToList();
-                    //        }
-
-                    //}
 
                     lstSummary = lstSummary.OrderBy(x => x.Name).ToList();
                 }
@@ -444,50 +433,39 @@ namespace NLTD.EmployeePortal.LMS.Dac
 
         public IList<EmployeeList> GetEmployeeList(string param, Int64 userId)
         {
-            IList<EmployeeList> empList = new List<EmployeeList>();
-            var result = new List<Int64>();
-            IList<Int64> empReporting = new List<Int64>();
+            IList<EmployeeList> employeeList = new List<EmployeeList>();
+            List<Employee> directEmployees = new List<Employee>();
+            List<Int64> reportingEmployees = new List<Int64>();
+
+            EmployeeDac employeeDac = new EmployeeDac();
+            string leadRole = employeeDac.GetEmployeeRole(userId);
+
             using (var context = new NLTDDbContext())
             {
-                var employees = context.Employee
-                                      .Where(e => e.ReportingToId == userId && e.IsActive == true)
+                employeeList = (from emp in context.Employee
+                                   where (emp.FirstName + " " + emp.LastName).Contains(param.ToUpper())
+                                   select new EmployeeList
+                                   {
+                                       UserId = emp.UserId,
+                                       Name = emp.FirstName + " " + emp.LastName
+                                   }
+                                   ).ToList();
+
+                if (leadRole != "ADMIN" && leadRole != "HR")
+                {
+                    directEmployees = context.Employee
+                        .Where(e => e.ReportingToId == userId && e.IsActive == true)
                                       .ToList();
 
-                foreach (var employee in employees)
-                {
-                    result.Add(employee.UserId);
-                    result.AddRange(GetEmployeesReporting(employee.UserId));
-                }
-                empReporting = result.ToList();
-
-                var empployees = (from emp in context.Employee
-                                  select new EmployeeList
-                                  {
-                                      UserId = emp.UserId,
-                                      Name = emp.FirstName + " " + emp.LastName
-                                  }
-                            ).ToList();
-
-                var leadinfo = (from emp in context.Employee
-                                join role in context.EmployeeRole on emp.EmployeeRoleId equals role.RoleId
-                                where emp.UserId == userId
-                                select new { RoleName = role.Role }).FirstOrDefault();
-                if (leadinfo != null)
-                {
-                    if (leadinfo.RoleName.ToUpper() == "ADMIN" || leadinfo.RoleName.ToUpper() == "HR")
+                    foreach (var employee in directEmployees)
                     {
-                        empployees = empployees.Where(x => x.Name.ToUpper().Contains(param.ToUpper())).ToList();
+                        reportingEmployees.Add(employee.UserId);
+                        reportingEmployees.AddRange(GetEmployeesReporting(employee.UserId));
                     }
-                    else
-                    {
-                        empployees = empployees.Where(x => x.Name.ToUpper().Contains(param.ToUpper())).ToList();
-                        empployees = empployees.Where(t => empReporting.Contains(t.UserId)).ToList();
-                    }
+                    employeeList = employeeList.Where(t => reportingEmployees.Contains(t.UserId)).ToList();
                 }
-
-                empList = empployees.OrderBy(e => e.Name).ToList();
             }
-            return empList;
+            return employeeList.OrderBy(e => e.Name).ToList();
         }
 
         public IList<Int64> GetEmployeesReporting(long leadId)
@@ -757,13 +735,12 @@ namespace NLTD.EmployeePortal.LMS.Dac
                 }
                 else
                 {
-                    var leadinfo = (from emp in context.Employee
-                                    join role in context.EmployeeRole on emp.EmployeeRoleId equals role.RoleId
-                                    where emp.UserId == qryMdl.LeadId
-                                    select new { RoleName = role.Role }).FirstOrDefault();
-                    if (leadinfo != null)
+                    EmployeeDac employeeDac = new EmployeeDac();
+                    string leadRole = employeeDac.GetEmployeeRole(qryMdl.LeadId);
+
+                    if (leadRole != "")
                     {
-                        if (leadinfo.RoleName.ToUpper() == "ADMIN" || leadinfo.RoleName.ToUpper() == "HR")
+                        if (leadRole == "ADMIN" || leadRole == "HR")
                         {
                             if (qryMdl.SearchUserID > 0)
                             {
@@ -1478,16 +1455,14 @@ namespace NLTD.EmployeePortal.LMS.Dac
                 }
                 else
                 {
-                    var leadinfo = (from emp in context.Employee
-                                    join role in context.EmployeeRole on emp.EmployeeRoleId equals role.RoleId
-                                    where emp.UserId == LeadId
-                                    select new { RoleName = role.Role }).FirstOrDefault();
+                    EmployeeDac employeeDac = new EmployeeDac();
+                    string leadRole = employeeDac.GetEmployeeRole(LeadId);
 
-                    if (leadinfo != null)
+                    if (leadRole != "")
                     {
                         if (reqUsr == "Team")
                         {
-                            if (leadinfo.RoleName.ToUpper() == "ADMIN" || leadinfo.RoleName.ToUpper() == "HR")
+                            if (leadRole == "ADMIN" || leadRole == "HR")
                             {
                                 if (paramUserId > 0)
                                 {
@@ -1682,15 +1657,15 @@ namespace NLTD.EmployeePortal.LMS.Dac
                     {
                         permissions = qry.Where(x => x.UserId == LeadId).ToList();
                     }
-                    var leadinfo = (from emp in context.Employee
-                                    join role in context.EmployeeRole on emp.EmployeeRoleId equals role.RoleId
-                                    where emp.UserId == LeadId
-                                    select new { RoleName = role.Role }).FirstOrDefault();
-                    if (leadinfo != null)
+
+                    EmployeeDac employeeDac = new EmployeeDac();
+                    string leadRole = employeeDac.GetEmployeeRole(LeadId);
+
+                    if (leadRole != "")
                     {
                         if (reqUsr == "Team")
                         {
-                            if (leadinfo.RoleName.ToUpper() == "ADMIN" || leadinfo.RoleName.ToUpper() == "HR")
+                            if (leadRole == "ADMIN" || leadRole == "HR")
                             {
                                 if (paramUserId > 0)
                                 {
@@ -1801,15 +1776,15 @@ namespace NLTD.EmployeePortal.LMS.Dac
                     {
                         permissions = qry.Where(x => x.UserId == LeadId).ToList();
                     }
-                    var leadinfo = (from emp in context.Employee
-                                    join role in context.EmployeeRole on emp.EmployeeRoleId equals role.RoleId
-                                    where emp.UserId == LeadId
-                                    select new { RoleName = role.Role }).FirstOrDefault();
-                    if (leadinfo != null)
+
+                    EmployeeDac employeeDac = new EmployeeDac();
+                    string leadRole = employeeDac.GetEmployeeRole(LeadId);
+
+                    if (leadRole != "")
                     {
                         if (reqUsr == "Team")
                         {
-                            if (leadinfo.RoleName.ToUpper() == "ADMIN" || leadinfo.RoleName.ToUpper() == "HR")
+                            if (leadRole == "ADMIN" || leadRole == "HR")
                             {
                                 if (paramUserId > 0)
                                 {
@@ -2016,16 +1991,10 @@ namespace NLTD.EmployeePortal.LMS.Dac
         {
             List<TimeSheetModel> timeSheetModelList = new List<TimeSheetModel>();
             // To Get all the employee profile under the manager or lead
-            string userRole = string.Empty;
-            using (NLTDDbContext context = new NLTDDbContext())
-            {
-                userRole = (from emp in context.Employee
-                            join role in context.EmployeeRole on emp.EmployeeRoleId equals role.RoleId
-                            where emp.UserId == UserID
-                            select role.Role).FirstOrDefault();
-            }
+            EmployeeDac employeeDac = new EmployeeDac();
+            string leadRole = employeeDac.GetEmployeeRole(UserID);
 
-            List<EmployeeProfile> employeeProfileListUnderManager = new EmployeeDac().GetReportingEmployeeProfile(UserID, userRole, false).OrderBy(m => m.FirstName).ToList();
+            List<EmployeeProfile> employeeProfileListUnderManager = new EmployeeDac().GetReportingEmployeeProfile(UserID, leadRole, false).OrderBy(m => m.FirstName).ToList();
 
             for (int i = 0; i < employeeProfileListUnderManager.Count; i++)
             {
@@ -2137,16 +2106,14 @@ namespace NLTD.EmployeePortal.LMS.Dac
                 }
                 else
                 {
-                    var leadinfo = (from em in context.Employee
-                                    join role in context.EmployeeRole on em.EmployeeRoleId equals role.RoleId
-                                    where em.UserId == LeadId
-                                    select new { RoleName = role.Role }).FirstOrDefault();
+                    EmployeeDac employeeDac = new EmployeeDac();
+                    string leadRole = employeeDac.GetEmployeeRole(LeadId);
 
-                    if (leadinfo != null)
+                    if (leadRole != "")
                     {
                         if (reqUsr == "Team")
                         {
-                            if (leadinfo.RoleName.ToUpper() == "ADMIN" || leadinfo.RoleName.ToUpper() == "HR")
+                            if (leadRole == "ADMIN" || leadRole == "HR")
                             {
                                 if (paramUserId > 0)
                                 {
@@ -2222,16 +2189,14 @@ namespace NLTD.EmployeePortal.LMS.Dac
                  ).ToList();
 
                     MonthwiseCountEmp emp;
-                    var leadinfo = (from em in context.Employee
-                                    join role in context.EmployeeRole on em.EmployeeRoleId equals role.RoleId
-                                    where em.UserId == LeadId
-                                    select new { RoleName = role.Role }).FirstOrDefault();
+                    EmployeeDac employeeDac = new EmployeeDac();
+                    string leadRole = employeeDac.GetEmployeeRole(LeadId);
 
-                    if (leadinfo != null)
+                    if (leadRole != "")
                     {
                         if (reqUsr == "Team")
                         {
-                            if (leadinfo.RoleName.ToUpper() == "ADMIN" || leadinfo.RoleName.ToUpper() == "HR")
+                            if (leadRole == "ADMIN" || leadRole == "HR")
                             {
                                 if (OnlyReportedToMe)
                                 {

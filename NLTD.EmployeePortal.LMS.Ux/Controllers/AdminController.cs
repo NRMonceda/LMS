@@ -458,12 +458,6 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
             ViewBag.RequestLevelPerson = "Admin";
             ManageTeamLeavesQueryModel qyMdl = new ManageTeamLeavesQueryModel();
             qyMdl.OnlyReportedToMe = true;
-            //int year = DateTime.Now.Year;
-            //DateTime firstDay = new DateTime(year, 1, 1);
-            //DateTime lastDay = new DateTime(year, 12, 31);
-            //qyMdl.FromDate = firstDay;
-            //qyMdl.ToDate = lastDay;
-            //return View("TeamHistory", qyMdl);
             return View("SearchTransactionLog", qyMdl);
         }
 
@@ -551,11 +545,13 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
             string tempRequestLevelPerson = requestLevelPerson;
             EmployeeProfile profile = (EmployeeProfile)Session["Profile"];
             Int64 userID = profile.UserId;
+
             if (!string.IsNullOrEmpty(ID) && ID != "0")
             {
                 userID = Convert.ToInt32(ID);
-                requestLevelPerson = "My";// If we are not change the requst level person, If we pass any manager ID it will return all timesheet who are all under the manager
+                requestLevelPerson = "My";// If we are not change the request level person, If we pass any manager ID it will return all timesheet who are all under the manager
             }
+
             if (string.IsNullOrEmpty(FromDate) || FromDate == "Nodate")
             {
                 startDateFormatted = DateTime.Now.AddDays(-30).Date;
@@ -608,9 +604,6 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
             }
             else if (!string.IsNullOrEmpty(TimeSheetQueryModelObj.Name))
             {
-                //IEmployeeHelper EmployeeHelper = new EmployeeClient();
-                // Int64 UserID = TimeSheetQueryModelObj.UserID;
-
                 if (TimeSheetQueryModelObj.FromDate == DateTime.MinValue)
                 {
                     TimeSheetQueryModelObj.FromDate = currentDate.AddDays(-30);
@@ -621,8 +614,6 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
                     TimeSheetQueryModelObj.ToDate = TimeSheetQueryModelObj.ToDate;
                 }
                 requestLevelPerson = "My";
-
-                //TimeSheetQueryModelObj.UserID = UserID;
             }
             if (TimeSheetQueryModelObj.ToDate >= DateTime.Now)
             {
