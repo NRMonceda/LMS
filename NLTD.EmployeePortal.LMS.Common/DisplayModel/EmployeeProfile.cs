@@ -45,7 +45,7 @@ namespace NLTD.EmployeePortal.LMS.Common.DisplayModel
         public String ReportedToName { get; set; }
 
         [Required(ErrorMessage = "Select Holiday Calendar.")]
-        public Int64 OfficeHolodayId { get; set; }
+        public Int64 OfficeHolidayId { get; set; }
 
         public Int64 OfficeId { get; set; }
         public String LocationText { get; set; }

@@ -660,6 +660,7 @@
     <Content Include="Scripts\moment.min.js" />
     <Content Include="Scripts\site.js" />
     <Content Include="Scripts\site.min.js" />
+    <Content Include="SQL.txt" />
     <Content Include="static\s.html" />
     <Content Include="EmailTemplateCreditLeave.html" />
     <Content Include="Web.config">

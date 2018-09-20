@@ -115,11 +115,11 @@ function SubmitEmpForm(e) {
     } else {
         $("span[data-valmsg-for='OfficeId']").text("");
     }
-    if ($("#OfficeHolodayId option:selected").index() < 1) {
-        $("span[data-valmsg-for='OfficeHolodayId']").text("Please select holiday office.");
+    if ($("#OfficeHolidayId option:selected").index() < 1) {
+        $("span[data-valmsg-for='OfficeHolidayId']").text("Please select holiday office.");
         iserror = true;
     } else {
-        $("span[data-valmsg-for='OfficeHolodayId']").text("");
+        $("span[data-valmsg-for='OfficeHolidayId']").text("");
     }
     if ($.trim($("#DOJ").val()) == "") {
         $("span[data-valmsg-for='DOJ']").text("Please enter joining date.");
@@ -824,25 +824,6 @@ function showalert(userId, message, alerttype) {
         var alertDivId = "alertdiv" + userId;
         $('#alert_placeholder' + userId).append('<div id=alertDivId class="alert ' + alerttype + '"><a class="close" data-dismiss="alert">×</a><span>' + message + '</span></div>')
     }
-}
-
-/*-- Data Fetching --*/
-function LoadReportToDropDown() {
-    $("#ReportToId").html("");
-    var obj = new Object();
-    obj.LocationId = $("#LocationId").val();
-    $.ajax({
-        url: "/Data/GetReportToList",
-        method: "post",
-        data: obj,
-        success: function (data) {
-            var options = "";
-            $.each(function (data) {
-                options = options + "<option value='" + data.Key + "'>" + data.Value + "</option>";
-            });
-            $("#ReportToId").html(options);
-        }
-    });
 }
 
 function isTimeBasedLayout() {

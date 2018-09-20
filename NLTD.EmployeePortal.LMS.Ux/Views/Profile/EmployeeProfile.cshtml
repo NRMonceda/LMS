@@ -225,7 +225,7 @@
                         <div class="col-sm-3">
                             <div class="form-group">
                                 @Html.LabelFor(e => e.OfficeId, "Office", new { @class = "required" })
-                                <select id="OfficeId" name="OfficeId" class="form-control" onchange="LoadReportToDropDown()">
+                                <select id="OfficeId" name="OfficeId" class="form-control">
                                     @{
 
                                         if (ViewBag.EmpOffice != null)
@@ -247,15 +247,15 @@
                             </div>
                         </div>
                         <div class="col-sm-3">
-                            @Html.LabelFor(e => e.OfficeHolodayId, "Holiday Office", new { @class = "required" })
-                            <select id="OfficeHolodayId" name="OfficeHolodayId" class="form-control" onchange="LoadReportToDropDown()">
+                            @Html.LabelFor(e => e.OfficeHolidayId, "Holiday Office", new { @class = "required" })
+                            <select id="OfficeHolidayId" name="OfficeHolidayId" class="form-control">
                                 @{
 
                                     if (ViewBag.OfficeLocationList != null)
                                     {
                                         foreach (var item in (List<NLTD.EmployeePortal.LMS.Common.DisplayModel.DropDownItem>)ViewBag.OfficeLocationList)
                                         {
-                                            if (item.Key == Model.OfficeHolodayId.ToString())
+                                            if (item.Key == Model.OfficeHolidayId.ToString())
                                             {
                                                 <option value="@item.Key" selected="selected">@item.Value</option>
                                             }
@@ -267,7 +267,7 @@
                                     }
                                 }
                             </select>
-                            @Html.ValidationMessageFor(e => e.OfficeHolodayId, null, new { @class = "text-danger" })
+                            @Html.ValidationMessageFor(e => e.OfficeHolidayId, null, new { @class = "text-danger" })
                         </div>
                     </div>
                     <div class="row">

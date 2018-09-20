@@ -273,7 +273,7 @@ namespace NLTD.EmployeePortal.LMS.Dac
                                     where emp.UserId == userId && (h.Holiday >= startDate && h.Holiday <= endDate)
                                     select new
                                     {
-                                        HolidayId = h.OfficeHolodayId
+                                        HolidayId = h.OfficeHolidayId
                                     }).ToList();
                 if (holidayCount.Any())
                 {
@@ -417,7 +417,7 @@ namespace NLTD.EmployeePortal.LMS.Dac
                                     where emp.UserId == userId && h.Holiday == dateValue
                                     select new
                                     {
-                                        HolidayId = h.OfficeHolodayId
+                                        HolidayId = h.OfficeHolidayId
                                     }).ToList();
                 if (holidayCount.Any())
                 {

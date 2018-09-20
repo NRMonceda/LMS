@@ -56,7 +56,7 @@ namespace NLTD.EmployeePortal.LMS.Dac
             modelBuilder.Entity<EmployeeTransactionHistory>().HasKey(e => e.TransactionId).ToTable("EmployeeTransactionHistory");
             modelBuilder.Entity<LeaveType>().HasKey(e => e.LeaveTypeId).ToTable("LeaveType");
             modelBuilder.Entity<OfficeLocation>().HasKey(e => e.OfficeId).ToTable("OfficeLocation");
-            modelBuilder.Entity<OfficeHoliday>().HasKey(e => e.OfficeHolodayId).ToTable("OfficeHoliday");
+            modelBuilder.Entity<OfficeHoliday>().HasKey(e => e.OfficeHolidayId).ToTable("OfficeHoliday");
 
             modelBuilder.Entity<EmployeeWeekOff>().HasKey(e => e.EmployeeWeekOffId).ToTable("EmployeeWeekOff");
             modelBuilder.Entity<DaysOfWeek>().HasKey(e => e.DaysOfWeekId).ToTable("DaysOfWeek");
