@@ -69,62 +69,61 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
                                                    InOutDate = ea.InOutDate,
                                                    InOut = (ea.InOut ? "Out" : "In"),
                                                    Name = (e.FirstName + " " + e.LastName)
-                                               }).OrderBy(e => e.Name).ThenByDescending(e => e.InOutDate).ToList();
+                                               }).OrderBy(e => e.Name).ThenBy(e => e.InOutDate).ToList();
             }
 
-            //TimeSpan breakTime = new TimeSpan();
-            //employeeAttendanceModelList = employeeAttendanceModelList.OrderBy(e => e.Name).ThenBy(e => e.InOutDate).ToList();
+            TimeSpan punchTime = new TimeSpan();
+            TimeSpan breakTime = new TimeSpan();
+            TimeSpan workTime = new TimeSpan();
 
-            //for (int i = 0; i < employeeAttendanceModelList.Count; i++)
-            //{
-            //    if (employeeAttendanceModelList[i].InOut == "Out")
-            //    {
-            //        if (i < employeeAttendanceModelList.Count - 1)
-            //        {
-            //            if (employeeAttendanceModelList[i + 1].InOut == "In" && (employeeAttendanceModelList[i + 1].UserID== employeeAttendanceModelList[i].UserID))
-            //            {
-            //                // Do nothing
-            //            }
-            //            else if (employeeAttendanceModelList[i + 1].InOut == "Out" && (employeeAttendanceModelList[i + 1].UserID == employeeAttendanceModelList[i].UserID))
-            //            {
-            //                employeeAttendanceModelList[i].BreakDuration = "Missing In Punch";
-            //                //missing IN
-            //            }
-            //            else if (employeeAttendanceModelList[i + 1].InOut == "In" && (employeeAttendanceModelList[i + 1].UserID == employeeAttendanceModelList[i].UserID))
-            //            {
-            //                employeeAttendanceModelList[i].BreakDuration = "Missing In Punch";
-            //                //missing IN
-            //            }
-            //        }
-            //    }
-            //    else if (employeeAttendanceModelList[i].InOut == "In")
-            //    {
-            //        if (i>0)
-            //        {
-            //            if (employeeAttendanceModelList[i - 1].InOut == "Out" && (employeeAttendanceModelList[i - 1].UserID == employeeAttendanceModelList[i].UserID))
-            //            {
-            //                breakTime = (employeeAttendanceModelList[i].InOutDate - employeeAttendanceModelList[i - 1].InOutDate);
-            //                if (breakTime < new TimeSpan(8, 0, 0))
-            //                {
-            //                    employeeAttendanceModelList[i].BreakDuration = breakTime.ToString();
-            //                }
-            //                //calculate break duration
-            //            }
-            //            else if (employeeAttendanceModelList[i + 1].InOut == "In" && (employeeAttendanceModelList[i + 1].UserID == employeeAttendanceModelList[i].UserID))
-            //            {
-            //                employeeAttendanceModelList[i].BreakDuration = "Missing Out Punch";
-            //                //missing Out
-            //            }
-            //            else if (employeeAttendanceModelList[i + 1].InOut == "Out" && (employeeAttendanceModelList[i + 1].UserID == employeeAttendanceModelList[i].UserID))
-            //            {
-            //                employeeAttendanceModelList[i].BreakDuration = "Missing Out Punch";
-            //                //missing Out
-            //            }
-            //        }
-            //    }
-            //}
+            for (int i = 0; i < employeeAttendanceModelList.Count - 1; i++)
+            {
+                if (employeeAttendanceModelList[i].UserID == employeeAttendanceModelList[i + 1].UserID)
+                {
+                    punchTime = (employeeAttendanceModelList[i + 1].InOutDate - employeeAttendanceModelList[i].InOutDate);
+                    if (punchTime < new TimeSpan(8, 0, 0))
+                    {
+                        if (employeeAttendanceModelList[i].InOut == "In")
+                        {
+                            if (employeeAttendanceModelList[i + 1].InOut == "Out")
+                            {
+                                employeeAttendanceModelList[i].BreakDuration = "Work : " + punchTime.ToString();
+                                workTime += punchTime;
+                            }
+                            else
+                            {
+                                employeeAttendanceModelList[i].BreakDuration = "Missing Out Punch";
+                            }
+                        }
+                        else
+                        {
+                            if (employeeAttendanceModelList[i + 1].InOut == "In")
+                            {
+                                employeeAttendanceModelList[i].BreakDuration = "Break : " + punchTime.ToString();
+                                breakTime += punchTime;
+                            }
+                            else
+                            {
+                                employeeAttendanceModelList[i].BreakDuration = "Missing In Punch";
+                            }
+                        }
+                    }
+                    else
+                    {
+                        employeeAttendanceModelList[i].BreakDuration = "End Of Day. Total Work : " + workTime.ToString() + ", Total Break : " + breakTime.ToString();
+                        workTime = TimeSpan.Zero;
+                        breakTime = TimeSpan.Zero;
+                    }
+                }
+                else
+                {
+                    employeeAttendanceModelList[i].BreakDuration = "End Of Day. Total Work : " + workTime.ToString() + ", Total Break : " + breakTime.ToString();
+                    workTime = TimeSpan.Zero;
+                    breakTime = TimeSpan.Zero;
+                }
+            }
 
-            return employeeAttendanceModelList;
+            return employeeAttendanceModelList.OrderBy(e => e.Name).ThenByDescending(e => e.InOutDate).ToList();
         }
 
         public List<EmployeeAttendanceModel> GetAccessCardAttendanceForRange(Int64 UserID, DateTime FromDateTime, DateTime ToDateTime, string requestLevelPerson)
