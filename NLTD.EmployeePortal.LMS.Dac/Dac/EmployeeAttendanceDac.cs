@@ -69,16 +69,21 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
                                                    InOutDate = ea.InOutDate,
                                                    InOut = (ea.InOut ? "Out" : "In"),
                                                    Name = (e.FirstName + " " + e.LastName)
-                                               }).OrderBy(e => e.Name).ThenBy(e => e.InOutDate).ToList();
+                                               }).OrderBy(e => e.UserID).ThenBy(e => e.InOutDate).ToList();
             }
 
             TimeSpan punchTime = new TimeSpan();
             TimeSpan breakTime = new TimeSpan();
             TimeSpan workTime = new TimeSpan();
 
-            for (int i = 0; i < employeeAttendanceModelList.Count - 1; i++)
+            for (int i = 0; i <= employeeAttendanceModelList.Count-1; i++)
             {
-                if (employeeAttendanceModelList[i].UserID == employeeAttendanceModelList[i + 1].UserID)
+                punchTime = TimeSpan.Zero;
+                if (i== employeeAttendanceModelList.Count - 1)
+                {
+                    employeeAttendanceModelList[i].BreakDuration = "End Of Day. Total Work : " + workTime.ToString() + ", Total Break : " + breakTime.ToString();
+                }
+                else if (employeeAttendanceModelList[i].UserID == employeeAttendanceModelList[i + 1].UserID)
                 {
                     punchTime = (employeeAttendanceModelList[i + 1].InOutDate - employeeAttendanceModelList[i].InOutDate);
                     if (punchTime < new TimeSpan(8, 0, 0))
@@ -122,7 +127,7 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
                     breakTime = TimeSpan.Zero;
                 }
             }
-
+            
             return employeeAttendanceModelList.OrderBy(e => e.Name).ThenByDescending(e => e.InOutDate).ToList();
         }
 
