@@ -2,12 +2,17 @@
 using NLTD.EmployeePortal.LMS.Repository;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
+using System.Data.Entity;
 using System.Linq;
 
 namespace NLTD.EmployeePortal.LMS.Dac.Dac
 {
     public class EmployeeAttendanceDac : IEmployeeAttendanceHelper
     {
+        private int BeforeShiftBuffer = Convert.ToInt32(ConfigurationManager.AppSettings["BeforeShiftBuffer"]);
+        private int AfterShiftBuffer = Convert.ToInt32(ConfigurationManager.AppSettings["AfterShiftBuffer"]);
+
         public void Dispose()
         {
         }
@@ -62,13 +67,18 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
             {
                 employeeAttendanceModelList = (from ea in context.EmployeeAttendance
                                                join e in context.Employee on ea.UserID equals e.UserId
+                                               join s in context.ShiftMapping on e.UserId equals s.UserID
+                                               join sm in context.ShiftMaster on s.ShiftID equals sm.ShiftID
                                                where employeeIDs.Contains(ea.UserID ?? 0) && ea.InOutDate >= FromDateTime && ea.InOutDate <= ToDateTime
+                                               && ea.InOutDate >= DbFunctions.AddHours(s.ShiftDate, sm.FromTime.Hours - BeforeShiftBuffer)
+                                               && ea.InOutDate <= (sm.ToTime.Hours > 9 ? DbFunctions.AddHours(s.ShiftDate, sm.ToTime.Hours + AfterShiftBuffer) : DbFunctions.AddHours(DbFunctions.AddDays(s.ShiftDate, 1), sm.ToTime.Hours + AfterShiftBuffer))
                                                select new EmployeeAttendanceModel
                                                {
                                                    UserID = ea.UserID,
                                                    InOutDate = ea.InOutDate,
                                                    InOut = (ea.InOut ? "Out" : "In"),
-                                                   Name = (e.FirstName + " " + e.LastName)
+                                                   Name = (e.FirstName + " " + e.LastName),
+                                                   ShiftDate = s.ShiftDate
                                                }).OrderBy(e => e.UserID).ThenBy(e => e.InOutDate).ToList();
             }
 
@@ -84,11 +94,9 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
                 }
                 else if (employeeAttendanceModelList[i].UserID == employeeAttendanceModelList[i + 1].UserID)
                 {
-                    var currentPunchShift = employeeAttendanceModelList[i].InOutDate.Hour < 9 ? employeeAttendanceModelList[i].InOutDate.AddDays(-1) : employeeAttendanceModelList[i].InOutDate;
-                    var nextPunchShift = employeeAttendanceModelList[i + 1].InOutDate.Hour < 9 ? employeeAttendanceModelList[i + 1].InOutDate.AddDays(-1) : employeeAttendanceModelList[i + 1].InOutDate;
-
                     punchTime = (employeeAttendanceModelList[i + 1].InOutDate - employeeAttendanceModelList[i].InOutDate);
-                    if (currentPunchShift.Date.CompareTo(nextPunchShift.Date) == 0)
+
+                    if (employeeAttendanceModelList[i].ShiftDate == employeeAttendanceModelList[i + 1].ShiftDate)
                     {
                         if (employeeAttendanceModelList[i].InOut == "In")
                         {
