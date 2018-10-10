@@ -2,7 +2,9 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using System.Web.Hosting;
 using System.Xml.Serialization;
 
@@ -44,25 +46,32 @@ namespace NLTD.EmployeePortal.LMS.Ux.AppHelpers
                 default://check and remove this
                     break;
             }
-            menu.menuitem = new List<MenuItem>();
-            Menu menuPerPath = null;
-            XmlSerializer serializer = new XmlSerializer(typeof(Menu));
-
-            using (var stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read))
+            if (true)     //!String.IsNullOrEmpty(path))
             {
-                StreamReader reader = new StreamReader(stream);
-                menuPerPath = (Menu)serializer.Deserialize(reader);
-                menu.menuitem.AddRange(menuPerPath.menuitem);
-            }
+                menu.menuitem = new List<MenuItem>();
+                Menu menuPerPath = null;
+                XmlSerializer serializer = new XmlSerializer(typeof(Menu));
 
-            using (var stream = new FileStream(path5, FileMode.Open, FileAccess.Read, FileShare.Read))
+                using (var stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read))
+                {
+                    StreamReader reader = new StreamReader(stream);
+                    menuPerPath = (Menu)serializer.Deserialize(reader);
+                    menu.menuitem.AddRange(menuPerPath.menuitem);
+                }
+
+                using (var stream = new FileStream(path5, FileMode.Open, FileAccess.Read, FileShare.Read))
+                {
+                    StreamReader reader = new StreamReader(stream);
+                    menuPerPath = (Menu)serializer.Deserialize(reader);
+                    menu.menuitem.AddRange(menuPerPath.menuitem);
+                }
+                //menu.menuitem=RemoveDublicates(menu.menuitem);
+                return FormatMenuForAdminLTE(menu);
+            }
+            else
             {
-                StreamReader reader = new StreamReader(stream);
-                menuPerPath = (Menu)serializer.Deserialize(reader);
-                menu.menuitem.AddRange(menuPerPath.menuitem);
+                return "";
             }
-
-            return FormatMenuForAdminLTE(menu);
         }
 
         private static string FormatMenuForAdminLTE(Menu menu)

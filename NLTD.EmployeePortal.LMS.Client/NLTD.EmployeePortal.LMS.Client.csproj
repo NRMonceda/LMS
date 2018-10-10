@@ -51,7 +51,7 @@
     <Compile Include="EmployeeClient.cs" />
     <Compile Include="EmployeeLeaveBalanceClient.cs" />
     <Compile Include="EmployeeRoleHelper.cs" />
-    <Compile Include="EmplyeeAttendanceClient.cs" />
+    <Compile Include="EmployeeAttendanceClient.cs" />
     <Compile Include="LeaveClient.cs" />
     <Compile Include="LeaveTransactionHistoryClient.cs" />
     <Compile Include="OfficeHolidayHelper.cs" />
