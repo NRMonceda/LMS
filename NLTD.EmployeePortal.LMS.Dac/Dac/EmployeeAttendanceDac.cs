@@ -90,7 +90,7 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
             {
                 if (i == employeeAttendanceModelList.Count - 1)
                 {
-                    employeeAttendanceModelList[i].BreakDuration = "End Of Day. Total Work : " + workTime.ToString() + ", Total Break : " + breakTime.ToString();
+                    employeeAttendanceModelList[i].BreakDuration = "Total Work : " + workTime.ToString() + ", Total Break : " + breakTime.ToString();
                 }
                 else if (employeeAttendanceModelList[i].UserID == employeeAttendanceModelList[i + 1].UserID)
                 {
@@ -125,14 +125,14 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
                     }
                     else
                     {
-                        employeeAttendanceModelList[i].BreakDuration = "End Of Day. Total Work : " + workTime.ToString() + ", Total Break : " + breakTime.ToString();
+                        employeeAttendanceModelList[i].BreakDuration = "Total Work : " + workTime.ToString() + ", Total Break : " + breakTime.ToString();
                         workTime = TimeSpan.Zero;
                         breakTime = TimeSpan.Zero;
                     }
                 }
                 else
                 {
-                    employeeAttendanceModelList[i].BreakDuration = "End Of Day. Total Work : " + workTime.ToString() + ", Total Break : " + breakTime.ToString();
+                    employeeAttendanceModelList[i].BreakDuration = "Total Work : " + workTime.ToString() + ", Total Break : " + breakTime.ToString();
                     workTime = TimeSpan.Zero;
                     breakTime = TimeSpan.Zero;
                 }
