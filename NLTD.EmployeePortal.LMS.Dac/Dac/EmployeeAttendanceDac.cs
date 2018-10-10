@@ -76,17 +76,19 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
             TimeSpan breakTime = new TimeSpan();
             TimeSpan workTime = new TimeSpan();
 
-            for (int i = 0; i <= employeeAttendanceModelList.Count-1; i++)
+            for (int i = 0; i <= employeeAttendanceModelList.Count - 1; i++)
             {
-                punchTime = TimeSpan.Zero;
-                if (i== employeeAttendanceModelList.Count - 1)
+                if (i == employeeAttendanceModelList.Count - 1)
                 {
                     employeeAttendanceModelList[i].BreakDuration = "End Of Day. Total Work : " + workTime.ToString() + ", Total Break : " + breakTime.ToString();
                 }
                 else if (employeeAttendanceModelList[i].UserID == employeeAttendanceModelList[i + 1].UserID)
                 {
+                    var currentPunchShift = employeeAttendanceModelList[i].InOutDate.Hour < 9 ? employeeAttendanceModelList[i].InOutDate.AddDays(-1) : employeeAttendanceModelList[i].InOutDate;
+                    var nextPunchShift = employeeAttendanceModelList[i + 1].InOutDate.Hour < 9 ? employeeAttendanceModelList[i + 1].InOutDate.AddDays(-1) : employeeAttendanceModelList[i + 1].InOutDate;
+
                     punchTime = (employeeAttendanceModelList[i + 1].InOutDate - employeeAttendanceModelList[i].InOutDate);
-                    if (punchTime < new TimeSpan(8, 0, 0))
+                    if (currentPunchShift.Date.CompareTo(nextPunchShift.Date) == 0)
                     {
                         if (employeeAttendanceModelList[i].InOut == "In")
                         {
@@ -127,7 +129,7 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
                     breakTime = TimeSpan.Zero;
                 }
             }
-            
+
             return employeeAttendanceModelList.OrderBy(e => e.Name).ThenByDescending(e => e.InOutDate).ToList();
         }
 
