@@ -532,7 +532,7 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
                 endDateFormatted = DateTime.Parse(ToDate, new CultureInfo("en-GB", true)).Add(new TimeSpan(23, 59, 59));
             }
 
-            IEmployeeAttendanceHelper employeeAttendanceHelper = new EmplyeeAttendanceClient();
+            IEmployeeAttendanceHelper employeeAttendanceHelper = new EmployeeAttendanceClient();
             employeeAttendanceModelList = employeeAttendanceHelper.GetAccessCardAttendanceForRange(userID, startDateFormatted, endDateFormatted, requestLevelPerson);
             requestLevelPerson = tempRequestLevelPerson;
             return employeeAttendanceModelList;
@@ -563,7 +563,7 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
                 endDateFormatted = DateTime.Parse(ToDate, new CultureInfo("en-GB", true)).Add(new TimeSpan(23, 59, 59));
             }
 
-            IEmployeeAttendanceHelper employeeAttendanceHelper = new EmplyeeAttendanceClient();
+            IEmployeeAttendanceHelper employeeAttendanceHelper = new EmployeeAttendanceClient();
             employeeAttendanceModelList = employeeAttendanceHelper.GetAttendanceForRange(userID, startDateFormatted, endDateFormatted, requestLevelPerson, IsDirectEmployees);
             requestLevelPerson = tempRequestLevelPerson;
             return employeeAttendanceModelList;

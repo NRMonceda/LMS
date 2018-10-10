@@ -17,7 +17,7 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
         // GET: Attendance
         public AttendanceController()
         {
-            EmployeeAttendanceHelper = new EmplyeeAttendanceClient();
+            EmployeeAttendanceHelper = new EmployeeAttendanceClient();
         }
 
         public ActionResult MyAttendance()
