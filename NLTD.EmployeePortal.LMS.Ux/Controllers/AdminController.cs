@@ -711,12 +711,12 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
 
             if (excelData.Count > 0)
             {
-                List<string> columns = new List<string>() { "AttendanceDate", "InOutTime", "InOut", "Name" };
+                List<string> columns = new List<string>() { "AttendanceDate", "InOutTime", "InOut", "Name", "BreakDuration" };
                 // string fileName = "Attendance.xlsx";
                 string fileName = string.Format("Attendance_{0}{1}", DateTime.Now.ToString("ddMMyyyyHHmmss"), ".xlsx");
                 if (EmployeeAttendanceQueryModelObj.RequestLevelPerson == "My")
                 {
-                    columns = new List<string>() { "AttendanceDate", "InOutTime", "InOut" };
+                    columns = new List<string>() { "AttendanceDate", "InOutTime", "InOut", "BreakDuration" };
                 }
 
                 byte[] filecontent = ExcelExportHelper.ExportExcelAttendance(excelData, "", false, columns.ToArray());
