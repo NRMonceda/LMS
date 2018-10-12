@@ -497,7 +497,7 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
 
         public ActionResult loadEmployeeAttendance(string ID, string FromDate, string ToDate, string requestLevelPerson, bool myDirectEmployees)
         {
-            IList<EmployeeAttendanceModel> employeeAttendanceModelList = GetEmployeeAttendanceList(ID, FromDate, ToDate, requestLevelPerson, myDirectEmployees);
+            IList<EmployeeAttendanceModel> employeeAttendanceModelList = GetEmployeeAttendanceList(ID, FromDate, ToDate, requestLevelPerson, myDirectEmployees, true);
             ViewBag.RequestLevelPerson = requestLevelPerson;
             return PartialView("EmployeeAttendanceDtlPartial", employeeAttendanceModelList);
         }
@@ -538,7 +538,7 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
             return employeeAttendanceModelList;
         }
 
-        private IList<EmployeeAttendanceModel> GetEmployeeAttendanceList(string ID, string FromDate, string ToDate, string requestLevelPerson, bool IsDirectEmployees)
+        private IList<EmployeeAttendanceModel> GetEmployeeAttendanceList(string ID, string FromDate, string ToDate, string requestLevelPerson, bool IsDirectEmployees, bool getBreakStatus)
         {
             IList<EmployeeAttendanceModel> employeeAttendanceModelList = null;
             DateTime startDateFormatted, endDateFormatted;
@@ -564,7 +564,7 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
             }
 
             IEmployeeAttendanceHelper employeeAttendanceHelper = new EmployeeAttendanceClient();
-            employeeAttendanceModelList = employeeAttendanceHelper.GetAttendanceForRange(userID, startDateFormatted, endDateFormatted, requestLevelPerson, IsDirectEmployees);
+            employeeAttendanceModelList = employeeAttendanceHelper.GetAttendanceForRange(userID, startDateFormatted, endDateFormatted, requestLevelPerson, IsDirectEmployees, getBreakStatus);
             requestLevelPerson = tempRequestLevelPerson;
             return employeeAttendanceModelList;
         }
@@ -707,7 +707,7 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
         public ActionResult ExportAttendanceToExcel(EmployeeAttendanceQueryModel EmployeeAttendanceQueryModelObj, string RequestLevelPerson)
         {
             List<EmployeeAttendanceModel> excelData = GetEmployeeAttendanceList(EmployeeAttendanceQueryModelObj.UserID.ToString(), (EmployeeAttendanceQueryModelObj.FromDate == DateTime.MinValue ? "" : EmployeeAttendanceQueryModelObj.FromDate.ToString()),
-                (EmployeeAttendanceQueryModelObj.ToDate == DateTime.MinValue ? "" : EmployeeAttendanceQueryModelObj.ToDate.ToString()), RequestLevelPerson, EmployeeAttendanceQueryModelObj.DirectEmployees).ToList();
+                (EmployeeAttendanceQueryModelObj.ToDate == DateTime.MinValue ? "" : EmployeeAttendanceQueryModelObj.ToDate.ToString()), RequestLevelPerson, EmployeeAttendanceQueryModelObj.DirectEmployees, true).ToList();
 
             if (excelData.Count > 0)
             {

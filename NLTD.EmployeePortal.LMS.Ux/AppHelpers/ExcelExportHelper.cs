@@ -858,7 +858,6 @@ namespace NLTD.EmployeePortal.LMS.Ux.AppHelpers
                                                                                 AttendanceDate = at.InOutDate.ToString("dd-MM-yyyy"),
                                                                                 InOutTime = at.InOutDate.ToString("HH:mm:ss"),
                                                                                 Name = at.Name,
-                                                                                BreakDuration = at.BreakDuration,
                                                                                 CardID = at.CardID
                                                                             }).ToList();
 

@@ -117,7 +117,7 @@ namespace NLTD.EmployeePortal.LMS.Dac
             }
             IEmployeeAttendanceHelper EmployeeAttendanceDacObj = new EmployeeAttendanceDac();
             //To Retrive the Employee Attendance for the given date.
-            List<EmployeeAttendanceModel> EmployeeAttendanceList = EmployeeAttendanceDacObj.GetAttendanceForRange(UserID, FromDate, ToDate, "My", true);
+            List<EmployeeAttendanceModel> EmployeeAttendanceList = EmployeeAttendanceDacObj.GetAttendanceForRange(UserID, FromDate, ToDate, "My", true, false);
 
             try
             {

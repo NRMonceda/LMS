@@ -112,7 +112,7 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
             IEmployeeAttendanceHelper EmployeeAttendanceDacObj = new EmployeeAttendanceDac();
 
             //To Retrieve the Employee Attendance for the given date.
-            List<EmployeeAttendanceModel> EmployeeAttendanceList = EmployeeAttendanceDacObj.GetAttendanceForRange(UserID, FromDate, ToDate, "My", true);
+            List<EmployeeAttendanceModel> EmployeeAttendanceList = EmployeeAttendanceDacObj.GetAttendanceForRange(UserID, FromDate, ToDate, "My", true, false);
 
             // To Get the Employee name
             EmployeeProfile EmployeeProfileObj = new EmployeeDac().GetEmployeeProfile(UserID);

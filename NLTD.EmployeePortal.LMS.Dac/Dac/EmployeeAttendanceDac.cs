@@ -41,7 +41,7 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
             return employeeAttendanceModelList;
         }
 
-        public List<EmployeeAttendanceModel> GetAttendanceForRange(Int64 UserID, DateTime FromDateTime, DateTime ToDateTime, string requestLevelPerson, bool isDirectEmployees)
+        public List<EmployeeAttendanceModel> GetAttendanceForRange(Int64 UserID, DateTime FromDateTime, DateTime ToDateTime, string requestLevelPerson, bool isDirectEmployees, bool getBreakStatus)
         {
             List<EmployeeAttendanceModel> employeeAttendanceModelList = new List<EmployeeAttendanceModel>();
             EmployeeDac employeeDac = new EmployeeDac();
@@ -82,45 +82,54 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
                                                }).OrderBy(e => e.UserID).ThenBy(e => e.InOutDate).ToList();
             }
 
-            TimeSpan punchTime = new TimeSpan();
-            TimeSpan breakTime = new TimeSpan();
-            TimeSpan workTime = new TimeSpan();
-
-            for (int i = 0; i <= employeeAttendanceModelList.Count - 1; i++)
+            if (getBreakStatus)
             {
-                if (i == employeeAttendanceModelList.Count - 1)
-                {
-                    employeeAttendanceModelList[i].BreakDuration = "Total Work : " + workTime.ToString() + ", Total Break : " + breakTime.ToString();
-                }
-                else if (employeeAttendanceModelList[i].UserID == employeeAttendanceModelList[i + 1].UserID)
-                {
-                    punchTime = (employeeAttendanceModelList[i + 1].InOutDate - employeeAttendanceModelList[i].InOutDate);
+                TimeSpan punchTime = new TimeSpan();
+                TimeSpan breakTime = new TimeSpan();
+                TimeSpan workTime = new TimeSpan();
 
-                    if (employeeAttendanceModelList[i].ShiftDate == employeeAttendanceModelList[i + 1].ShiftDate)
+                for (int i = 0; i <= employeeAttendanceModelList.Count - 1; i++)
+                {
+                    if (i == employeeAttendanceModelList.Count - 1)
                     {
-                        if (employeeAttendanceModelList[i].InOut == "In")
+                        employeeAttendanceModelList[i].BreakDuration = "Total Work : " + workTime.ToString() + ", Total Break : " + breakTime.ToString();
+                    }
+                    else if (employeeAttendanceModelList[i].UserID == employeeAttendanceModelList[i + 1].UserID)
+                    {
+                        punchTime = (employeeAttendanceModelList[i + 1].InOutDate - employeeAttendanceModelList[i].InOutDate);
+
+                        if (employeeAttendanceModelList[i].ShiftDate == employeeAttendanceModelList[i + 1].ShiftDate)
                         {
-                            if (employeeAttendanceModelList[i + 1].InOut == "Out")
+                            if (employeeAttendanceModelList[i].InOut == "In")
                             {
-                                employeeAttendanceModelList[i].BreakDuration = "Work : " + punchTime.ToString();
-                                workTime += punchTime;
+                                if (employeeAttendanceModelList[i + 1].InOut == "Out")
+                                {
+                                    employeeAttendanceModelList[i].BreakDuration = "Work : " + punchTime.ToString();
+                                    workTime += punchTime;
+                                }
+                                else
+                                {
+                                    employeeAttendanceModelList[i].BreakDuration = "Missing Out Punch";
+                                }
                             }
                             else
                             {
-                                employeeAttendanceModelList[i].BreakDuration = "Missing Out Punch";
+                                if (employeeAttendanceModelList[i + 1].InOut == "In")
+                                {
+                                    employeeAttendanceModelList[i].BreakDuration = "Break : " + punchTime.ToString();
+                                    breakTime += punchTime;
+                                }
+                                else
+                                {
+                                    employeeAttendanceModelList[i].BreakDuration = "Missing In Punch";
+                                }
                             }
                         }
                         else
                         {
-                            if (employeeAttendanceModelList[i + 1].InOut == "In")
-                            {
-                                employeeAttendanceModelList[i].BreakDuration = "Break : " + punchTime.ToString();
-                                breakTime += punchTime;
-                            }
-                            else
-                            {
-                                employeeAttendanceModelList[i].BreakDuration = "Missing In Punch";
-                            }
+                            employeeAttendanceModelList[i].BreakDuration = "Total Work : " + workTime.ToString() + ", Total Break : " + breakTime.ToString();
+                            workTime = TimeSpan.Zero;
+                            breakTime = TimeSpan.Zero;
                         }
                     }
                     else
@@ -130,14 +139,7 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
                         breakTime = TimeSpan.Zero;
                     }
                 }
-                else
-                {
-                    employeeAttendanceModelList[i].BreakDuration = "Total Work : " + workTime.ToString() + ", Total Break : " + breakTime.ToString();
-                    workTime = TimeSpan.Zero;
-                    breakTime = TimeSpan.Zero;
-                }
             }
-
             return employeeAttendanceModelList.OrderBy(e => e.Name).ThenByDescending(e => e.InOutDate).ToList();
         }
 
