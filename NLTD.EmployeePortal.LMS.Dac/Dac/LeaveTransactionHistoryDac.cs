@@ -151,8 +151,8 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
                                      EndDate = ld.LeaveDate,
                                      LeaveType = lt.Type,
                                      LeaveDayQty = ld.LeaveDayQty,
-                                     StartDateType = l.StartDateType,
-                                     EndDateType = l.EndDateType,
+                                     StartDateType = ld.PartOfDay,
+                                     EndDateType = ld.PartOfDay,
                                      LeaveTypeId = l.LeaveTypeId,
                                      IsLeave = lt.IsLeave,
                                      WorkFromHomeDayQty = ld.LeaveDayQty
