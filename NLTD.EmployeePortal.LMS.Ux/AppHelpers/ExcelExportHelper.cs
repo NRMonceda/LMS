@@ -841,7 +841,8 @@ namespace NLTD.EmployeePortal.LMS.Ux.AppHelpers
                                                                                 InOut = at.InOut,
                                                                                 AttendanceDate = at.InOutDate.ToString("dd-MM-yyyy"),
                                                                                 InOutTime = at.InOutDate.ToString("HH:mm:ss"),
-                                                                                Name = at.Name
+                                                                                Name = at.Name,
+                                                                                BreakDuration = at.BreakDuration
                                                                             }).ToList();
 
             return ExportAttendanceExcel(employeeAttendanceModelListObj, Heading, showSlno, ColumnsToTake);
@@ -1205,6 +1206,7 @@ namespace NLTD.EmployeePortal.LMS.Ux.AppHelpers
                 dataTable.Columns["AttendanceDate"].ColumnName = "Date";
                 dataTable.Columns["InOutTime"].ColumnName = "In Out Time";
                 dataTable.Columns["InOut"].ColumnName = "In Out";
+                dataTable.Columns["BreakDuration"].ColumnName = "BreakDuration";
 
                 ExcelWorksheet workSheet = package.Workbook.Worksheets.Add("AttendanceDetails");
                 int startRowFrom = String.IsNullOrEmpty(heading) ? 1 : 3;
@@ -1277,17 +1279,6 @@ namespace NLTD.EmployeePortal.LMS.Ux.AppHelpers
                     }
                 }
 
-                //format the datetime field
-                //using (ExcelRange col = workSheet.Cells[2, 3, 1 + dataTable.Rows.Count, 3])
-                //{
-                //    col.Style.Numberformat.Format = "dd/MM/yyyy";
-                //    col.Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
-                //}
-                //using (ExcelRange col = workSheet.Cells[2, 5, 1 + dataTable.Rows.Count, 7])
-                //{
-                //    col.Style.Numberformat.Format = "HH:mm:ss";
-                //    col.Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
-                //}
                 if (!String.IsNullOrEmpty(heading))
                 {
                     workSheet.Cells["A1"].Value = heading;
@@ -1334,12 +1325,7 @@ namespace NLTD.EmployeePortal.LMS.Ux.AppHelpers
                 foreach (DataColumn column in dataTable.Columns)
                 {
                     ExcelRange columnCells = workSheet.Cells[workSheet.Dimension.Start.Row, columnIndex, workSheet.Dimension.End.Row, columnIndex];
-                    //int maxLength = columnCells.Max(cell => cell.Value.ToString().Count());
-                    //if (maxLength < 150)
-                    //{
                     workSheet.Column(columnIndex).AutoFit();
-                    //}
-
                     columnIndex++;
                 }
 
@@ -1380,17 +1366,6 @@ namespace NLTD.EmployeePortal.LMS.Ux.AppHelpers
                     }
                 }
 
-                //format the datetime field
-                //using (ExcelRange col = workSheet.Cells[2, 3, 1 + dataTable.Rows.Count, 3])
-                //{
-                //    col.Style.Numberformat.Format = "dd/MM/yyyy";
-                //    col.Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
-                //}
-                //using (ExcelRange col = workSheet.Cells[2, 5, 1 + dataTable.Rows.Count, 7])
-                //{
-                //    col.Style.Numberformat.Format = "HH:mm:ss";
-                //    col.Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
-                //}
                 if (!String.IsNullOrEmpty(heading))
                 {
                     workSheet.Cells["A1"].Value = heading;

@@ -70,6 +70,9 @@ else
                     <th>
                         @Html.DisplayName("Punch")
                     </th>
+                    <th>
+                        @Html.DisplayName("Status")
+                    </th>
 
                 </tr>
             </thead>
@@ -89,6 +92,9 @@ else
                 </td>
                 <td>
                     @Model[j].InOut
+                </td>
+                <td>
+                    @Model[j].BreakDuration
                 </td>
 
             </tr>
@@ -129,6 +135,9 @@ else
                                 <th>
                                     @Html.DisplayName("Punch")
                                 </th>
+                                <th>
+                                    @Html.DisplayName("Status")
+                                </th>
 
                             </tr>
                         </thead>
@@ -155,6 +164,9 @@ else
                                     </td>
                                     <td>
                                         @Model[j].InOut
+                                    </td>
+                                    <td>
+                                        @Model[j].BreakDuration
                                     </td>
 
                                 </tr>

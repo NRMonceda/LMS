@@ -18,6 +18,9 @@ namespace NLTD.EmployeePortal.LMS.Common.DisplayModel
 
         public string requestLevelPerson { get; set; }
 
-        //public string BreakDuration { get; set; }
+        public string BreakDuration { get; set; }
+
+        public DateTime ShiftDate { get; set; }
+        
     }
 }
