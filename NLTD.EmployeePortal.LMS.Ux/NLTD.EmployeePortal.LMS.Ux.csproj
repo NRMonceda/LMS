@@ -770,6 +770,7 @@
     <Content Include="Views\Admin\EmployeeAcessCardAttendanceDtlPartial.cshtml" />
     <Content Include="Views\Profile\EarnedLeaveCredit.cshtml" />
     <Content Include="Views\Profile\EarnedLeaveCreditPartial.cshtml" />
+    <Content Include="Views\Dashboard\ChangeLogPartial.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
