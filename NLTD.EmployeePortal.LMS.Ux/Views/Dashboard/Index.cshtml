@@ -66,12 +66,13 @@
                 <div class="box box-danger">
                     <div class="box-header with-border">
                         <h3 class="box-title">Office Attendance</h3>
+                            <span style="float: right; font-size: 14px; font-weight: bold; font-style: italic; color: maroon">
+                                Employees: @ViewBag.OfficeEmployees
+                            </span>
                     </div>
                     <div class="box-body">
                         <span class="box-title">No. of employees present in office today : </span>
                         <span style="font-weight: bold;">@ViewBag.OfficeAttendance</span>
-                        <span class="box-title"> of </span>
-                        <span style="font-weight: bold;">@ViewBag.OfficeEmployees</span>
                     </div>
                 </div>
             </div>
