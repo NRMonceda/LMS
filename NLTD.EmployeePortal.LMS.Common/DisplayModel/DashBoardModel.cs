@@ -16,7 +16,7 @@ namespace NLTD.EmployeePortal.LMS.Common.DisplayModel
         public string UserRole { get; set; }
         public bool IsLMSApprover { get; set; }
         public int EmployeeCount { get; set; }
-
+        public int EmployeeInOfficeCount { get; set; }
         public bool PreviousYear { get; set; }
         public bool NextYear { get; set; }
     }

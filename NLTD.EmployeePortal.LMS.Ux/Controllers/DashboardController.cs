@@ -22,7 +22,8 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
             }
             dbMdl.IsLMSApprover = IsLMSApprover;
             dbMdl.UserRole = Role;
-            ViewBag.OfficeAttendance = dbMdl.EmployeeCount;
+            ViewBag.OfficeEmployees = dbMdl.EmployeeCount;
+            ViewBag.OfficeAttendance = dbMdl.EmployeeInOfficeCount;
 
             ViewBag.PreviousYear = dbMdl.PreviousYear ? "" : "disabled";
             ViewBag.NextYear = dbMdl.NextYear ? "" : "disabled";

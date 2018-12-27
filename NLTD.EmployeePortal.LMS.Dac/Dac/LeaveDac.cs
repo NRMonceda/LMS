@@ -1983,7 +1983,7 @@ namespace NLTD.EmployeePortal.LMS.Dac
             dshMdl.lstWeekOffs = GetWeekOffs(UserId);
             dshMdl.PendingApprovalCount = GetPendingApprovalCount(UserId);
             dshMdl.EmployeeCount = GetEmployeeCount(OfficeId);
-            //dshMdl.ListTimeSheetModel = GetMyTeamTimeSheet(UserId);
+            dshMdl.EmployeeInOfficeCount = GetEmployeeInOfficeCount(OfficeId);
             return dshMdl;
         }
 
@@ -2004,7 +2004,7 @@ namespace NLTD.EmployeePortal.LMS.Dac
             return timeSheetModelList;
         }
 
-        public int GetEmployeeCount(Int64 OfficeId)
+        public int GetEmployeeInOfficeCount(Int64 OfficeId)
         {
             int count = 0;
             DateTime dateTime = DateTime.Now;
@@ -2022,6 +2022,16 @@ namespace NLTD.EmployeePortal.LMS.Dac
                 );
 
                 count = qry.ToList().Distinct().Count();
+            }
+            return count;
+        }
+
+        public int GetEmployeeCount(Int64 OfficeId)
+        {
+            int count = 0;
+            using (var context = new NLTDDbContext())
+            {
+                count = context.Employee.Where(x => x.OfficeId == OfficeId && x.IsActive==true).Count();
             }
             return count;
         }
