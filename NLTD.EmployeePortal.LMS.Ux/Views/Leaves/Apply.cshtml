@@ -110,16 +110,21 @@
                                     @{
                                         foreach (var item in Model.lstLeavTypes)
                                         {
-                                            if (Model.LeaveType == item.LeaveTypeId)
+                                            //Remove Debit Leave from Apply Leave screen for now. This should be handled with soft delete flag. TODO
+                                            if (item.LeaveTypeText != "Debit Leave")
                                             {
+
+                                                if (Model.LeaveType == item.LeaveTypeId)
+                                                {
                                                 <option value="@item.LeaveTypeId" selected="selected">@item.LeaveTypeText</option>
-                                            }
-                                            else
-                                            {
+                                                }
+                                                else
+                                                {
                                                 <option value="@item.LeaveTypeId">@item.LeaveTypeText</option>
+                                                    }
+                                                }
                                             }
                                         }
-                                    }
                                 </select>
                             </div>
 

@@ -873,8 +873,15 @@ namespace NLTD.EmployeePortal.LMS.Dac
                                                         LeaveTypeText = types.Type,
                                                         IsTimeBased = types.IsTimeBased
                                                     }).ToList();
+               
                 return LeaveTypes;
             }
+
+            
+
+            
+
+
         }
 
         public string GetTimeBasedLeaveTypesString(long OfficeId, Int64 userId)
@@ -932,8 +939,36 @@ namespace NLTD.EmployeePortal.LMS.Dac
                         var adjustBal = context.LeaveType.Where(e => e.LeaveTypeId == request.LeaveType).FirstOrDefault();
                         bool isTimeBased = adjustBal.IsTimeBased;
                         string duplicateRequest = string.Empty;
+                        int daysBeforeApplied = 0;
                         if (isTimeBased)
                             request.LeaveUpto = request.LeaveFrom;
+
+                        //New Leave Policy restrictions
+                        //TODO remove hard coded
+                        if (System.DateTime.Now.Date > DateTime.ParseExact("05012019", "ddMMyyyy",CultureInfo.InvariantCulture).Date)
+                        {
+                            daysBeforeApplied = (request.LeaveFrom.Date - System.DateTime.Now.Date).Days;
+
+                            if (adjustBal.Type == "Casual Leave")
+                            {
+                                //Apply 3 days before
+                                if (daysBeforeApplied < 3)
+                                {
+                                    return "MinDaysForCL";
+                                }
+                            }
+                            else if (adjustBal.Type == "Earned Leave")
+                            {
+                                //Apply 14 days before
+                                if (daysBeforeApplied < 14)
+                                {
+                                    return "MinDaysForEL";
+                                }
+                            }
+                        }
+
+                        //
+
 
                         var chkLeave = context.Leave
                         .Where(h => h.UserId == request.UserId && (h.Status == "A" || h.Status == "P") && ((request.LeaveFrom >= h.StartDate && request.LeaveFrom <= h.EndDate) || (request.LeaveUpto >= h.StartDate && request.LeaveUpto <= h.EndDate) || (request.LeaveFrom <= h.StartDate && request.LeaveUpto >= h.EndDate))).ToList();
@@ -1134,6 +1169,14 @@ namespace NLTD.EmployeePortal.LMS.Dac
                             if (leaveDuration > adjustBal.MaximumPerRequest)
                                 return "ExceedMaxPerRequest" + adjustBal.MaximumPerRequest;
                         }
+                        //Leave Policy changes //TODO remove hard coded
+                        if (adjustBal.Type == "Earned Leave")
+                        {
+                            if (leaveDuration < 3)
+                                return "BelowMinPerRequest";
+                        }
+                        //
+
 
                         Leave leave = new Leave();
                         leave.AppliedAt = DateTime.Now;
