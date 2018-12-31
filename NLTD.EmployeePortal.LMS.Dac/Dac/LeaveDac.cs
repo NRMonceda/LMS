@@ -940,12 +940,14 @@ namespace NLTD.EmployeePortal.LMS.Dac
                         bool isTimeBased = adjustBal.IsTimeBased;
                         string duplicateRequest = string.Empty;
                         int daysBeforeApplied = 0;
+                        string leavePolicyDate = ConfigurationManager.AppSettings["LeavePolicyDate"].ToString();
+                        string todayDate = System.DateTime.Now.Date.ToString("ddMMyyyy", CultureInfo.InvariantCulture);
                         if (isTimeBased)
                             request.LeaveUpto = request.LeaveFrom;
 
                         //New Leave Policy restrictions
                         //TODO remove hard coded
-                        if (System.DateTime.Now.Date > DateTime.ParseExact("05012019", "ddMMyyyy",CultureInfo.InvariantCulture).Date)
+                        if (DateTime.ParseExact(todayDate, "ddMMyyyy", CultureInfo.InvariantCulture).Date > DateTime.ParseExact(leavePolicyDate, "ddMMyyyy",CultureInfo.InvariantCulture).Date)
                         {
                             daysBeforeApplied = (request.LeaveFrom.Date - System.DateTime.Now.Date).Days;
 
