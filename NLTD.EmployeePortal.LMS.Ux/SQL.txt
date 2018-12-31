@@ -1,1 +1,1 @@
-﻿sp_RENAME 'OfficeHoliday.OfficeHolidayId' , 'OfficeHolidayId', 'COLUMN'
+﻿UPDATE LeaveType SET MaximumPerMonth=2 WHERE LeaveTypeId=7

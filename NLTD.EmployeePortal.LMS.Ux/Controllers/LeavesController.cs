@@ -252,6 +252,8 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
                                 data.ErrorMesage = "Please select correct date.";
                             else if (result == "PermissionProperTime")
                                 data.ErrorMesage = "Please select the correct time duration.";
+                            else if (result == "PermissionDurationTime")
+                                data.ErrorMesage = "Total permission time exceeds the duration allowed per month.";
                             else if (result == "PermissionDateTobeSame")
                                 data.ErrorMesage = "The From and To dates should be same for this type of request.";
                             else if (result.Contains("ExceedMaxPerRequest"))
