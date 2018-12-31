@@ -257,9 +257,9 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
                             else if (result.Contains("ExceedMaxPerRequest"))
                                 data.ErrorMesage = "Maximum number of days allowed per request are " + result.Substring(19) + ".";
                             else if (result == "MinDaysForCL")
-                                data.ErrorMesage = "Casual Leave can be applied 3 days prior to availing.";
+                                data.ErrorMesage = "Casual Leave has to be applied 3 days prior to availing.";
                             else if (result == "MinDaysForEL")
-                                data.ErrorMesage = "Earned Leave can be applied 14 days prior to availing.";
+                                data.ErrorMesage = "Earned Leave has to be applied 14 days prior to availing.";
                             else if (result.Contains("BelowMinPerRequest"))
                                 data.ErrorMesage = "Minimum number of days allowed per request are 3.";
                             
