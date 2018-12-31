@@ -96,7 +96,7 @@
                             @Html.Label("Request Type")
                             <select id="LeaveType" name="LeaveType" class="form-control" onchange="hourEntryLayout()">
                                 @{
-                                    foreach (var item in Model.lstLeavTypes)
+                                    foreach (var item in Model.lstLeaveTypes)
                                     {
                                         if (Model.LeaveType == item.LeaveTypeId)
                                         {

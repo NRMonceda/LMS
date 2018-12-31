@@ -2101,7 +2101,7 @@ namespace NLTD.EmployeePortal.LMS.Dac
         public LeaveRequestModel ApplyLeaveCommonData(Int64 OfficeId, Int64 UserId)
         {
             LeaveRequestModel lrm = new LeaveRequestModel();
-            lrm.lstLeavTypes = GetLeaveTypes(OfficeId, UserId);
+            lrm.lstLeaveTypes = GetLeaveTypes(OfficeId, UserId);
             lrm.lstSummary = GetLeaveSumary(UserId, DateTime.Now.Year);
             lrm.WeekOffs = ReturnWeekOff(UserId);
             lrm.holidayDates = GetHolidayDates(UserId, DateTime.Now.Year);

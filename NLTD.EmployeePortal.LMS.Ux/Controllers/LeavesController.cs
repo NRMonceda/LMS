@@ -42,7 +42,7 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
             using (var Client = new LeaveClient())
             {
                 var commonData = Client.ApplyLeaveCommonData(this.OfficeId, this.UserId);
-                request.lstLeavTypes = commonData.lstLeavTypes;
+                request.lstLeaveTypes = commonData.lstLeaveTypes;
                 request.lstSummary = commonData.lstSummary;
                 request.WeekOffs = commonData.WeekOffs;
                 request.holidayDates = commonData.holidayDates;
@@ -77,7 +77,7 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
             using (var Client = new LeaveClient())
             {
                 var commonData = Client.ApplyLeaveCommonData(this.OfficeId, userId);
-                request.lstLeavTypes = commonData.lstLeavTypes;
+                request.lstLeaveTypes = commonData.lstLeaveTypes;
                 request.lstSummary = commonData.lstSummary;
                 request.WeekOffs = commonData.WeekOffs;
                 request.holidayDates = commonData.holidayDates;
@@ -274,7 +274,7 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
             using (var Client = new LeaveClient())
             {
                 var commonData = Client.ApplyLeaveCommonData(this.OfficeId, userId);
-                data.lstLeavTypes = commonData.lstLeavTypes;
+                data.lstLeaveTypes = commonData.lstLeaveTypes;
                 data.lstSummary = commonData.lstSummary;
                 data.WeekOffs = commonData.WeekOffs;
                 data.holidayDates = commonData.holidayDates;

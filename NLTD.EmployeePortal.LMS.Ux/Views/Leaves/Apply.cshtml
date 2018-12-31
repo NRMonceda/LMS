@@ -108,7 +108,7 @@
                                 @Html.Label("Request Type")
                                 <select id="LeaveType" name="LeaveType" class="form-control" onchange="hourEntryLayout()">
                                     @{
-                                        foreach (var item in Model.lstLeavTypes)
+                                        foreach (var item in Model.lstLeaveTypes)
                                         {
                                             //Remove Debit Leave from Apply Leave screen for now. This should be handled with soft delete flag. TODO
                                             if (item.LeaveTypeText != "Debit Leave")
