@@ -2,9 +2,14 @@
 <Menu xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <menuitem>
     <MenuItem>
+      <title>Leave Policy</title>
+      <url>/Help/LeavePolicy 2019.pdf" target="_blank</url>
+      <icon>fa fa-file-o</icon>
+    </MenuItem>
+    <MenuItem>
       <title>Help</title>
       <url>/Help/LMS_User_Guide.htm" target="_blank</url>
       <icon>fa fa-file-o</icon>
-    </MenuItem>
+    </MenuItem>    
   </menuitem>
 </Menu>
