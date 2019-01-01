@@ -384,7 +384,10 @@ namespace NLTD.EmployeePortal.LMS.Dac
                     holStr.Append(item.HolidayDate.ToString("MM/dd/yyyy", CultureInfo.InvariantCulture) + ",");
                 }
                 retStr = holStr.ToString();
-                retStr = retStr.Substring(0, holStr.Length - 1);
+                if (holStr.Length > 1)
+                {
+                    retStr = retStr.Substring(0, holStr.Length - 1);
+                }
             }
             return retStr;
         }
