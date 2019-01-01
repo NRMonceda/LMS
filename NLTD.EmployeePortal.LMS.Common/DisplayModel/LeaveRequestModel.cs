@@ -32,7 +32,7 @@ namespace NLTD.EmployeePortal.LMS.Common.DisplayModel
 
         public IList<LeaveSummary> lstSummary { get; set; }
 
-        public IList<LeaveTypesModel> lstLeavTypes { get; set; }
+        public IList<LeaveTypesModel> lstLeaveTypes { get; set; }
 
         public IList<LeaveDtl> leaveDetail = new List<LeaveDtl>();
 

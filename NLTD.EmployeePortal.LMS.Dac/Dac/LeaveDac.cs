@@ -582,7 +582,7 @@ namespace NLTD.EmployeePortal.LMS.Dac
                                   ReportingToId = l.ReportingToId,
                                   isTimeBased = l.isTimeBased,
                                   Comments = l.Comments,
-                                  PermissionInMonth = (l.isTimeBased == false) ? "" : ReturnPermissionHoursPerMonth(l.LeaveFromDate.Month, l.UserId, l.LeaveTypeId),
+                                  PermissionInMonth = (l.isTimeBased == false) ? "" : ReturnPermissionHoursPerMonthInString(l.LeaveFromDate.Month, l.UserId, l.LeaveTypeId, false),
                                   AppliedByName = e.FirstName + " " + e.LastName
                               }).ToList();
 
@@ -626,7 +626,23 @@ namespace NLTD.EmployeePortal.LMS.Dac
             }
         }
 
-        public string ReturnPermissionHoursPerMonth(int month, Int64 userId, long leaveTypeId)
+        public string ReturnPermissionHoursPerMonthInString(int month, Int64 userId, long leaveTypeId, bool includePending)
+        {
+            string retSring = string.Empty;
+            TimeSpan totalDuration = TimeSpan.Zero;
+            totalDuration = ReturnPermissionHoursPerMonth(month, userId, leaveTypeId, includePending);
+            if (totalDuration == TimeSpan.Zero)
+            {
+                retSring = "00:00";
+            }
+            else
+            {
+                retSring = totalDuration.ToString(@"hh\:mm");
+            }
+            return retSring;
+        }
+
+        public TimeSpan ReturnPermissionHoursPerMonth(int month, Int64 userId, long leaveTypeId, bool includePending)
         {
             string retSring = string.Empty;
             TimeSpan totalDuration = TimeSpan.Zero;
@@ -634,7 +650,9 @@ namespace NLTD.EmployeePortal.LMS.Dac
             {
                 var permissions = (from l in context.Leave
                                    join lp in context.PermissionDetail on l.LeaveId equals lp.LeaveId
-                                   where lp.PermissionDate.Month == month && l.UserId == userId && l.Status == "A" && l.StartDate.Year == DateTime.Now.Year
+                                   where lp.PermissionDate.Month == month && l.UserId == userId && 
+                                    (includePending || l.Status == "A")
+                                    && l.StartDate.Year == DateTime.Now.Year
                                     && l.LeaveTypeId == leaveTypeId
                                    select new { TimeFrom = lp.TimeFrom, TimeTo = lp.TimeTo }
                                      )
@@ -647,15 +665,8 @@ namespace NLTD.EmployeePortal.LMS.Dac
                         totalDuration = totalDuration + calculateDuration(permissions[i].TimeFrom, permissions[i].TimeTo);
                     }
                 }
-
-                if (totalDuration == TimeSpan.Zero)
-                {
-                    retSring = "00:00";
-                }
-                else
-                    retSring = totalDuration.ToString(@"hh\:mm");
             }
-            return retSring;
+            return totalDuration;
         }
 
         public TimeSpan calculateDuration(string permissionTimeFrom, string permissionTimeTo)
@@ -946,7 +957,9 @@ namespace NLTD.EmployeePortal.LMS.Dac
                         string leavePolicyDate = ConfigurationManager.AppSettings["LeavePolicyDate"].ToString();
                         string todayDate = System.DateTime.Now.Date.ToString("ddMMyyyy", CultureInfo.InvariantCulture);
                         if (isTimeBased)
+                        {
                             request.LeaveUpto = request.LeaveFrom;
+                        }
 
                         //New Leave Policy restrictions
                         //TODO remove hard coded
@@ -1148,10 +1161,11 @@ namespace NLTD.EmployeePortal.LMS.Dac
                                     permissionDateToTime = permissionDateToTime.AddDays(1);
                                 if (permissionDateToTime > permissionDateFromTime)
                                 {
-                                    //if ((permissionDateToTime - permissionDateFromTime).Hours > 4)
-                                    //{
-                                    //    return "PermissionDurationTime";
-                                    //}
+                                    TimeSpan appliedPermissionHoursPerMonth = ReturnPermissionHoursPerMonth(request.LeaveFrom.Date.Month, request.UserId, request.LeaveType,true);
+                                    if ((permissionDateToTime - permissionDateFromTime).TotalMinutes + appliedPermissionHoursPerMonth.TotalMinutes > (adjustBal.MaximumPerMonth*60))
+                                    {
+                                        return "PermissionDurationTime";
+                                    }
                                 }
                                 else
                                 {
@@ -2104,7 +2118,7 @@ namespace NLTD.EmployeePortal.LMS.Dac
         public LeaveRequestModel ApplyLeaveCommonData(Int64 OfficeId, Int64 UserId)
         {
             LeaveRequestModel lrm = new LeaveRequestModel();
-            lrm.lstLeavTypes = GetLeaveTypes(OfficeId, UserId);
+            lrm.lstLeaveTypes = GetLeaveTypes(OfficeId, UserId);
             lrm.lstSummary = GetLeaveSumary(UserId, DateTime.Now.Year);
             lrm.WeekOffs = ReturnWeekOff(UserId);
             lrm.holidayDates = GetHolidayDates(UserId, DateTime.Now.Year);

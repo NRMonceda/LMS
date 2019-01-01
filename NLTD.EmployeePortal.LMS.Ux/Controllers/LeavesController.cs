@@ -42,7 +42,7 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
             using (var Client = new LeaveClient())
             {
                 var commonData = Client.ApplyLeaveCommonData(this.OfficeId, this.UserId);
-                request.lstLeavTypes = commonData.lstLeavTypes;
+                request.lstLeaveTypes = commonData.lstLeaveTypes;
                 request.lstSummary = commonData.lstSummary;
                 request.WeekOffs = commonData.WeekOffs;
                 request.holidayDates = commonData.holidayDates;
@@ -77,7 +77,7 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
             using (var Client = new LeaveClient())
             {
                 var commonData = Client.ApplyLeaveCommonData(this.OfficeId, userId);
-                request.lstLeavTypes = commonData.lstLeavTypes;
+                request.lstLeaveTypes = commonData.lstLeaveTypes;
                 request.lstSummary = commonData.lstSummary;
                 request.WeekOffs = commonData.WeekOffs;
                 request.holidayDates = commonData.holidayDates;
@@ -252,14 +252,16 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
                                 data.ErrorMesage = "Please select correct date.";
                             else if (result == "PermissionProperTime")
                                 data.ErrorMesage = "Please select the correct time duration.";
+                            else if (result == "PermissionDurationTime")
+                                data.ErrorMesage = "Total permission time exceeds the duration allowed per month.";
                             else if (result == "PermissionDateTobeSame")
                                 data.ErrorMesage = "The From and To dates should be same for this type of request.";
                             else if (result.Contains("ExceedMaxPerRequest"))
                                 data.ErrorMesage = "Maximum number of days allowed per request are " + result.Substring(19) + ".";
                             else if (result == "MinDaysForCL")
-                                data.ErrorMesage = "Casual Leave can be applied 3 days prior to availing.";
+                                data.ErrorMesage = "Casual Leave has to be applied 3 days prior to availing.";
                             else if (result == "MinDaysForEL")
-                                data.ErrorMesage = "Earned Leave can be applied 14 days prior to availing.";
+                                data.ErrorMesage = "Earned Leave has to be applied 14 days prior to availing.";
                             else if (result.Contains("BelowMinPerRequest"))
                                 data.ErrorMesage = "Minimum number of days allowed per request are 3.";
                             
@@ -274,7 +276,7 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
             using (var Client = new LeaveClient())
             {
                 var commonData = Client.ApplyLeaveCommonData(this.OfficeId, userId);
-                data.lstLeavTypes = commonData.lstLeavTypes;
+                data.lstLeaveTypes = commonData.lstLeaveTypes;
                 data.lstSummary = commonData.lstSummary;
                 data.WeekOffs = commonData.WeekOffs;
                 data.holidayDates = commonData.holidayDates;
