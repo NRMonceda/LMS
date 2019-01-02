@@ -651,7 +651,7 @@ namespace NLTD.EmployeePortal.LMS.Dac
                 var permissions = (from l in context.Leave
                                    join lp in context.PermissionDetail on l.LeaveId equals lp.LeaveId
                                    where lp.PermissionDate.Month == month && l.UserId == userId && 
-                                    (includePending || l.Status == "A")
+                                    ((includePending && l.Status == "P") || l.Status == "A")
                                     && l.StartDate.Year == DateTime.Now.Year
                                     && l.LeaveTypeId == leaveTypeId
                                    select new { TimeFrom = lp.TimeFrom, TimeTo = lp.TimeTo }
