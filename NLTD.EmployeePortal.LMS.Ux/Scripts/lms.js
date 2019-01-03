@@ -90,12 +90,6 @@ function SubmitEmpForm(e) {
     } else {
         $("span[data-valmsg-for='Gender']").text("");
     }
-    if ($("#ShiftId option:selected").index() < 1) {
-        $("span[data-valmsg-for='ShiftId']").text("Please select employee shift.");
-        iserror = true;
-    } else {
-        $("span[data-valmsg-for='ShiftId']").text("");
-    }
     if ($("#RoleId option:selected").index() < 0) {
         $("span[data-valmsg-for='RoleId']").text("Please select LMS role.");
         iserror = true;
@@ -206,6 +200,10 @@ function returnArray() {
 }
 function returnHolidayArray() {
     var offStr = $("#hdnHolidays").val();
+
+    if ($('#LeaveType :selected').text().indexOf("Over") != -1)
+        offStr = '';    
+
     if (offStr.length > 0) {
         var arr = offStr.split(',');
     }
@@ -214,15 +212,15 @@ function returnHolidayArray() {
     return arr;
 }
 
-function returnHolidayArray() {
-    var offStr = $("#hdnHolidays").val();
-    if (offStr.length > 0) {
-        var arr = offStr.split(',');
-    }
-    else
-        return [];
-    return arr;
-}
+//function returnHolidayArray() {
+//    var offStr = $("#hdnHolidays").val();
+//    if (offStr.length > 0) {
+//        var arr = offStr.split(',');
+//    }
+//    else
+//        return [];
+//    return arr;
+//}
 function loadLeaveSummary(userId) {
     $.ajax({
         type: 'GET',
@@ -857,6 +855,16 @@ function hideRuleText() {
         $('#divSickLeaveMsg > p').html("* Applies only to BPO employees.");
     else
         $('#divSickLeaveMsg > p').html("");
+
+
+    $('.datepicker').datetimepicker(
+                {
+                   
+                    disabledDates: returnHolidayArray()
+                }
+                )
+
+
 }
 function CountLeaveDays() {
     if ($("#LeaveFrom").val() == $("#LeaveUpto").val()) {

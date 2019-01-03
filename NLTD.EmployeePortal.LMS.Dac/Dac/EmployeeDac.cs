@@ -840,7 +840,7 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
                             remarks = remarks + "#RoleId" + "^" + profile.RoleId;
                             remarks = remarks + "#ReportedToId" + "^" + profile.ReportedToId;
                             remarks = remarks + "#OfficeHolidayId" + "^" + profile.OfficeHolidayId;
-                            remarks = remarks + "#ShiftId" + "^" + profile.ShiftId;
+                            remarks = remarks + "#ShiftId" + "^" + 1;
                             remarks = remarks + "#CardId" + "^" + profile.CardId;
                             remarks = remarks + "#DOJ" + "^" + profile.DOJ;
                             remarks = remarks + "#ConfirmationDate" + "^" + profile.ConfirmationDate;
@@ -859,7 +859,7 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
                             employee.EmployeeRoleId = profile.RoleId;
                             employee.ReportingToId = profile.ReportedToId;
                             employee.OfficeHolidayId = profile.OfficeHolidayId;
-                            employee.ShiftId = profile.ShiftId;
+                            employee.ShiftId = 1;//Hard coded as default shift
                             employee.Cardid = profile.CardId;
                             employee.DOJ = profile.DOJ;
                             employee.ConfirmationDate = profile.ConfirmationDate;
@@ -873,8 +873,8 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
                             isSaved = context.SaveChanges();
                             if (isSaved > 0)
                             {
-                                isSaved = AddOrUpdateEmployeeDefaultShift(profile.Mode, employee.UserId, employee.ShiftId, ModifiedBy,
-                                    employee.ShiftId);
+                                isSaved = AddOrUpdateEmployeeDefaultShift(profile.Mode, employee.UserId, 1, ModifiedBy,
+                                    1);//Hard coded employee shift
                             }
 
                             if (isSaved > 0)
@@ -968,8 +968,8 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
                             if (profile.RoleId != oldEmpData.EmployeeRoleId)
                                 remarks = remarks + "#RoleId" + "^" + profile.RoleId;
 
-                            if (profile.ShiftId != oldEmpData.ShiftId)
-                                remarks = remarks + "#ShiftId" + "^" + profile.ShiftId;
+                            //if (profile.ShiftId != oldEmpData.ShiftId)
+                            //    remarks = remarks + "#ShiftId" + "^" + profile.ShiftId;
 
                             if (profile.CardId != oldEmpData.Cardid)
                                 remarks = remarks + "#CardId" + "^" + profile.CardId;
@@ -994,7 +994,7 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
                             employee.Gender = profile.Gender;
                             employee.MobileNumber = profile.MobileNumber;
                             employee.EmailAddress = profile.EmailAddress;
-                            employee.ShiftId = profile.ShiftId;
+                            //employee.ShiftId = profile.ShiftId;
                             employee.Cardid = profile.CardId;
                             employee.OfficeHolidayId = profile.OfficeHolidayId;
                             employee.EmployeeRoleId = profile.RoleId;
@@ -1010,11 +1010,11 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
                                 employee.ModifiedBy = ModifiedBy;
                                 isSaved = context.SaveChanges();
 
-                                if (isSaved > 0)
-                                {
-                                    isSaved = AddOrUpdateEmployeeDefaultShift(profile.Mode, employee.UserId, employee.ShiftId, ModifiedBy,
-                                        oldShiftid);
-                                }
+                                //if (isSaved > 0)
+                                //{
+                                //    isSaved = AddOrUpdateEmployeeDefaultShift(profile.Mode, employee.UserId, employee.ShiftId, ModifiedBy,
+                                //        oldShiftid);
+                                //}
                             }
 
                             string isSameWeekoff = "";
