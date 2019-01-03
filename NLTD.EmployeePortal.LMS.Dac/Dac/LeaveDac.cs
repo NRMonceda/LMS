@@ -954,13 +954,18 @@ namespace NLTD.EmployeePortal.LMS.Dac
                         bool isTimeBased = adjustBal.IsTimeBased;
                         string duplicateRequest = string.Empty;
                         int daysBeforeApplied = 0;
+                        decimal leaveDuration = 0;
                         string leavePolicyDate = ConfigurationManager.AppSettings["LeavePolicyDate"].ToString();
                         string todayDate = System.DateTime.Now.Date.ToString("ddMMyyyy", CultureInfo.InvariantCulture);
                         if (isTimeBased)
                         {
                             request.LeaveUpto = request.LeaveFrom;
                         }
-
+                        if (isTimeBased == false)
+                        {
+                            request.leaveDetail = GetLeaveDetailCalculation(request.LeaveFrom, request.LeaveUpto, request.LeaveFromTime, request.LeaveUptoTime, request.UserId, request.LeaveType);
+                            leaveDuration = request.leaveDetail[0].Total;
+                        }
                         //New Leave Policy restrictions
                         //TODO remove hard coded
                         if (DateTime.ParseExact(todayDate, "ddMMyyyy", CultureInfo.InvariantCulture).Date > DateTime.ParseExact(leavePolicyDate, "ddMMyyyy",CultureInfo.InvariantCulture).Date)
@@ -982,7 +987,12 @@ namespace NLTD.EmployeePortal.LMS.Dac
                                 {
                                     return "MinDaysForEL";
                                 }
+                                if (leaveDuration < 3)
+                                {
+                                    return "BelowMinPerRequest";
+                                }
                             }
+                            
                         }
 
                         //
@@ -1105,7 +1115,7 @@ namespace NLTD.EmployeePortal.LMS.Dac
                         IList<LeaveSummary> lstSummary = new List<LeaveSummary>();
                         lstSummary = GetLeaveSumary(request.UserId, request.LeaveFrom.Year);
                         decimal nonAdjLeavesTaken = 0;
-                        decimal leaveDuration = 0;
+                        
                         bool isHalfdayRequest = false;
                         if (request.LeaveFromTime == "F")
                             isHalfdayRequest = true;
@@ -1178,23 +1188,13 @@ namespace NLTD.EmployeePortal.LMS.Dac
                             }
                         }
 
-                        if (isTimeBased == false)
-                        {
-                            request.leaveDetail = GetLeaveDetailCalculation(request.LeaveFrom, request.LeaveUpto, request.LeaveFromTime, request.LeaveUptoTime, request.UserId, request.LeaveType);
-                            leaveDuration = request.leaveDetail[0].Total;
-                        }
+                       
                         if (adjustBal.MaximumPerRequest != null)
                         {
                             if (leaveDuration > adjustBal.MaximumPerRequest)
                                 return "ExceedMaxPerRequest" + adjustBal.MaximumPerRequest;
                         }
-                        //Leave Policy changes //TODO remove hard coded
-                        if (adjustBal.Type == "Earned Leave")
-                        {
-                            if (leaveDuration < 3)
-                                return "BelowMinPerRequest";
-                        }
-                        //
+                       
 
 
                         Leave leave = new Leave();
