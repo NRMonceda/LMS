@@ -201,9 +201,6 @@ function returnArray() {
 function returnHolidayArray() {
     var offStr = $("#hdnHolidays").val();
 
-    if ($('#LeaveType :selected').text().indexOf("Over") != -1)
-        offStr = '';    
-
     if (offStr.length > 0) {
         var arr = offStr.split(',');
     }
@@ -836,6 +833,8 @@ function hourEntryLayout() {
     if (isTimeBasedLayout() == true) {
         $(".duration").hide();
         $(".timeentry").show();
+        $(".fromentry").hide();
+        
         $('#PermissionTimeFrom').timepicker({ 'scrollDefault': '10am' });
         $('#PermissionTimeTo').timepicker({ 'scrollDefault': '10am' });
         $("#LeaveUpto").val($("#LeaveFrom").val())
@@ -843,6 +842,7 @@ function hourEntryLayout() {
     else {
         $(".duration").show();
         $(".timeentry").hide();
+        $(".fromentry").show();
     }
     hideRuleText()
 }
@@ -851,20 +851,22 @@ function hideRuleText() {
         $('#divSickLeaveMsg > p').html("* Please submit a medical certificate to your manager for sick leaves greater than 3 days.");
     else if ($('#LeaveType :selected').text().indexOf("Compensatory Off") != -1)
         $('#divSickLeaveMsg > p').html("* Please provide the date against which the Compensatory Off is to be availed in the Reason.");  
-    else if ($('#LeaveType :selected').text().indexOf("Over") != -1)
+    else if ($('#LeaveType :selected').text().indexOf("Over") != -1) {
+        //$('#datepicker').datepicker('destroy');
         $('#divSickLeaveMsg > p').html("* Applies only to BPO employees.");
+    }
     else
         $('#divSickLeaveMsg > p').html("");
 
 
-    $('.datepicker').datetimepicker(
-                {
+    //$('.datepicker').datetimepicker(
+    //            {
                    
-                    disabledDates: returnHolidayArray()
-                }
-                )
+    //                disabledDates: returnHolidayArray()
+    //            }
+    //            )
 
-
+    //$('.datepicker').datetimepicker().
 }
 function CountLeaveDays() {
     if ($("#LeaveFrom").val() == $("#LeaveUpto").val()) {

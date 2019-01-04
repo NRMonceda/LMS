@@ -40,6 +40,17 @@
         CountLeaveDays();
 
     })
+            $('.datepickerNoHolidays').datetimepicker(
+               {
+                   viewMode: "days",
+                   minDate: minDate,
+                   maxDate: maxDate,
+                   format: "DD/MM/YYYY"
+                   
+               }
+               )
+
+
         });
     </script>
 
@@ -135,10 +146,12 @@
                                     </div>
                                     <div class="timeentry" style="display:none">
                                         @Html.Label("Date")
+                                        @Html.TextBox("PermissionDate", Model.PermissionDate.ToString("DD/MM/YYYY"), new { @class = "form-control datepickerNoHolidays" })
                                     </div>
-                                    @Html.TextBox("LeaveFrom", Model.LeaveFrom.ToString("DD/MM/YYYY"), new { @class = "form-control datepicker" })
-                                    @*@Html.TextBoxFor(m=>m.LeaveFrom, new { @class = "form-control datetpicker"})*@
-                                </div>
+                                    <div class="fromentry" >
+                                        @Html.TextBox("LeaveFrom", Model.LeaveFrom.ToString("DD/MM/YYYY"), new { @class = "form-control datepicker" })
+                                        </div>
+                                    </div>
                             </div>
                             <div class="col-sm-2 duration">
                                 <div class="form-group">

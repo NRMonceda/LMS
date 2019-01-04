@@ -194,7 +194,10 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
                         }
                     }
                 }
-
+                else
+                {
+                    data.LeaveFrom = data.PermissionDate;
+                }
                 if (data.LeaveFrom == data.LeaveUpto)
                 {
                     if (data.LeaveFromTime == "F")

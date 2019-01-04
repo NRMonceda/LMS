@@ -20,6 +20,8 @@ namespace NLTD.EmployeePortal.LMS.Common.DisplayModel
         [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}")]
         public DateTime LeaveFrom { get; set; }
 
+        public DateTime PermissionDate { get; set; }
+
         public DateTime LeaveUpto { get; set; }
         public Int64 LeaveType { get; set; }
         public String LeaveFromTime { get; set; }
