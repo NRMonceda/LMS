@@ -69,42 +69,13 @@
 
     @Html.Hidden("hdnLeaveFrom", Model.LeaveFrom)
     @Html.Hidden("hdnLeaveUpto", Model.LeaveUpto)
+  
     @Html.Hidden("hdnWeekOff", Model.WeekOffs)
     @Html.Hidden("hdnHolidays", Model.holidayDates)
     @Html.Hidden("hdnTimebasedLeaveTypeIds", Model.TimebasedLeaveTypeIds)
     @Html.HiddenFor(m=>m.IsTimeBased)
-
+    @Html.HiddenFor(m => m.IsOverTime)
     <div id="alert_placeholder"></div>
-        @*if (Model.ErrorMesage == "Saved")
-                    {
-                        <div class="alert alert-success">
-                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                <span aria-hidden="true">x</span>
-                            </button>
-                            Request submitted Successfully.
-                        </div>
-
-                    }
-                    else if (Model.ErrorMesage == "EmailFailed")
-                    {
-                        <div class="alert alert-success">
-                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                <span aria-hidden="true">x</span>
-                            </button>
-                            Request submitted Successfully,but sending email failed. Please inform your Reporting Person.
-                        </div>
-
-                    }
-                    else if (Model.ErrorMesage != "" && Model.ErrorMesage != null)
-                    {
-                        <div class="alert alert-danger">
-                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                <span aria-hidden="true">x</span>
-                            </button>
-                            @Model.ErrorMesage
-                        </div>
-            }*@
-
         <div class="row">
             <div class="col-sm-12">
                 <div class="box box-primary">
@@ -141,11 +112,10 @@
 
                             <div class="col-sm-2">
                                 <div class="form-group">
-                                    <div class="duration">
-                                        @Html.Label("From")
-                                    </div>
-                                    <div class="timeentry" style="display:none">
-                                        @Html.Label("Date")
+                                    
+                                     @Html.Label("From", new { id = "fromLabel" })
+                                    
+                                    <div class="overtimeentry" style="display:none">                                        
                                         @Html.TextBox("PermissionDate", Model.PermissionDate.ToString("DD/MM/YYYY"), new { @class = "form-control datepickerNoHolidays" })
                                     </div>
                                     <div class="fromentry" >
@@ -200,6 +170,10 @@
                                 <button type="button" id="btnShowDaysCalc" class="btn btn-link" style="padding-top:8px;" onclick="LoadLeaveDtlSplit()">Show Days Calculation</button>
                                 <div id="LeaveDtlSplit" style="position:absolute; width:520px; background-color:white; z-index:9999;float:left;display:none;">
                                 </div>
+                            </div>
+                            <div class="col-sm-2 duration" style="padding-top:2em">
+                               
+                                <p id="chkException"> @Html.CheckBoxFor(m => m.IsExceptionTypeLeave)  Apply as an Exception </p>
                             </div>
                         </div>
                         <div class="row">

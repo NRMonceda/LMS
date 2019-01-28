@@ -140,8 +140,15 @@
                         </div>
                         <div class="col-sm-6">
                             @if (item.Status == "P")
-                            {
+                            {                               
+                                if (item.IsExceptionTypeLeave==true)
+                                {
+                                    <input type="button" value="APPROVE EXCEPTION" data-value="@item.LeaveId" onclick="ApproveLeave(@item.LeaveId.ToString(),@Model[0].UserId)" class="pull-right btn btn-flickr" />
+                                }
+                                else
+                                {
                                 <input type="button" value="APPROVE" data-value="@item.LeaveId" onclick="ApproveLeave(@item.LeaveId.ToString(),@Model[0].UserId)" class="pull-right btn btn-primary" />
+                                }
                             }
                             else
                             {

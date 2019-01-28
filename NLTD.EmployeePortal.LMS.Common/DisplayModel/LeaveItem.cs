@@ -51,5 +51,7 @@ namespace NLTD.EmployeePortal.LMS.Common.DisplayModel
         public Int64? AppliedById { get; set; }
 
         public long LeaveTypeId { get; set; }
+
+        public bool? IsExceptionTypeLeave { get; set; }
     }
 }

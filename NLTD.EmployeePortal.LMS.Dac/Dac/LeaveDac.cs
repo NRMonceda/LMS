@@ -44,7 +44,7 @@ namespace NLTD.EmployeePortal.LMS.Dac
                             leave.ApprovedBy = status.UserId;
                             leave.ApprovedAt = DateTime.Now;
                             leave.Status = status.Status;
-
+                            
                             isSaved = context.SaveChanges();
                             if (isSaved > 0)
                             {
@@ -73,14 +73,31 @@ namespace NLTD.EmployeePortal.LMS.Dac
                                             if (adjustBal.AdjustLeaveBalance)
                                                 empLeaveBal.BalanceDays = (empLeaveBal.BalanceDays ?? 0) + leave.Duration;
                                         }
+                                        
                                         empLeaveBal.ModifiedBy = status.UserId;
                                         empLeaveBal.ModifiedOn = DateTime.Now;
                                         isSaved = context.SaveChanges();
+                                        if (leave.IsExceptionLeave)
+                                        {
+                                            if (existingStatus == "P" || existingStatus == "A")
+                                            {
+                                                if (leave.Status == "R" || leave.Status == "C")
+                                                {
+                                                    //Reduce 1 from the AvailedLeavePolicyException 
+                                                    var emp = context.Employee.Where(x => x.UserId == leave.UserId).FirstOrDefault();
+                                                    emp.AvailedLeavePolicyException = (emp.AvailedLeavePolicyException ?? 0) - 1;
+                                                    emp.ModifiedBy = status.UserId;
+                                                    emp.ModifiedOn = DateTime.Now;
+                                                    isSaved = context.SaveChanges();
+                                                }
+                                            }
+                                        }
+
                                     }
                                 }
                                 if (isSaved > 0)
                                 {
-                                    retValue = "Saved";
+                                    
                                     if (adjustBal.IsTimeBased == false)
                                     {
                                         //if (adjustBal.IsLeave == true)
@@ -106,11 +123,18 @@ namespace NLTD.EmployeePortal.LMS.Dac
                                             hist.Remarks = "Rejected";
                                             hist.TransactionType = "C";
                                         }
-                                        bool retRes = SaveTransactionLog(hist);
-                                        if (retRes)
-                                            retValue = "Saved";
-                                        else
-                                            retValue = "NotSaved";
+                                        //bool retRes = SaveTransactionLog(hist);
+                                        LeaveTransactionHistory histRec = new LeaveTransactionHistory();
+                                        histRec.UserId = hist.EmployeeId;
+                                        histRec.LeaveTypeId = hist.LeaveTypeId;
+                                        histRec.LeaveId = hist.LeaveId;
+                                        histRec.TransactionDate = DateTime.Now;
+                                        histRec.TransactionType = hist.TransactionType;
+                                        histRec.NumberOfDays = hist.NumberOfDays;
+                                        histRec.TransactionBy = hist.TransactionBy;
+                                        histRec.Remarks = hist.Remarks;
+                                        context.LeaveTransactionHistory.Add(histRec);
+                                        isSaved = context.SaveChanges();                                        
                                         //}
                                     }
                                 }
@@ -131,6 +155,7 @@ namespace NLTD.EmployeePortal.LMS.Dac
                         if (retValue == "Saved")
                         {
                             transaction.Commit();
+                            retValue = "Saved";
                         }
                         else
                         {
@@ -140,6 +165,7 @@ namespace NLTD.EmployeePortal.LMS.Dac
                     catch
                     {
                         transaction.Rollback();
+                        throw;
                     }
                 }
             }
@@ -550,7 +576,8 @@ namespace NLTD.EmployeePortal.LMS.Dac
                                            isTimeBased = types.IsTimeBased,
                                            Comments = leave.Comments,
                                            AppliedById = leave.AppliedBy,
-                                           LeaveTypeId = types.LeaveTypeId
+                                           LeaveTypeId = types.LeaveTypeId,
+                                           IsExceptionTypeLeave=leave.IsExceptionLeave
                                        }).AsQueryable();
 
                 List<LeaveItem> LeaveItems = new List<LeaveItem>();
@@ -583,7 +610,8 @@ namespace NLTD.EmployeePortal.LMS.Dac
                                   isTimeBased = l.isTimeBased,
                                   Comments = l.Comments,
                                   PermissionInMonth = (l.isTimeBased == false) ? "" : ReturnPermissionHoursPerMonthInString(l.LeaveFromDate.Month, l.UserId, l.LeaveTypeId, false),
-                                  AppliedByName = e.FirstName + " " + e.LastName
+                                  AppliedByName = e.FirstName + " " + e.LastName,
+                                  IsExceptionTypeLeave=l.IsExceptionTypeLeave
                               }).ToList();
 
                 var pdLeaveId = (from items in LeaveItems
@@ -734,7 +762,8 @@ namespace NLTD.EmployeePortal.LMS.Dac
                                            Comments = leave.Comments,
                                            IsLeave = types.IsLeave,
                                            isTimeBased = types.IsTimeBased,
-                                           AppliedById = leave.AppliedBy
+                                           AppliedById = leave.AppliedBy,
+                                           IsExceptionTypeLeave=leave.IsExceptionLeave
                                        }).AsQueryable();
 
                 if (qryMdl.IsLeaveOnly)
@@ -829,7 +858,8 @@ namespace NLTD.EmployeePortal.LMS.Dac
                                   IsLeave = l.IsLeave,
                                   isTimeBased = l.isTimeBased,
                                   AppliedById = l.AppliedById,
-                                  AppliedByName = e.FirstName + " " + e.LastName
+                                  AppliedByName = e.FirstName + " " + e.LastName,
+                                  IsExceptionTypeLeave=l.IsExceptionTypeLeave
                               }).ToList();
 
                 var pdLeaveId = (from items in LeaveItems
@@ -886,16 +916,9 @@ namespace NLTD.EmployeePortal.LMS.Dac
                                                         LeaveTypeId = types.LeaveTypeId,
                                                         LeaveTypeText = types.Type,
                                                         IsTimeBased = types.IsTimeBased
-                                                    }).ToList();
-               
+                                                    }).ToList();               
                 return LeaveTypes;
             }
-
-            
-
-            
-
-
         }
 
         public string GetTimeBasedLeaveTypesString(long OfficeId, Int64 userId)
@@ -944,6 +967,7 @@ namespace NLTD.EmployeePortal.LMS.Dac
         {
             int isSaved = 0;
             Int64 newId = 0;
+            bool isExceptionLeave = false;
             using (var context = new NLTDDbContext())
             {
                 using (var transaction = context.Database.BeginTransaction())
@@ -957,15 +981,155 @@ namespace NLTD.EmployeePortal.LMS.Dac
                         decimal leaveDuration = 0;
                         string leavePolicyDate = ConfigurationManager.AppSettings["LeavePolicyDate"].ToString();
                         string todayDate = System.DateTime.Now.Date.ToString("ddMMyyyy", CultureInfo.InvariantCulture);
+                        int leaveExceptionsAllowed = Convert.ToInt32(ConfigurationManager.AppSettings["leaveExceptionsAllowed"].ToString());
                         if (isTimeBased)
                         {
                             request.LeaveUpto = request.LeaveFrom;
+                            request.IsExceptionTypeLeave = false;
                         }
                         if (isTimeBased == false)
                         {
                             request.leaveDetail = GetLeaveDetailCalculation(request.LeaveFrom, request.LeaveUpto, request.LeaveFromTime, request.LeaveUptoTime, request.UserId, request.LeaveType);
                             leaveDuration = request.leaveDetail[0].Total;
+
+                            #region Duplicate Leave Logic                        
+
+                            var chkLeave = context.Leave
+                            .Where(h => h.UserId == request.UserId && (h.Status == "A" || h.Status == "P") && ((request.LeaveFrom >= h.StartDate && request.LeaveFrom <= h.EndDate) || (request.LeaveUpto >= h.StartDate && request.LeaveUpto <= h.EndDate) || (request.LeaveFrom <= h.StartDate && request.LeaveUpto >= h.EndDate))).ToList();
+                            if (chkLeave.Any())
+                            {
+                                foreach (var item in chkLeave)
+                                {
+                                    if (item.StartDateType == "A" && item.EndDateType == "A")
+                                    {
+                                        if (item.Duration > 0)
+                                        {
+                                            if (isTimeBased == false)
+                                                duplicateRequest = "Duplicate";
+                                        }
+                                    }
+                                    else
+                                    {
+                                        if (isTimeBased == false) //No half day duplicate validation for time based requests such as Permission
+                                        {
+                                            if (request.LeaveFrom.Date == item.StartDate.Date || request.LeaveFrom.Date == item.EndDate.Date || request.LeaveUpto.Date == item.StartDate.Date || request.LeaveUpto.Date == item.EndDate.Date)
+                                            {
+                                                if (request.LeaveFrom.Date == item.StartDate.Date)
+                                                {
+                                                    if (request.LeaveFromTime == "A")
+                                                    {
+                                                        duplicateRequest = "Duplicate";
+                                                    }
+                                                    else if (request.LeaveFromTime == "F")
+                                                    {
+                                                        if (item.StartDateType == "F")
+                                                            duplicateRequest = "Duplicate";
+                                                    }
+                                                    else if (request.LeaveFromTime == "S")
+                                                    {
+                                                        if (item.StartDateType == "S")
+                                                            duplicateRequest = "Duplicate";
+                                                    }
+                                                }
+                                                if (request.LeaveFrom.Date == item.EndDate.Date)
+                                                {
+                                                    if (request.LeaveFromTime == "A")
+                                                    {
+                                                        duplicateRequest = "Duplicate";
+                                                    }
+                                                    else if (request.LeaveFromTime == "F")
+                                                    {
+                                                        if (item.EndDateType == "F")
+                                                            duplicateRequest = "Duplicate";
+                                                    }
+                                                    else if (request.LeaveFromTime == "S")
+                                                    {
+                                                        if (item.EndDateType == "S")
+                                                            duplicateRequest = "Duplicate";
+                                                    }
+                                                }
+                                                if (request.LeaveUpto.Date == item.StartDate.Date)
+                                                {
+                                                    if (request.LeaveUptoTime == "A")
+                                                    {
+                                                        duplicateRequest = "Duplicate";
+                                                    }
+                                                    else if (request.LeaveUptoTime == "F")
+                                                    {
+                                                        if (item.StartDateType == "F")
+                                                            duplicateRequest = "Duplicate";
+                                                    }
+                                                    else if (request.LeaveUptoTime == "S")
+                                                    {
+                                                        if (item.StartDateType == "S")
+                                                            duplicateRequest = "Duplicate";
+                                                    }
+                                                }
+                                                if (request.LeaveUpto.Date == item.EndDate.Date)
+                                                {
+                                                    if (request.LeaveUptoTime == "A")
+                                                    {
+                                                        duplicateRequest = "Duplicate";
+                                                    }
+                                                    else if (request.LeaveUptoTime == "F")
+                                                    {
+                                                        if (item.EndDateType == "F")
+                                                            duplicateRequest = "Duplicate";
+                                                    }
+                                                    else if (request.LeaveUptoTime == "S")
+                                                    {
+                                                        if (item.EndDateType == "S")
+                                                            duplicateRequest = "Duplicate";
+                                                    }
+                                                }
+                                            }
+                                            else
+                                            {
+                                                duplicateRequest = "Duplicate";
+                                            }
+                                        }
+                                    }
+                                    if (duplicateRequest == "Duplicate")
+                                    {
+                                        break;
+                                    }
+                                }
+
+                                //duplicateRequest = "Duplicate";
+                                if (duplicateRequest == "Duplicate")
+                                    return "Duplicate";
+                            }
+
+                            #endregion
+
+                            if (adjustBal.AdjustLeaveBalance)
+                            {
+                                isExceptionLeave = CheckExceptionLeave(request.LeaveFrom, request.LeaveUpto, request.LeaveFromTime, request.LeaveUptoTime, request.UserId, request.LeaveType);
+                                if (isExceptionLeave == true)
+                                {
+                                    if (request.IsExceptionTypeLeave == false)
+                                    {
+                                        return "CheckException";
+                                    }
+                                }
+                                else
+                                {
+                                    if (request.IsExceptionTypeLeave == true)
+                                    {
+                                        return "UnCheckException";
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                if (request.IsExceptionTypeLeave == true)
+                                {
+                                    return "UnCheckException";
+                                }
+                            }
+
                         }
+                        var empProfile = context.Employee.Where(x => x.UserId == request.UserId).FirstOrDefault();
                         //New Leave Policy restrictions
                         //TODO remove hard coded
                         if (DateTime.ParseExact(todayDate, "ddMMyyyy", CultureInfo.InvariantCulture).Date > DateTime.ParseExact(leavePolicyDate, "ddMMyyyy",CultureInfo.InvariantCulture).Date)
@@ -992,120 +1156,17 @@ namespace NLTD.EmployeePortal.LMS.Dac
                                     return "BelowMinPerRequest";
                                 }
                             }
-                            
-                        }
-
-                        //
-
-
-                        var chkLeave = context.Leave
-                        .Where(h => h.UserId == request.UserId && (h.Status == "A" || h.Status == "P") && ((request.LeaveFrom >= h.StartDate && request.LeaveFrom <= h.EndDate) || (request.LeaveUpto >= h.StartDate && request.LeaveUpto <= h.EndDate) || (request.LeaveFrom <= h.StartDate && request.LeaveUpto >= h.EndDate))).ToList();
-                        if (chkLeave.Any())
-                        {
-                            foreach (var item in chkLeave)
+                            //Check if Leave Exception already availed
+                            if (isExceptionLeave)
                             {
-                                if (item.StartDateType == "A" && item.EndDateType == "A")
+                                if (empProfile.AvailedLeavePolicyException >= leaveExceptionsAllowed)
                                 {
-                                    if (item.Duration > 0)
-                                    {
-                                        if (isTimeBased == false)
-                                            duplicateRequest = "Duplicate";
-                                    }
-                                }
-                                else
-                                {
-                                    if (isTimeBased == false) //No half day duplicate validation for time based requests such as Permission
-                                    {
-                                        if (request.LeaveFrom.Date == item.StartDate.Date || request.LeaveFrom.Date == item.EndDate.Date || request.LeaveUpto.Date == item.StartDate.Date || request.LeaveUpto.Date == item.EndDate.Date)
-                                        {
-                                            if (request.LeaveFrom.Date == item.StartDate.Date)
-                                            {
-                                                if (request.LeaveFromTime == "A")
-                                                {
-                                                    duplicateRequest = "Duplicate";
-                                                }
-                                                else if (request.LeaveFromTime == "F")
-                                                {
-                                                    if (item.StartDateType == "F")
-                                                        duplicateRequest = "Duplicate";
-                                                }
-                                                else if (request.LeaveFromTime == "S")
-                                                {
-                                                    if (item.StartDateType == "S")
-                                                        duplicateRequest = "Duplicate";
-                                                }
-                                            }
-                                            if (request.LeaveFrom.Date == item.EndDate.Date)
-                                            {
-                                                if (request.LeaveFromTime == "A")
-                                                {
-                                                    duplicateRequest = "Duplicate";
-                                                }
-                                                else if (request.LeaveFromTime == "F")
-                                                {
-                                                    if (item.EndDateType == "F")
-                                                        duplicateRequest = "Duplicate";
-                                                }
-                                                else if (request.LeaveFromTime == "S")
-                                                {
-                                                    if (item.EndDateType == "S")
-                                                        duplicateRequest = "Duplicate";
-                                                }
-                                            }
-                                            if (request.LeaveUpto.Date == item.StartDate.Date)
-                                            {
-                                                if (request.LeaveUptoTime == "A")
-                                                {
-                                                    duplicateRequest = "Duplicate";
-                                                }
-                                                else if (request.LeaveUptoTime == "F")
-                                                {
-                                                    if (item.StartDateType == "F")
-                                                        duplicateRequest = "Duplicate";
-                                                }
-                                                else if (request.LeaveUptoTime == "S")
-                                                {
-                                                    if (item.StartDateType == "S")
-                                                        duplicateRequest = "Duplicate";
-                                                }
-                                            }
-                                            if (request.LeaveUpto.Date == item.EndDate.Date)
-                                            {
-                                                if (request.LeaveUptoTime == "A")
-                                                {
-                                                    duplicateRequest = "Duplicate";
-                                                }
-                                                else if (request.LeaveUptoTime == "F")
-                                                {
-                                                    if (item.EndDateType == "F")
-                                                        duplicateRequest = "Duplicate";
-                                                }
-                                                else if (request.LeaveUptoTime == "S")
-                                                {
-                                                    if (item.EndDateType == "S")
-                                                        duplicateRequest = "Duplicate";
-                                                }
-                                            }
-                                        }
-                                        else
-                                        {
-                                            duplicateRequest = "Duplicate";
-                                        }
-                                    }
-                                }
-                                if (duplicateRequest == "Duplicate")
-                                {
-                                    break;
+                                    return "MaxExceptionsAvailed";
                                 }
                             }
 
-                            //duplicateRequest = "Duplicate";
-                            if (duplicateRequest == "Duplicate")
-                                return "Duplicate";
+                            
                         }
-
-                        var empProfile = context.Employee.Where(x => x.UserId == request.UserId).FirstOrDefault();
-
                         if (adjustBal.AdjustLeaveBalance)
                         {
                             var chkLeaveBalRec = context.EmployeeLeaveBalance.Where(e => e.UserId == request.UserId && e.LeaveTypeId == request.LeaveType && e.Year == request.LeaveFrom.Year).FirstOrDefault();
@@ -1238,6 +1299,7 @@ namespace NLTD.EmployeePortal.LMS.Dac
                         {
                             leave.Status = "P";
                         }
+                        leave.IsExceptionLeave = request.IsExceptionTypeLeave;
                         context.Leave.Add(leave);
                         isSaved = context.SaveChanges();
                         newId = leave.LeaveId;
@@ -1325,14 +1387,32 @@ namespace NLTD.EmployeePortal.LMS.Dac
                                         {
                                             hist.Remarks = "Pending";
                                         }
-                                        bool retRes = SaveTransactionLog(hist);
-                                        if (retRes)
-                                            isSaved = 1;
-                                        else
-                                            isSaved = -1;
+                                        //bool retRes = SaveTransactionLog(hist);
+
+                                        LeaveTransactionHistory histRec = new LeaveTransactionHistory();
+                                        histRec.UserId = hist.EmployeeId;
+                                        histRec.LeaveTypeId = hist.LeaveTypeId;
+                                        histRec.LeaveId = hist.LeaveId;
+                                        histRec.TransactionDate = DateTime.Now;
+                                        histRec.TransactionType = hist.TransactionType;
+                                        histRec.NumberOfDays = hist.NumberOfDays;
+                                        histRec.TransactionBy = hist.TransactionBy;
+                                        histRec.Remarks = hist.Remarks;
+                                        context.LeaveTransactionHistory.Add(histRec);
+                                        isSaved = context.SaveChanges();                                       
                                     }
                                 }
                             }
+                            if (request.IsExceptionTypeLeave)
+                            {
+                                //Add 1 to the AvailedLeavePolicyException 
+                                var emp = context.Employee.Where(x => x.UserId == leave.UserId).FirstOrDefault();
+                                emp.AvailedLeavePolicyException = (emp.AvailedLeavePolicyException ?? 0) + 1;
+                                emp.ModifiedBy = request.UserId;
+                                emp.ModifiedOn = DateTime.Now;
+                                isSaved = context.SaveChanges();
+                            }
+
                         }
                         if (isSaved != -1)
                         {
@@ -1353,7 +1433,308 @@ namespace NLTD.EmployeePortal.LMS.Dac
                 }
             }
         }
+        public bool CheckExceptionLeave(DateTime LeaveFrom, DateTime LeaveUpto, string LeaveFromTime, string LeaveUptoTime, Int64 UserId, Int64 LeaveTyp)
+        {
+            bool isExceptionType = false;
+            bool nextWorkingDay = false;
+            bool prevWorkingDay = false;
+            DateTime leaveDate = LeaveFrom;            
+            
+            using (var context = new NLTDDbContext())
+            {
+                var adjustBal = context.LeaveType.Where(e => e.LeaveTypeId == LeaveTyp).FirstOrDefault();
+                if (adjustBal.IsLeave == false)
+                {
+                    return false;
+                }
+            }           
+            Int32 leaveDuration = (LeaveUpto - LeaveFrom).Days;
+            DayOfWeek dw;           
+            string partOfDay = string.Empty;            
+            int addDays = 0;
+            IList<HolidayModel> holidayList = GetHolidays(UserId, LeaveFrom.Year);
+            IList<WeekOffDayModel> lstOffDays = ReturnWeekOffDays(UserId);
+            bool isFromDayHalf = false;
+            bool isToDayHalf = false;
+            bool isFromDayPrvDayHalf = false;
+            bool isToDayNextDayHalf = false;
+            bool isNextDayFullDayLeave = false;
+            bool isPrvDayFullDayLeave = false;
+            bool isToDayFullDayLeave = false;
+            string fromDayHalf = "";
+            string toDayHalf = "";
+            string fromDayPrvDayHalf = "";
+            string toDayNextDayHalf = "";
+            IList<LeaveListModel> lstLeaves = new List<LeaveListModel>();
+            using (var context = new NLTDDbContext())
+            {
+                lstLeaves = (from l in context.Leave
+                             join ld in context.LeaveDetail on l.LeaveId equals ld.LeaveId
+                             join lt in context.LeaveType on l.LeaveTypeId equals lt.LeaveTypeId
+                             where (l.Status == "P" || l.Status == "A") && ld.LeaveDate.Year==LeaveFrom.Year && ld.IsDayOff==false
+                             && lt.IsLeave == true && l.UserId == UserId
+                             select new LeaveListModel{ LeaveId = l.LeaveId, LeaveDtlId=ld.LeaveDetailId,PartOfDay = ld.PartOfDay,LeaveDate=ld.LeaveDate }
+             ).ToList();
+            }
+            if (LeaveFromTime == "A")
+            {
+                isToDayFullDayLeave = true;
+            }
+            else
+            {
+                if (LeaveFromTime == "F" && LeaveUptoTime=="F")
+                {
+                    isFromDayHalf = true;
+                    fromDayHalf = "F";
+                    isToDayHalf = true;
+                    toDayHalf = "F";
+                }
+                else if (LeaveFromTime == "S" && LeaveUptoTime == "S")
+                {
+                    isFromDayHalf = true;
+                    fromDayHalf = "S";
+                    isToDayHalf = true;
+                    toDayHalf = "S";
+                }
+                else if (LeaveFromTime == "S" && LeaveUptoTime == "F")
+                {
+                    isFromDayHalf = true;
+                    fromDayHalf = "S";
+                    isToDayHalf = true;
+                    toDayHalf = "F";
+                }                
+            }
+            //Check if half day leave exists on that From day
+            var leaveFrom = lstLeaves.Where(x => x.LeaveDate.Date == LeaveFrom.Date).FirstOrDefault();
 
+            if (leaveFrom != null)
+            {
+                isExceptionType = true;
+            }
+            if (LeaveUpto > LeaveFrom)
+            {
+                //Check if half day leave exists on that To day                
+                var leaveUpto = lstLeaves.Where(x => x.LeaveDate.Date == LeaveUpto.Date).FirstOrDefault();
+                if (leaveUpto != null)
+                {
+                    isExceptionType = true;
+                }                
+            }
+            if (isExceptionType == false)
+            {
+                addDays++;// To check next working day leave status
+                do
+                {
+                    if (LeaveFrom.Date.AddDays(addDays) == LeaveFrom.Date)
+                    {
+                        if (LeaveFromTime == "A")
+                        {
+                            partOfDay = "A";
+                        }
+                        else
+                        {
+                            partOfDay = LeaveFromTime;
+                        }
+                    }
+                    else if (LeaveFrom.Date.AddDays(addDays) == LeaveUpto.Date)
+                    {
+                        if (LeaveUptoTime == "A")
+                        {
+
+                            partOfDay = "A";
+                        }
+                        else
+                        {
+                            partOfDay = LeaveUptoTime;
+                        }
+                    }
+
+                    dw = LeaveUpto.Date.AddDays(addDays).DayOfWeek;
+                    var holDay = holidayList.Where(x => x.HolidayDate.Date == LeaveUpto.Date.AddDays(addDays)).FirstOrDefault();
+                    var offDay = lstOffDays.Where(x => x.Day.ToUpper() == dw.ToString().ToUpper()).FirstOrDefault();
+                    if (offDay != null)
+                    {
+                        //Nothing
+                    }
+                    else if (holDay != null)
+                    {
+                        //Nothing
+                    }
+                    else
+                    {
+                        //Coming to this block is working day
+                        nextWorkingDay = true;
+                        leaveDate = LeaveUpto.AddDays(addDays);
+                        //check if any leave exists, pending/approved. SL, EL, CL                        
+                        var leave = lstLeaves.Where(x => x.LeaveDate.Date == leaveDate.Date).FirstOrDefault();
+                        if (leave != null)
+                        {
+                            if (leave.PartOfDay == "S")
+                            {
+                                isToDayNextDayHalf = true;
+                                toDayNextDayHalf = "S";
+                            }
+                            else if (leave.PartOfDay == "F")
+                            {
+                                isToDayNextDayHalf = true;
+                                toDayNextDayHalf = "F";
+                            }
+                            else
+                            {
+                                isNextDayFullDayLeave = true;
+                            }
+                        }                        
+                        nextWorkingDay = true;
+                    }
+                    addDays++;
+                }
+                while (nextWorkingDay == false);
+                //If current day half and first half, next day off can be any
+                //If current day half and second half, next day off shouldn't be F/A
+
+                if (isToDayHalf)
+                {
+                    if (toDayHalf == "S")
+                    {
+                        if (isToDayNextDayHalf)
+                        {
+                            if (toDayNextDayHalf == "F")
+                            {
+                                isExceptionType = true;
+                            }
+                        }
+                        else if (isNextDayFullDayLeave)
+                        {
+                            isExceptionType = true;
+                        }
+                    }
+                }
+                //If current day is full, next day off shouldn't be F/A
+                if (isToDayFullDayLeave)
+                {
+                    if (isToDayNextDayHalf)
+                    {
+                        if (toDayNextDayHalf == "F")
+                        {
+                            isExceptionType = true;
+                        }
+                    }
+                    else if (isNextDayFullDayLeave)
+                    {
+                        isExceptionType = true;
+                    }
+                }
+            }
+            leaveDate = LeaveFrom;
+            if (isExceptionType == false)
+            {
+                addDays = -1;
+                do
+                {
+                    if (LeaveFrom.Date.AddDays(addDays) == LeaveFrom.Date)
+                    {
+                        if (LeaveFromTime == "A")
+                        {                            
+                            partOfDay = "A";
+                        }
+                        else
+                        {                            
+                            partOfDay = LeaveFromTime;
+                        }
+                    }
+                    else if (LeaveFrom.Date.AddDays(addDays) == LeaveUpto.Date)
+                    {
+                        if (LeaveUptoTime == "A")
+                        {                            
+                            partOfDay = "A";
+                        }
+                        else
+                        {                            
+                            partOfDay = LeaveUptoTime;
+                        }
+                    }
+                    
+                    dw = LeaveFrom.Date.AddDays(addDays).DayOfWeek;
+                    var holDay = holidayList.Where(x => x.HolidayDate.Date == LeaveFrom.Date.AddDays(addDays)).FirstOrDefault();
+                    var offDay = lstOffDays.Where(x => x.Day.ToUpper() == dw.ToString().ToUpper()).FirstOrDefault();
+                    if (offDay != null)
+                    {
+                       //Nothing
+                    }
+                    else if (holDay != null)
+                    {
+                        //Nothing
+                    }
+                    else
+                    {
+                        leaveDate = leaveDate.AddDays(addDays);
+                        //Coming to this block is working day
+                        nextWorkingDay = true;
+                        //check if any leave exists, pending/approved. SL, EL, CL                       
+                        var leave = lstLeaves.Where(x => x.LeaveDate.Date == leaveDate.Date).FirstOrDefault();
+                        if (leave != null)
+                        {
+                            if (leave.PartOfDay == "S")
+                            {
+                                isFromDayPrvDayHalf = true;
+                                fromDayPrvDayHalf = "S";
+                            }
+                            else if (leave.PartOfDay == "F")
+                            {
+
+                                isFromDayPrvDayHalf = true;
+                                fromDayPrvDayHalf = "F";
+                            }
+                            else
+                            {
+                                isPrvDayFullDayLeave = true;
+                            }
+                        }
+                        
+                        prevWorkingDay = true;
+                    }
+                    addDays--;
+                }
+                while (prevWorkingDay == false);
+
+                //If current day half and first half, previous day off shouldn't be S/A    
+                if (isFromDayHalf)
+                {
+                    if (fromDayHalf == "F")
+                    {
+                        if (isFromDayPrvDayHalf)
+                        {
+                            if (fromDayPrvDayHalf == "S")
+                            {
+                                isExceptionType = true;
+                            }                            
+                        }
+                        else if (isPrvDayFullDayLeave)
+                        {
+                            isExceptionType = true;
+                        }
+                    }
+                }
+
+                //If current day half and second half, previous day off can be any
+                //If current day is full, previous day off shouldn't be S/A
+                if (isToDayFullDayLeave)
+                {
+                    if (isFromDayPrvDayHalf)
+                    {
+                        if (fromDayPrvDayHalf == "S")
+                        {
+                            isExceptionType = true;
+                        }                        
+                    }
+                    else if (isPrvDayFullDayLeave)
+                    {
+                        isExceptionType = true;
+                    }
+                }
+            }
+            return isExceptionType;
+        }
         public IList<LeaveDtl> GetLeaveDetailCalculation(DateTime LeaveFrom, DateTime LeaveUpto, string LeaveFromTime, string LeaveUptoTime, Int64 UserId, Int64 LeaveTyp)
         {
             string LeaveTypText = string.Empty;
@@ -1450,28 +1831,28 @@ namespace NLTD.EmployeePortal.LMS.Dac
             return leaveDetail;
         }
 
-        public bool SaveTransactionLog(TransactionHistoryModel histModel)
-        {
-            int isSaved = 0;
-            using (var context = new NLTDDbContext())
-            {
-                LeaveTransactionHistory hist = new LeaveTransactionHistory();
-                hist.UserId = histModel.EmployeeId;
-                hist.LeaveTypeId = histModel.LeaveTypeId;
-                hist.LeaveId = histModel.LeaveId;
-                hist.TransactionDate = DateTime.Now;
-                hist.TransactionType = histModel.TransactionType;
-                hist.NumberOfDays = histModel.NumberOfDays;
-                hist.TransactionBy = histModel.TransactionBy;
-                hist.Remarks = histModel.Remarks;
-                context.LeaveTransactionHistory.Add(hist);
-                isSaved = context.SaveChanges();
-            }
-            if (isSaved > 0)
-                return true;
-            else
-                return false;
-        }
+        //public bool SaveTransactionLog(TransactionHistoryModel histModel)
+        //{
+        //    int isSaved = 0;
+        //    using (var context = new NLTDDbContext())
+        //    {
+        //        LeaveTransactionHistory hist = new LeaveTransactionHistory();
+        //        hist.UserId = histModel.EmployeeId;
+        //        hist.LeaveTypeId = histModel.LeaveTypeId;
+        //        hist.LeaveId = histModel.LeaveId;
+        //        hist.TransactionDate = DateTime.Now;
+        //        hist.TransactionType = histModel.TransactionType;
+        //        hist.NumberOfDays = histModel.NumberOfDays;
+        //        hist.TransactionBy = histModel.TransactionBy;
+        //        hist.Remarks = histModel.Remarks;
+        //        context.LeaveTransactionHistory.Add(hist);
+        //        isSaved = context.SaveChanges();
+        //    }
+        //    if (isSaved > 0)
+        //        return true;
+        //    else
+        //        return false;
+        //}
 
         public IList<DaywiseLeaveDtlModel> GetDaywiseLeaveDtl(DateTime? FromDate, DateTime? ToDate, bool IsLeaveOnly, Int64 LeadId, bool OnlyReportedToMe, Int64? paramUserId, string reqUsr, bool DonotShowRejected)
         {

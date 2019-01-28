@@ -38,7 +38,7 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
             {
                 request.LeaveUpto = System.DateTime.Now;
             }
-
+            
             using (var Client = new LeaveClient())
             {
                 var commonData = Client.ApplyLeaveCommonData(this.OfficeId, this.UserId);
@@ -196,7 +196,10 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
                 }
                 else
                 {
-                    data.LeaveFrom = data.PermissionDate;
+                    if (data.IsOverTime == "Yes")
+                    {
+                        data.LeaveFrom = data.PermissionDate;
+                    }
                 }
                 if (data.LeaveFrom == data.LeaveUpto)
                 {
@@ -267,7 +270,13 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
                                 data.ErrorMesage = "Earned Leave has to be applied 14 days prior to availing.";
                             else if (result.Contains("BelowMinPerRequest"))
                                 data.ErrorMesage = "Minimum number of days allowed per request are 3.";
-                            
+                            else if (result == "CheckException")
+                                data.ErrorMesage = "Please select Apply as an Exception.";
+                            else if (result == "UnCheckException")
+                                data.ErrorMesage = "Please clear Apply as an Exception.";
+                            else if (result == "MaxExceptionsAvailed")
+                                data.ErrorMesage = "You have already availed maximum number of leave exceptions.";
+
                         }
                     }
                 }

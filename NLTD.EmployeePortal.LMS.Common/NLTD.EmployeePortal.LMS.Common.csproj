@@ -66,6 +66,7 @@
     <Compile Include="DisplayModel\HolidayModel.cs" />
     <Compile Include="DisplayModel\LeaveHeaderModel.cs" />
     <Compile Include="DisplayModel\LeaveItem.cs" />
+    <Compile Include="DisplayModel\LeaveListModel.cs" />
     <Compile Include="DisplayModel\LeaveRequestModel.cs" />
     <Compile Include="DisplayModel\LeaveSummary.cs" />
     <Compile Include="DisplayModel\LeaveTransactionHistoryModel.cs" />

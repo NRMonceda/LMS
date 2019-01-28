@@ -34,5 +34,7 @@ namespace NLTD.EmployeePortal.LMS.Dac.DbModel
         public DateTime? DOJ { get; set; }
         public DateTime? ConfirmationDate { get; set; }
         public DateTime? RelievingDate { get; set; }
+
+        public int? AvailedLeavePolicyException { get; set; }
     }
 }

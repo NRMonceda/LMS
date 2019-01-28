@@ -42,6 +42,8 @@ namespace NLTD.EmployeePortal.LMS.Common.DisplayModel
 
         public string IsTimeBased { get; set; }
 
+        public string IsOverTime { get; set; }
+
         public string PermissionTime { get; set; }
 
         public string PermissionTimeFrom { get; set; }
@@ -55,6 +57,8 @@ namespace NLTD.EmployeePortal.LMS.Common.DisplayModel
         public Int64 ApplyForUserId { get; set; }
 
         public Int64 AppliedByUserId { get; set; }
+
+        public bool IsExceptionTypeLeave { get; set; }
     }
 
     public class LeaveDtl

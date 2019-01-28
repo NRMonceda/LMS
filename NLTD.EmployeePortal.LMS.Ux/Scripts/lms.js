@@ -831,18 +831,31 @@ function isTimeBasedLayout() {
 }
 function hourEntryLayout() {
     if (isTimeBasedLayout() == true) {
+        $("#fromLabel").html("Date");
         $(".duration").hide();
         $(".timeentry").show();
-        $(".fromentry").hide();
         
+        if ($('#LeaveType :selected').text().indexOf("Over") != -1) {
+            $(".overtimeentry").show();
+            $(".fromentry").hide();
+            $("#IsOverTime").val("Yes");
+        }
+        else {
+            $(".overtimeentry").hide();
+            $(".fromentry").show();
+            $("#IsOverTime").val("No");
+        }
         $('#PermissionTimeFrom').timepicker({ 'scrollDefault': '10am' });
         $('#PermissionTimeTo').timepicker({ 'scrollDefault': '10am' });
         $("#LeaveUpto").val($("#LeaveFrom").val())
     }
     else {
+        $("#fromLabel").html("From");
         $(".duration").show();
         $(".timeentry").hide();
         $(".fromentry").show();
+        $(".overtimeentry").hide();
+        $("#IsOverTime").val("No");
     }
     hideRuleText()
 }
@@ -858,15 +871,15 @@ function hideRuleText() {
     else
         $('#divSickLeaveMsg > p').html("");
 
+    if (($('#LeaveType :selected').text() == 'Casual Leave') || ($('#LeaveType :selected').text() == 'Earned Leave') || ($('#LeaveType :selected').text() == 'Sick/Unplanned Leave')) {
+        $('#chkException').show();
+    }
+    else {
+        $('#IsExceptionTypeLeave').attr('checked', false)
+        $('#chkException').hide();
 
-    //$('.datepicker').datetimepicker(
-    //            {
-                   
-    //                disabledDates: returnHolidayArray()
-    //            }
-    //            )
-
-    //$('.datepicker').datetimepicker().
+    }
+   
 }
 function CountLeaveDays() {
     if ($("#LeaveFrom").val() == $("#LeaveUpto").val()) {
