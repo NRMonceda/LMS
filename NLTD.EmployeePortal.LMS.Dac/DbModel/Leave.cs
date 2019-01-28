@@ -20,6 +20,6 @@ namespace NLTD.EmployeePortal.LMS.Dac.DbModel
         public Int64? ApprovedBy { get; set; }
         public DateTime? ApprovedAt { get; set; }
 
-        public bool IsExceptionLeave { get; set; }
+        public bool? IsExceptionLeave { get; set; }
     }
 }

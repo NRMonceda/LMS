@@ -77,7 +77,7 @@ namespace NLTD.EmployeePortal.LMS.Dac
                                         empLeaveBal.ModifiedBy = status.UserId;
                                         empLeaveBal.ModifiedOn = DateTime.Now;
                                         isSaved = context.SaveChanges();
-                                        if (leave.IsExceptionLeave)
+                                        if (leave.IsExceptionLeave == true)
                                         {
                                             if (existingStatus == "P" || existingStatus == "A")
                                             {
@@ -1425,7 +1425,7 @@ namespace NLTD.EmployeePortal.LMS.Dac
                 }
             }
         }
-        public bool CheckExceptionLeave(DateTime LeaveFrom, DateTime LeaveUpto, string LeaveFromTime, string LeaveUptoTime, Int64 UserId, Int64 LeaveTyp)
+        public bool CheckExceptionLeave(DateTime LeaveFrom, DateTime LeaveUpto, string LeaveFromTime, string LeaveUptoTime, Int64 UserId, Int64 LeaveType)
         {
             bool isExceptionType = false;
             bool nextWorkingDay = false;
@@ -1434,7 +1434,7 @@ namespace NLTD.EmployeePortal.LMS.Dac
             
             using (var context = new NLTDDbContext())
             {
-                var adjustBal = context.LeaveType.Where(e => e.LeaveTypeId == LeaveTyp).FirstOrDefault();
+                var adjustBal = context.LeaveType.Where(e => e.LeaveTypeId == LeaveType).FirstOrDefault();
                 if (adjustBal.IsLeave == false)
                 {
                     return false;
