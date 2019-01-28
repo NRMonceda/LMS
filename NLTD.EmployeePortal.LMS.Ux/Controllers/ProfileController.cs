@@ -249,9 +249,9 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
                 if (isValid)
                 {
                     employee.LogonId = employee.LogonId.ToUpper();
-                    employee.FirstName = System.Globalization.CultureInfo.CurrentCulture.TextInfo.ToTitleCase(employee.FirstName.ToLower());
-                    employee.LastName = System.Globalization.CultureInfo.CurrentCulture.TextInfo.ToTitleCase(employee.LastName.ToLower());
-                    employee.EmailAddress = employee.EmailAddress == null ? null : employee.EmailAddress.ToLower();
+                    employee.FirstName = System.Globalization.CultureInfo.CurrentCulture.TextInfo.ToTitleCase(employee.FirstName.ToLower().Trim());
+                    employee.LastName = System.Globalization.CultureInfo.CurrentCulture.TextInfo.ToTitleCase(employee.LastName.ToLower().Trim());
+                    employee.EmailAddress = employee.EmailAddress == null ? null : employee.EmailAddress.ToLower().Trim();
 
                     using (var client = new EmployeeClient())
                     {
