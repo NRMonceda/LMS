@@ -871,7 +871,7 @@ function hideRuleText() {
     else
         $('#divSickLeaveMsg > p').html("");
 
-    if (($('#LeaveType :selected').text() == 'Casual Leave') || ($('#LeaveType :selected').text() == 'Earned Leave') || ($('#LeaveType :selected').text() == 'Sick/Unplanned Leave')) {
+    if (($('#LeaveType :selected').text().indexOf('Leave') > 0 || ($('#LeaveType :selected').text() == 'Compensatory Off'))) {
         $('#chkException').show();
     }
     else {

@@ -1,1 +1,5 @@
-﻿UPDATE LeaveType SET MaximumPerMonth=2 WHERE LeaveTypeId=7
+﻿ALTER TABLE EMPLOYEE
+ADD AvailedLeavePolicyException INT NULL
+
+ALTER TABLE LEAVE
+ADD IsExceptionLeave BIT NULL

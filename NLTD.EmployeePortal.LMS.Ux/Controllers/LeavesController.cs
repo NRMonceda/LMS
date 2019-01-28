@@ -271,11 +271,11 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
                             else if (result.Contains("BelowMinPerRequest"))
                                 data.ErrorMesage = "Minimum number of days allowed per request are 3.";
                             else if (result == "CheckException")
-                                data.ErrorMesage = "Please select Apply as an Exception.";
+                                data.ErrorMesage = "Combining leaves is an exception. Please avail leave combination exception";
                             else if (result == "UnCheckException")
-                                data.ErrorMesage = "Please clear Apply as an Exception.";
-                            else if (result == "MaxExceptionsAvailed")
-                                data.ErrorMesage = "You have already availed maximum number of leave exceptions.";
+                                data.ErrorMesage = "No combination of leaves found. Please uncheck avail leave combination exception";
+                            else if (result.Contains("MaxExceptionsAvailed:"))
+                                data.ErrorMesage = "You have already availed " + result.Substring(21) + " leave exceptions.";
 
                         }
                     }

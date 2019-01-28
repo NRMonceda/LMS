@@ -981,7 +981,7 @@ namespace NLTD.EmployeePortal.LMS.Dac
                         decimal leaveDuration = 0;
                         string leavePolicyDate = ConfigurationManager.AppSettings["LeavePolicyDate"].ToString();
                         string todayDate = System.DateTime.Now.Date.ToString("ddMMyyyy", CultureInfo.InvariantCulture);
-                        int leaveExceptionsAllowed = Convert.ToInt32(ConfigurationManager.AppSettings["leaveExceptionsAllowed"].ToString());
+                        int numberOfLeaveExceptionsAllowed = Convert.ToInt32(ConfigurationManager.AppSettings["NumberOfLeaveExceptionsAllowed"].ToString());
                         if (isTimeBased)
                         {
                             request.LeaveUpto = request.LeaveFrom;
@@ -1102,7 +1102,7 @@ namespace NLTD.EmployeePortal.LMS.Dac
 
                             #endregion
 
-                            if (adjustBal.AdjustLeaveBalance)
+                            if (adjustBal.IsLeave)
                             {
                                 isExceptionLeave = CheckExceptionLeave(request.LeaveFrom, request.LeaveUpto, request.LeaveFromTime, request.LeaveUptoTime, request.UserId, request.LeaveType);
                                 if (isExceptionLeave == true)
@@ -1120,14 +1120,6 @@ namespace NLTD.EmployeePortal.LMS.Dac
                                     }
                                 }
                             }
-                            else
-                            {
-                                if (request.IsExceptionTypeLeave == true)
-                                {
-                                    return "UnCheckException";
-                                }
-                            }
-
                         }
                         var empProfile = context.Employee.Where(x => x.UserId == request.UserId).FirstOrDefault();
                         //New Leave Policy restrictions
@@ -1159,9 +1151,9 @@ namespace NLTD.EmployeePortal.LMS.Dac
                             //Check if Leave Exception already availed
                             if (isExceptionLeave)
                             {
-                                if (empProfile.AvailedLeavePolicyException >= leaveExceptionsAllowed)
+                                if (empProfile.AvailedLeavePolicyException >= numberOfLeaveExceptionsAllowed)
                                 {
-                                    return "MaxExceptionsAvailed";
+                                    return "MaxExceptionsAvailed:" + numberOfLeaveExceptionsAllowed.ToString();
                                 }
                             }
 
@@ -1504,6 +1496,7 @@ namespace NLTD.EmployeePortal.LMS.Dac
                     toDayHalf = "F";
                 }                
             }
+
             //Check if half day leave exists on that From day
             var leaveFrom = lstLeaves.Where(x => x.LeaveDate.Date == LeaveFrom.Date).FirstOrDefault();
 
