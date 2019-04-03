@@ -1148,6 +1148,14 @@ namespace NLTD.EmployeePortal.LMS.Dac
                                     return "BelowMinPerRequest";
                                 }
                             }
+                            else if (adjustBal.Type == "Sick/Unplanned Leave")
+                            {
+                                //Apply for past days only
+                                if (daysBeforeApplied > 0)
+                                {
+                                    return "MinDaysForSL";
+                                }
+                            }
                             //Check if Leave Exception already availed
                             if (isExceptionLeave)
                             {

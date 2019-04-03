@@ -266,6 +266,8 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
                                 data.ErrorMesage = "Maximum number of days allowed per request are " + result.Substring(19) + ".";
                             else if (result == "MinDaysForCL")
                                 data.ErrorMesage = "Casual Leave has to be applied 3 days prior to availing.";
+                            else if (result == "MinDaysForSL")
+                                data.ErrorMesage = "Sick/Unplanned Leave cannot be applied for future dates.";
                             else if (result == "MinDaysForEL")
                                 data.ErrorMesage = "Earned Leave has to be applied 14 days prior to availing.";
                             else if (result.Contains("BelowMinPerRequest"))
@@ -275,7 +277,7 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
                             else if (result == "UnCheckException")
                                 data.ErrorMesage = "No combination of leaves found. Please uncheck avail leave combination exception";
                             else if (result.Contains("MaxExceptionsAvailed:"))
-                                data.ErrorMesage = "You have already availed " + result.Substring(21) + " leave exceptions.";
+                                data.ErrorMesage = "You have already availed " + result.Substring(21) + " leave exceptions. Please contact HR for your case.";
 
                         }
                     }
