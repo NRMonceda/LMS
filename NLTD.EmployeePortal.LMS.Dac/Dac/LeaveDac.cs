@@ -1151,7 +1151,7 @@ namespace NLTD.EmployeePortal.LMS.Dac
                             else if (adjustBal.Type == "Sick/Unplanned Leave")
                             {
                                 //Apply for past days only
-                                if (daysBeforeApplied > 0)
+                                if ((request.LeaveUpto.Date - System.DateTime.Now.Date).Days > 0)
                                 {
                                     return "MinDaysForSL";
                                 }
