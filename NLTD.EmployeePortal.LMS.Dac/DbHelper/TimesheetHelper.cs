@@ -27,5 +27,17 @@ namespace NLTD.EmployeePortal.LMS.DbHelper
             List<TimeSheetModel> timeSheetModelList = TimesheetHelperObj.GetMyTeamTimeSheet(UserID, FromDate, ToDate, myDirectEmployees);
             return timeSheetModelList;
         }
+        public IList<UserEmailListModel> GetUserEmailData()
+        {
+            ITimesheetHelper TimesheetHelperObj = new TimeSheetDac();
+            IList<UserEmailListModel> usrEmailList = TimesheetHelperObj.GetUserEmailData();
+            return usrEmailList;
+        }
+        public long GetHrUserId()
+        {
+            ITimesheetHelper TimesheetHelperObj = new TimeSheetDac();
+            long usrId = TimesheetHelperObj.GetHrUserId();
+            return usrId;
+        }
     }
 }

@@ -699,9 +699,11 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="HangfireRecurringJobs.cs" />
     <Compile Include="Models\Menu.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
+    <Compile Include="TimesheetEmailReportService.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\web.config" />

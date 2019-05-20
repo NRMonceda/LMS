@@ -430,6 +430,53 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
             }
             return StartDateType;
         }
+        public IList<UserEmailListModel> GetUserEmailData()
+        {
+            IList<UserEmailListModel> lstEmail = new List<UserEmailListModel>();
+            try
+            {
+                using (var context = new NLTDDbContext())
+                {
+                    lstEmail = (from e in context.Employee
+                                join em in context.Employee on e.ReportingToId equals em.UserId
+                                where e.IsActive==true
+                                select new UserEmailListModel
+                                {
+                                    UserId = e.UserId,
+                                    EmployeeEmailAddress = e.EmailAddress,
+                                    ReportingToEmailAddress = em.EmailAddress,
+                                    FirstName=e.FirstName,
+                                    LastName=e.LastName
+
+                                }).ToList();
+                }
+            }
+            catch 
+            {
+                throw;
+            }
+            return lstEmail;
+        }
+        public long GetHrUserId()
+        {
+            long userId = 0;
+            try
+            {
+                using (var context = new NLTDDbContext())
+                {
+                    var hrUsr = (from e in context.Employee    
+                                join r in context.EmployeeRole on e.EmployeeRoleId equals r.RoleId                            
+                                where e.IsActive == true && r.Role.ToUpper()=="HR"
+                                select new {UserId=e.UserId}
+                                ).FirstOrDefault();
+                }
+            }
+            catch 
+            {
+                throw;
+            }
+            return 70; //hard coded suresh
+        }
     }
 
     public class EmployeeLeave
