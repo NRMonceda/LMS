@@ -39,5 +39,11 @@ namespace NLTD.EmployeePortal.LMS.DbHelper
             long usrId = TimesheetHelperObj.GetHrUserId();
             return usrId;
         }
+        public bool IsUserHR(long userId)
+        {
+            ITimesheetHelper TimesheetHelperObj = new TimeSheetDac();
+            bool result = TimesheetHelperObj.IsUserHR(userId);
+            return result;
+        }
     }
 }

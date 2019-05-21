@@ -469,13 +469,38 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
                                 where e.IsActive == true && r.Role.ToUpper()=="HR"
                                 select new {UserId=e.UserId}
                                 ).FirstOrDefault();
+                    userId = hrUsr.UserId;
                 }
             }
             catch 
             {
                 throw;
             }
-            return 70; //hard coded suresh
+            return userId; 
+        }
+        public bool IsUserHR(long userId)
+        {
+            bool result = false;
+            try
+            {
+                using (var context = new NLTDDbContext())
+                {
+                    var hrUsr = (from e in context.Employee
+                                 join r in context.EmployeeRole on e.EmployeeRoleId equals r.RoleId
+                                 where e.UserId==userId 
+                                 select new {Role=r.Role }
+                                ).FirstOrDefault();
+
+                    if (hrUsr.Role == "HR")
+                        result = true;
+
+                }
+            }
+            catch
+            {
+                throw;
+            }
+            return result; //hard coded suresh
         }
     }
 

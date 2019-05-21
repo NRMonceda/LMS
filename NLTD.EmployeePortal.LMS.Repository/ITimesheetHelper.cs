@@ -13,5 +13,7 @@ namespace NLTD.EmployeePortal.LMS.Repository
         IList<UserEmailListModel> GetUserEmailData();
 
         long GetHrUserId();
+
+        bool IsUserHR(long userId);
     }
 }
