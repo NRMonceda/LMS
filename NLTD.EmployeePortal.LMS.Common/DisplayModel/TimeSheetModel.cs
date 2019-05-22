@@ -12,7 +12,7 @@ namespace NLTD.EmployeePortal.LMS.Common.DisplayModel
         public DateTime OutTime { get; set; }
         public TimeSpan WorkingHours { get; set; }
         public string Status { get; set; }
-
+        public string HolidayStatus { get; set; }
         public string Requests { get; set; }
 
         public TimeSpan LateIn { get; set; }

@@ -20,26 +20,31 @@ namespace NLTD.EmployeePortal.LMS.Ux
             {
                 recurringJobList = connection.GetRecurringJobs();
             }
-            if (string.IsNullOrWhiteSpace(timesheetWeeklyEmailServiceConfig))
-            {
-                if (recurringJobList != null && recurringJobList.Any())
-                {
-                    var curJob = recurringJobList.FirstOrDefault(x => x.Id == "HangfireRecurringJobs.TimesheetWeeklyEmailService");
-                    if (curJob != null)
-                    {
-                        RecurringJob.RemoveIfExists(curJob.Id);
 
-                        if (!String.IsNullOrWhiteSpace(curJob.LastJobId))
-                        {
-                            RecurringJob.RemoveIfExists(curJob.LastJobId);
-                        }
+            //Remove Service if exists
+            if (recurringJobList != null && recurringJobList.Any())
+            {
+                var curJob = recurringJobList.FirstOrDefault(x => x.Id == "HangfireRecurringJobs.TimesheetWeeklyEmailService");
+                if (curJob != null)
+                {
+                    RecurringJob.RemoveIfExists(curJob.Id);
+
+                    if (!String.IsNullOrWhiteSpace(curJob.LastJobId))
+                    {
+                        RecurringJob.RemoveIfExists(curJob.LastJobId);
                     }
                 }
             }
-            else
+            using (var connection = JobStorage.Current.GetConnection())
+            {
+                recurringJobList = connection.GetRecurringJobs();
+            }
+            //Add TimesheetWeeklyEmailService if config exists 
+            if (!string.IsNullOrWhiteSpace(timesheetWeeklyEmailServiceConfig))
             {
                 RecurringJob.AddOrUpdate(() => TimesheetWeeklyEmailService(), timesheetWeeklyEmailServiceConfig, TimeZoneInfo.FindSystemTimeZoneById("India Standard Time"));
             }
+            
 
             //if (string.IsNullOrWhiteSpace(timesheetMonthlyEmailServiceConfig))
             //{

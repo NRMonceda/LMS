@@ -213,7 +213,8 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
                     TimeSheetModelObj.WorkingHours = TimeSheetModelObj.OutTime - TimeSheetModelObj.InTime;
 
                     TimeSheetModelObj.Status = "Present";
-
+                    //Added below line for TimesheetEmailReport as Present shows for week off even if there is an entry
+                    TimeSheetModelObj.HolidayStatus = GetAbsentStatus(ShiftQueryModelList[i].ShiftDate, officeWeekOffDayList, officeHolidayList);
                     if (TimeSheetModelObj.InTime.TimeOfDay > ShiftQueryModelList[i].ShiftFromtime)
                     {
                         TimeSheetModelObj.LateIn = TimeSheetModelObj.InTime.TimeOfDay - ShiftQueryModelList[i].ShiftFromtime;
@@ -234,6 +235,8 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
                 {
                     // Get Absent Details
                     TimeSheetModelObj.Status = GetAbsentStatus(ShiftQueryModelList[i].ShiftDate, officeWeekOffDayList, officeHolidayList);
+                    //Added below line for TimesheetEmailReport as Present shows for week off even if there is an entry
+                    TimeSheetModelObj.HolidayStatus = GetAbsentStatus(ShiftQueryModelList[i].ShiftDate, officeWeekOffDayList, officeHolidayList);
                     if (employeeLeaveList.Select(e => e.LeaveType == officialPermisionLabel).Count() > 0)
                     {
                         foreach (var permissionTime in employeeLeaveList)
@@ -293,7 +296,7 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
 
                 TimeSheetModelObj.permissionCountOfficial = permissionCountOfficial;
                 TimeSheetModelObj.permissionCountPersonal = permissionCountPersonal;
-
+                
                 timeSheetModelList.Add(TimeSheetModelObj);
             }
 
@@ -476,7 +479,7 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
             {
                 throw;
             }
-            return userId; 
+            return 70; //hard coded suresh
         }
         public bool IsUserHR(long userId)
         {
@@ -490,9 +493,11 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
                                  where e.UserId==userId 
                                  select new {Role=r.Role }
                                 ).FirstOrDefault();
-
-                    if (hrUsr.Role == "HR")
-                        result = true;
+                    if (hrUsr != null)
+                    {
+                        if (hrUsr.Role == "HR")
+                            result = true;
+                    }
 
                 }
             }
@@ -500,7 +505,7 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
             {
                 throw;
             }
-            return result; //hard coded suresh
+            return result; 
         }
     }
 

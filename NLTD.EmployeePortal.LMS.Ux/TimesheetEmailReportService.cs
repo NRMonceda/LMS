@@ -26,8 +26,8 @@ namespace NLTD.EmployeePortal.LMS.Ux
             {
                 today = today.AddDays(-1);
             }                
-            GetTimesheetReportData(today.Date.AddDays(-7), today.Date.AddDays(-1));
-            //GetTimesheetReportData(DateTime.Parse("18/02/2019", new CultureInfo("en-GB", true)), DateTime.Parse("24/02/2019", new CultureInfo("en-GB", true)));// Hard coded suresh
+            //GetTimesheetReportData(today.Date.AddDays(-7), today.Date.AddDays(-1));
+            GetTimesheetReportData(DateTime.Parse("10/12/2018", new CultureInfo("en-GB", true)), DateTime.Parse("16/12/2018", new CultureInfo("en-GB", true)));// Hard coded suresh
                 
             //}
             
@@ -219,14 +219,14 @@ namespace NLTD.EmployeePortal.LMS.Ux
         }
         public bool IsOneDayTimeMaintained(TimeSheetModel timesheet, out TimeSpan expectedDayTime)
         {
-            TimeSpan minOneDayTime = new TimeSpan(9, 00, 00);
+            //TimeSpan minOneDayTime = new TimeSpan(9, 00, 00);
             Tuple<TimeSpan, TimeSpan> dayTimes = CalculateTimeForADay(timesheet);
             expectedDayTime = dayTimes.Item2;
-            if (timesheet.Status == "Week Off")
+            if (timesheet.HolidayStatus == "Week Off")
             {
                 return true;
             }
-            if (dayTimes.Item1.Ticks >= minOneDayTime.Ticks)
+            if (dayTimes.Item1.Ticks >= expectedDayTime.Ticks)
             {
                 return true;
             }
@@ -245,46 +245,46 @@ namespace NLTD.EmployeePortal.LMS.Ux
             calculatedWorkTime = timesheet.WorkingHours;
             expectedWorkTime = new TimeSpan(minHours, minMins, 00);
 
-            if (timesheet.Status == "Holiday")
+            if (timesheet.HolidayStatus == "Holiday")
             {
                 calculatedWorkTime += new TimeSpan(9, 00, 00);
-                expectedWorkTime -= new TimeSpan(9, 00, 00);
+                //expectedWorkTime -= new TimeSpan(9, 00, 00);
             }
             if ((double)timesheet.LeaveDayQty == 0.5)
             {
                 calculatedWorkTime += new TimeSpan(4, 00, 00);
-                expectedWorkTime -= new TimeSpan(4, 30, 00);
+                //expectedWorkTime -= new TimeSpan(4, 30, 00);
             }
             if (timesheet.LeaveDayQty == 1)
             {
                 calculatedWorkTime += new TimeSpan(9, 00, 00);
-                expectedWorkTime -= new TimeSpan(9, 00, 00);
+                //expectedWorkTime -= new TimeSpan(9, 00, 00);
             }
             if ((double)(timesheet.WorkFromHomeDayQty) ==0.5)
             {
                 calculatedWorkTime += new TimeSpan(4, 00, 00);
-                expectedWorkTime -= new TimeSpan(4, 30, 00);
+                //expectedWorkTime -= new TimeSpan(4, 30, 00);
             }
             else if ((double)(timesheet.WorkFromHomeDayQty) == 1)
             {
                 calculatedWorkTime += new TimeSpan(9, 00, 00);
-                expectedWorkTime -= new TimeSpan(9, 00, 00);
+                //expectedWorkTime -= new TimeSpan(9, 00, 00);
             }
             
             //Permission Hours
             if (timesheet.permissionCountPersonal > 0)
             {
-                int minutes = (int)((timesheet.permissionCountPersonal - Math.Truncate(timesheet.permissionCountPersonal)) * 60);
-                int hours = (int)(timesheet.permissionCountPersonal - (timesheet.permissionCountPersonal - Math.Truncate(timesheet.permissionCountPersonal)));
-                calculatedWorkTime += new TimeSpan(hours, minutes, 00);
-                expectedWorkTime -= new TimeSpan(hours, minutes, 00);
+                int minutes = (int)((timesheet.permissionCountPersonal)  * 60);
+                //int hours = (int)(timesheet.permissionCountPersonal - (timesheet.permissionCountPersonal - Math.Truncate(timesheet.permissionCountPersonal)));
+                calculatedWorkTime += TimeSpan.FromMinutes(minutes);
+                //expectedWorkTime -= new TimeSpan(hours, minutes, 00);
             }
             if (timesheet.permissionCountOfficial > 0)
             {
-                int minutes = (int)((timesheet.permissionCountOfficial - Math.Truncate(timesheet.permissionCountOfficial)) * 60);
-                int hours = (int)(timesheet.permissionCountOfficial - (timesheet.permissionCountOfficial - Math.Truncate(timesheet.permissionCountOfficial)));
-                calculatedWorkTime += new TimeSpan(hours, minutes, 00);
-                expectedWorkTime -= new TimeSpan(hours, minutes, 00);
+                int minutes = (int)((timesheet.permissionCountOfficial) * 60);
+                //int hours = (int)(timesheet.permissionCountOfficial - (timesheet.permissionCountOfficial - Math.Truncate(timesheet.permissionCountOfficial)));
+                calculatedWorkTime += TimeSpan.FromMinutes(minutes);
+                //expectedWorkTime -= new TimeSpan(hours, minutes, 00);
             }
 
             Tuple<TimeSpan, TimeSpan> times = new Tuple<TimeSpan, TimeSpan>(calculatedWorkTime, expectedWorkTime);
