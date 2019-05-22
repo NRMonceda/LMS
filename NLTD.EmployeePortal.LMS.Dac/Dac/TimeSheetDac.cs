@@ -479,7 +479,7 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
             {
                 throw;
             }
-            return 70; //hard coded suresh
+            return userId; 
         }
         public bool IsUserHR(long userId)
         {

@@ -35,10 +35,7 @@ namespace NLTD.EmployeePortal.LMS.Ux
                     }
                 }
             }
-            using (var connection = JobStorage.Current.GetConnection())
-            {
-                recurringJobList = connection.GetRecurringJobs();
-            }
+            
             //Add TimesheetWeeklyEmailService if config exists 
             if (!string.IsNullOrWhiteSpace(timesheetWeeklyEmailServiceConfig))
             {

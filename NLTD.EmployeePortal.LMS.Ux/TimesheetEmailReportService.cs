@@ -26,8 +26,8 @@ namespace NLTD.EmployeePortal.LMS.Ux
             {
                 today = today.AddDays(-1);
             }                
-            //GetTimesheetReportData(today.Date.AddDays(-7), today.Date.AddDays(-1));
-            GetTimesheetReportData(DateTime.Parse("10/12/2018", new CultureInfo("en-GB", true)), DateTime.Parse("16/12/2018", new CultureInfo("en-GB", true)));// Hard coded suresh
+            GetTimesheetReportData(today.Date.AddDays(-7), today.Date.AddDays(-1));
+            //GetTimesheetReportData(DateTime.Parse("10/12/2018", new CultureInfo("en-GB", true)), DateTime.Parse("16/12/2018", new CultureInfo("en-GB", true)));// Hard coded suresh
                 
             //}
             
