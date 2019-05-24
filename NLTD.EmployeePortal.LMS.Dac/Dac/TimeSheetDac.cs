@@ -479,7 +479,7 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
             {
                 throw;
             }
-            return userId; 
+            return userId;
         }
         public bool IsUserHR(long userId)
         {
@@ -495,7 +495,7 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
                                 ).FirstOrDefault();
                     if (hrUsr != null)
                     {
-                        if (hrUsr.Role == "HR")
+                        if (hrUsr.Role.ToUpper() == "HR" || hrUsr.Role.ToUpper() == "ADMIN")
                             result = true;
                     }
 

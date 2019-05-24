@@ -16,11 +16,7 @@ namespace NLTD.EmployeePortal.LMS.Ux
     public class TimesheetEmailReportService
     {
         public void ProcessWeeklyReport()
-        {
-            DateTime monthReportDate = new DateTime(DateTime.Now.Date.Year, DateTime.Now.Date.Month, 23);
-
-            //if(DateTime.Now.Date!= monthReportDate.Date)//Donot run weekly report as monthly report will be run
-            //{
+        {                      
             DateTime today = DateTime.Now;
             while (today.DayOfWeek.ToString() != "Monday")
             {
@@ -28,9 +24,6 @@ namespace NLTD.EmployeePortal.LMS.Ux
             }                
             GetTimesheetReportData(today.Date.AddDays(-7), today.Date.AddDays(-1));
             //GetTimesheetReportData(DateTime.Parse("10/12/2018", new CultureInfo("en-GB", true)), DateTime.Parse("16/12/2018", new CultureInfo("en-GB", true)));// Hard coded suresh
-                
-            //}
-            
         }
         //public void ProcessMonthlyReport()
         //{
@@ -52,8 +45,7 @@ namespace NLTD.EmployeePortal.LMS.Ux
                 TimeSheetQueryModelObj.FromDate = FromDate; 
                 TimeSheetQueryModelObj.ToDate = ToDate; 
                 TimeSheetQueryModelObj.UserID = EmployeeAttendanceHelperObj.GetHrUserId();
-                TimeSheetQueryModelObj.MyDirectEmployees = false;
-                TimeSpan expectedDayWorkTime = TimeSpan.Zero;
+                TimeSheetQueryModelObj.MyDirectEmployees = false;                
                 List<TimeSheetModel> timeSheetModelList = EmployeeAttendanceHelperObj.GetMyTeamTimeSheet(TimeSheetQueryModelObj.UserID, TimeSheetQueryModelObj.FromDate, TimeSheetQueryModelObj.ToDate, TimeSheetQueryModelObj.MyDirectEmployees);                
                 timeSheetModelList = timeSheetModelList.OrderBy(x => x.userID).ToList();
                 IList<WeeklyDateBlocksModel> lstWeeklyDates = BuildWeeklyDateBlocks(TimeSheetQueryModelObj.FromDate, TimeSheetQueryModelObj.ToDate);
@@ -61,7 +53,7 @@ namespace NLTD.EmployeePortal.LMS.Ux
                 DailyTimeNotMaintainedModel dayMdl;
                 foreach (var item in timeSheetModelList)
                 {
-                    if (!IsOneDayTimeMaintained(item, out expectedDayWorkTime))
+                    if (!IsOneDayTimeMaintained(item))
                     {
                         dayMdl = new DailyTimeNotMaintainedModel();
                         dayMdl.WorkingDay = item.WorkingDate;
@@ -69,8 +61,7 @@ namespace NLTD.EmployeePortal.LMS.Ux
                         dayMdl.Shift = item.Shift;
                         dayMdl.InTime = item.InTime.ToString("hh") + ":" + item.InTime.ToString("mm") + ":" + item.InTime.ToString("ss");
                         dayMdl.OutTime = item.OutTime.ToString("hh") + ":" + item.OutTime.ToString("mm") + ":" + item.OutTime.ToString("ss");
-                        dayMdl.TotalDayWorkingHoursFormatted = item.WorkingHours.ToString("hh") + ":" + item.WorkingHours.ToString("mm") + ":" + item.WorkingHours.ToString("ss");
-                        //dayMdl.ExpectedDayWorkingHoursFormatted = expectedDayWorkTime.ToString("hh") + ":" + expectedDayWorkTime.ToString("mm") + ":" + expectedDayWorkTime.ToString("ss");
+                        dayMdl.TotalDayWorkingHoursFormatted = item.WorkingHours.ToString("hh") + ":" + item.WorkingHours.ToString("mm") + ":" + item.WorkingHours.ToString("ss");                        
                         dayMdl.Status = item.Status;
                         dayMdl.Request = item.Requests;
                         dayMdl.UserId = item.userID;                      
@@ -86,13 +77,13 @@ namespace NLTD.EmployeePortal.LMS.Ux
                 decimal leaveDayQty = 0;
                 decimal workFromHome = 0;
                 bool isWeeklyMet = true;
+                TimeSpan minWeekTime = new TimeSpan(45, 0, 0);
                 foreach (var item in lstUsers)
                 {
                     foreach (var week in lstWeeklyDates)
                     {
                         CalculateTimeForAWeek(timeSheetModelList.Where(x => x.WorkingDate.Date >= week.WeekDayStartDate.Date && x.WorkingDate.Date <= week.WeekDayEndDate && x.userID == item).ToList(), out totalWeekTime, out calculatedWeekTime,out officialPermission,out personalPermission,out leaveDayQty, out workFromHome);
-
-                        TimeSpan minWeekTime = new TimeSpan(45, 0, 0);
+                                                
                         if (calculatedWeekTime.Ticks < minWeekTime.Ticks)
                         {
                             isWeeklyMet = false;
@@ -180,11 +171,7 @@ namespace NLTD.EmployeePortal.LMS.Ux
 #else
             BackgroundJob.Enqueue(() => email.SendHtmlFormattedEmail(toEmailAddress, lstCCEmailAddresses, subject, emailBody));
 #endif
-        }
-        public string PrepareLeadEmailBody()
-        {
-            return null;
-        }
+        }       
         public IList<WeeklyDateBlocksModel> BuildWeeklyDateBlocks(DateTime fromDate, DateTime toDate)
         {
             //Monday to Sunday is 1 week block
@@ -217,16 +204,20 @@ namespace NLTD.EmployeePortal.LMS.Ux
 
             return lstWeeklyDates;
         }
-        public bool IsOneDayTimeMaintained(TimeSheetModel timesheet, out TimeSpan expectedDayTime)
-        {
-            //TimeSpan minOneDayTime = new TimeSpan(9, 00, 00);
-            Tuple<TimeSpan, TimeSpan> dayTimes = CalculateTimeForADay(timesheet);
-            expectedDayTime = dayTimes.Item2;
+        public bool IsOneDayTimeMaintained(TimeSheetModel timesheet)
+        {            
+            TimeSpan calculatedWorkTime = CalculateTimeForADay(timesheet);
+            TimeSpan expectedWorkTime = TimeSpan.Zero;
+            string minDailyTime = ConfigurationManager.AppSettings["MinimumDailyTime"];
+            int minHours = (int.Parse)(minDailyTime.Substring(0, (minDailyTime.IndexOf(":", StringComparison.Ordinal))).Trim().ToString());
+            int minMins = (int.Parse)(minDailyTime.Substring(minDailyTime.IndexOf(":", StringComparison.Ordinal) + 1).Trim().ToString());            
+            expectedWorkTime = new TimeSpan(minHours, minMins, 00);
+
             if (timesheet.HolidayStatus == "Week Off")
             {
                 return true;
             }
-            if (dayTimes.Item1.Ticks >= expectedDayTime.Ticks)
+            if (calculatedWorkTime.Ticks >=expectedWorkTime.Ticks)
             {
                 return true;
             }
@@ -235,60 +226,50 @@ namespace NLTD.EmployeePortal.LMS.Ux
                 return false;
             }
         }
-        public Tuple<TimeSpan, TimeSpan> CalculateTimeForADay(TimeSheetModel timesheet)
-        {
-            TimeSpan expectedWorkTime = TimeSpan.Zero;
+        public TimeSpan CalculateTimeForADay(TimeSheetModel timesheet)
+        {            
             TimeSpan calculatedWorkTime = TimeSpan.Zero;
-            string minDailyTime =  ConfigurationManager.AppSettings["MinimumDailyTime"];
-            int minHours = (int.Parse)(minDailyTime.Substring(0, (minDailyTime.IndexOf(":", StringComparison.Ordinal))).Trim().ToString());
-            int minMins = (int.Parse)(minDailyTime.Substring(minDailyTime.IndexOf(":", StringComparison.Ordinal) + 1).Trim().ToString());
             calculatedWorkTime = timesheet.WorkingHours;
-            expectedWorkTime = new TimeSpan(minHours, minMins, 00);
-
             if (timesheet.HolidayStatus == "Holiday")
             {
                 calculatedWorkTime += new TimeSpan(9, 00, 00);
-                //expectedWorkTime -= new TimeSpan(9, 00, 00);
+                
             }
             if ((double)timesheet.LeaveDayQty == 0.5)
             {
                 calculatedWorkTime += new TimeSpan(4, 00, 00);
-                //expectedWorkTime -= new TimeSpan(4, 30, 00);
+                
             }
             if (timesheet.LeaveDayQty == 1)
             {
                 calculatedWorkTime += new TimeSpan(9, 00, 00);
-                //expectedWorkTime -= new TimeSpan(9, 00, 00);
+                
             }
             if ((double)(timesheet.WorkFromHomeDayQty) ==0.5)
             {
                 calculatedWorkTime += new TimeSpan(4, 00, 00);
-                //expectedWorkTime -= new TimeSpan(4, 30, 00);
+                
             }
             else if ((double)(timesheet.WorkFromHomeDayQty) == 1)
             {
                 calculatedWorkTime += new TimeSpan(9, 00, 00);
-                //expectedWorkTime -= new TimeSpan(9, 00, 00);
+                
             }
             
             //Permission Hours
             if (timesheet.permissionCountPersonal > 0)
             {
-                int minutes = (int)((timesheet.permissionCountPersonal)  * 60);
-                //int hours = (int)(timesheet.permissionCountPersonal - (timesheet.permissionCountPersonal - Math.Truncate(timesheet.permissionCountPersonal)));
+                int minutes = (int)((timesheet.permissionCountPersonal)  * 60);                
                 calculatedWorkTime += TimeSpan.FromMinutes(minutes);
-                //expectedWorkTime -= new TimeSpan(hours, minutes, 00);
+                
             }
             if (timesheet.permissionCountOfficial > 0)
             {
-                int minutes = (int)((timesheet.permissionCountOfficial) * 60);
-                //int hours = (int)(timesheet.permissionCountOfficial - (timesheet.permissionCountOfficial - Math.Truncate(timesheet.permissionCountOfficial)));
-                calculatedWorkTime += TimeSpan.FromMinutes(minutes);
-                //expectedWorkTime -= new TimeSpan(hours, minutes, 00);
+                int minutes = (int)((timesheet.permissionCountOfficial) * 60);                
+                calculatedWorkTime += TimeSpan.FromMinutes(minutes);                
             }
-
-            Tuple<TimeSpan, TimeSpan> times = new Tuple<TimeSpan, TimeSpan>(calculatedWorkTime, expectedWorkTime);
-            return times;            
+            
+            return calculatedWorkTime;            
         }
         public void CalculateTimeForAWeek(IList<TimeSheetModel> lstweekTimeSheet, out TimeSpan totalWeekHours, out TimeSpan calculatedWeekHours,out decimal officialPermission,out decimal personalPermission, out decimal leaveDayQty,out decimal workFromHome)
         {
@@ -301,14 +282,13 @@ namespace NLTD.EmployeePortal.LMS.Ux
             leaveDayQty = 0;
             workFromHome = 0;
             
-            Tuple<TimeSpan, TimeSpan> dayTimes;
+            TimeSpan calculatedDayTime=TimeSpan.Zero;
             foreach (var day in lstweekTimeSheet)
             {
                 if (day.Status != "Week Off")
                 {
-                    dayTimes = CalculateTimeForADay(day);
-                    totalCalculatedWeekTime += dayTimes.Item1;
-                    totalExpectedWeekTime += dayTimes.Item2;
+                    calculatedDayTime = CalculateTimeForADay(day);
+                    totalCalculatedWeekTime += calculatedDayTime;                    
                     totalWeekTime = totalWeekTime.Add(new TimeSpan(0, day.WorkingHours.Hours, day.WorkingHours.Minutes, day.WorkingHours.Seconds, 0));
                     officialPermission += day.permissionCountOfficial;
                     personalPermission += day.permissionCountPersonal;
