@@ -10,11 +10,14 @@ namespace NLTD.EmployeePortal.LMS.Ux
 {
     public class HangfireRecurringJobs
     {
-        public HangfireRecurringJobs(){}
+        public HangfireRecurringJobs()
+        {
+        }
+
         public HangfireRecurringJobs(bool runFlag)
         {
             string timesheetWeeklyEmailServiceConfig = ConfigurationManager.AppSettings["TimesheetWeeklyEmailServiceConfig"];
-            string timesheetMonthlyEmailServiceConfig = ConfigurationManager.AppSettings["TimesheetMonthlyEmailServiceConfig"];
+            //string timesheetMonthlyEmailServiceConfig = ConfigurationManager.AppSettings["TimesheetMonthlyEmailServiceConfig"];
             List<RecurringJobDto> recurringJobList;
             using (var connection = JobStorage.Current.GetConnection())
             {
@@ -35,13 +38,12 @@ namespace NLTD.EmployeePortal.LMS.Ux
                     }
                 }
             }
-            
-            //Add TimesheetWeeklyEmailService if config exists 
+
+            //Add TimesheetWeeklyEmailService if config exists
             if (!string.IsNullOrWhiteSpace(timesheetWeeklyEmailServiceConfig))
             {
                 RecurringJob.AddOrUpdate(() => TimesheetWeeklyEmailService(), timesheetWeeklyEmailServiceConfig, TimeZoneInfo.FindSystemTimeZoneById("India Standard Time"));
             }
-            
 
             //if (string.IsNullOrWhiteSpace(timesheetMonthlyEmailServiceConfig))
             //{
@@ -63,13 +65,14 @@ namespace NLTD.EmployeePortal.LMS.Ux
             //{
             //    RecurringJob.AddOrUpdate(() => TimesheetMonthlyEmailService(), timesheetMonthlyEmailServiceConfig, TimeZoneInfo.FindSystemTimeZoneById("India Standard Time"));
             //}
+        }
 
-        }
         public void TimesheetWeeklyEmailService()
-        {   
+        {
             TimesheetEmailReportService srv = new TimesheetEmailReportService();
-            srv.ProcessWeeklyReport();            
+            srv.ProcessWeeklyReport();
         }
+
         //public void TimesheetMonthlyEmailService()
         //{
         //    TimesheetEmailReportService srv = new TimesheetEmailReportService();
