@@ -26,7 +26,7 @@ namespace NLTD.EmployeePortal.LMS.Ux
                 today = today.AddDays(-1);
             }
             GetTimesheetReportData(today.Date.AddDays(-7), today.Date.AddDays(-1));
-            //GetTimesheetReportData(DateTime.Parse("10/12/2018", new CultureInfo("en-GB", true)), DateTime.Parse("16/12/2018", new CultureInfo("en-GB", true)));// Hard coded suresh
+            //GetTimesheetReportData(DateTime.Parse("4/3/2019", new CultureInfo("en-GB", true)), DateTime.Parse("10/3/2019", new CultureInfo("en-GB", true)));// Hard coded suresh
         }
 
         //public void ProcessMonthlyReport()
@@ -63,8 +63,8 @@ namespace NLTD.EmployeePortal.LMS.Ux
                         dayMdl.WorkingDay = item.WorkingDate;
                         dayMdl.WorkingDayText = item.WorkingDate.DayOfWeek.ToString();
                         dayMdl.Shift = item.Shift;
-                        dayMdl.InTime = item.InTime.ToString("hh") + ":" + item.InTime.ToString("mm") + ":" + item.InTime.ToString("ss");
-                        dayMdl.OutTime = item.OutTime.ToString("hh") + ":" + item.OutTime.ToString("mm") + ":" + item.OutTime.ToString("ss");
+                        dayMdl.InTime = item.InTime.Hour + ":" + item.InTime.ToString("mm") + ":" + item.InTime.ToString("ss");
+                        dayMdl.OutTime = item.OutTime.Hour + ":" + item.OutTime.ToString("mm") + ":" + item.OutTime.ToString("ss");
                         dayMdl.TotalDayWorkingHoursFormatted = item.WorkingHours.ToString("hh") + ":" + item.WorkingHours.ToString("mm") + ":" + item.WorkingHours.ToString("ss");
                         dayMdl.Status = item.Status;
                         dayMdl.Request = item.Requests;
@@ -88,12 +88,20 @@ namespace NLTD.EmployeePortal.LMS.Ux
                 {
                     foreach (var week in lstWeeklyDates)
                     {
+                        totalWeekTime = TimeSpan.Zero;
+                        calculatedWeekTime = TimeSpan.Zero;
+                        officialPermission = 0;
+                        personalPermission = 0;
+                        leaveDayQty = 0;
+                        workFromHome = 0;
+                        isWeeklyMet = true;
+
                         CalculateTimeForAWeek(timeSheetModelList.Where(x => x.WorkingDate.Date >= week.WeekDayStartDate.Date && x.WorkingDate.Date <= week.WeekDayEndDate && x.userID == item).ToList(), out totalWeekTime, out calculatedWeekTime, out officialPermission, out personalPermission, out leaveDayQty, out workFromHome);
 
                         if (calculatedWeekTime.Ticks < expectedWeekTime.Ticks)
                         {
                             isWeeklyMet = false;
-                        }
+                        }                       
                         weekMdl = new WeeklyTimeNotMaintainedModel();
                         weekMdl.DateRange = string.Format("{0} {1} - {2} {3}", week.WeekDayStartDate.Day, week.WeekDayStartDate.ToString("MMM"), week.WeekDayEndDate.Day, week.WeekDayEndDate.ToString("MMM"));
                         weekMdl.WorkFromHomeQty = workFromHome;
@@ -120,7 +128,7 @@ namespace NLTD.EmployeePortal.LMS.Ux
                     if (lstUserEmail.Where(p => p.UserId == userId).Count() > 0)
                     {
                         ccEmailaddresses = new List<string>();
-                        body = PrepareEmployeeEmailBody(lstTimeSheetDailyNotMaintained.Count > 0 ? lstTimeSheetDailyNotMaintained.Where(x => x.UserId == userId).ToList() : null, lstTimeSheetWeeklyNotMaintained.Count > 0 ? lstTimeSheetWeeklyNotMaintained.Where(x => x.UserId == userId).ToList() : null, lstUserEmail.Where(x => x.UserId == userId).FirstOrDefault().FirstName + " " + lstUserEmail.Where(x => x.UserId == userId).FirstOrDefault().LastName);
+                        body = PrepareEmployeeEmailBody(lstTimeSheetDailyNotMaintained.Count > 0 ? lstTimeSheetDailyNotMaintained.Where(x => x.UserId == userId).ToList() : null, lstTimeSheetWeeklyNotMaintained.Count > 0 ? lstTimeSheetWeeklyNotMaintained.Where(x => x.UserId == userId).ToList() : null);
                         if (body != "NoEmail")
                         {
                             ccEmailaddresses.Add(lstUserEmail.Where(x => x.UserId == userId).FirstOrDefault().ReportingToEmailAddress);
@@ -135,16 +143,16 @@ namespace NLTD.EmployeePortal.LMS.Ux
             }
         }
 
-        public string PrepareEmployeeEmailBody(IList<DailyTimeNotMaintainedModel> lstDaywiseEmp, IList<WeeklyTimeNotMaintainedModel> lstEmpWeekwise, string empName)
+        public string PrepareEmployeeEmailBody(IList<DailyTimeNotMaintainedModel> lstDaywiseEmp, IList<WeeklyTimeNotMaintainedModel> lstEmpWeekwise)
         {
-            if ((lstDaywiseEmp == null ? false : lstDaywiseEmp.Count == 0) && (lstEmpWeekwise == null ? false : lstEmpWeekwise.Count == 0))
+            if ((lstDaywiseEmp == null ? true : lstDaywiseEmp.Count == 0) && (lstEmpWeekwise == null ? true : lstEmpWeekwise.Count == 0))
             {
                 return "NoEmail";
             }
             string body = string.Empty;
 
             foreach (var mdl in lstEmpWeekwise)
-            {
+            {                
                 if ((lstDaywiseEmp == null ? false : lstDaywiseEmp.Count > 0) || mdl.IsWeeklyTimeMet == false)
                 {
                     body += "<tr class='weeklytotal'><th>Summary</th><th>" + mdl.DateRange + "</th><th>Work From Home : " + mdl.WorkFromHomeQty + "</th><th colspan='2'>" + mdl.Permissions + "</th>" + (mdl.IsWeeklyTimeMet == true ? "<th>" : "<th style=\"color: Red\">") + mdl.TotalWeekWorkingHoursFormatted + "</th><th>" + "Leave : " + mdl.Requests + "</th></tr>";
@@ -157,8 +165,10 @@ namespace NLTD.EmployeePortal.LMS.Ux
                     }
                 }
             }
-
-            return body;
+            if (body == "")
+                return "NoEmail";
+            else
+                return body;
         }
 
         public void SendEmail(string body, string toEmailAddress, IList<string> lstCCEmailAddresses, string subject, string empName)
