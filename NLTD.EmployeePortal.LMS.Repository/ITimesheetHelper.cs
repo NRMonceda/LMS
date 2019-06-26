@@ -9,5 +9,11 @@ namespace NLTD.EmployeePortal.LMS.Repository
         List<TimeSheetModel> GetMyTimeSheet(Int64 UserID, DateTime FromDate, DateTime ToDate);
 
         List<TimeSheetModel> GetMyTeamTimeSheet(Int64 UserID, DateTime FromDate, DateTime ToDate, bool myDirectEmployees);
+
+        IList<UserEmailListModel> GetUserEmailData();
+
+        long GetHrUserId();
+
+        bool IsUserHR(long userId);
     }
 }

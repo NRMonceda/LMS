@@ -643,10 +643,15 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
         public ActionResult LoadMyTeamTimesheet(TimeSheetQueryModel TimeSheetQueryModelObj)
         {
             string errorMessage = string.Empty;
-            List<TimeSheetModel> timeSheetModelList = GetEmployeeTimeSheet(TimeSheetQueryModelObj, out errorMessage, "Team");
-            if (!string.IsNullOrEmpty(errorMessage))
+            TimesheetClient tsClient = new TimesheetClient();
+            List<TimeSheetModel> timeSheetModelList = new List<TimeSheetModel>();
+            if (tsClient.IsUserHR(TimeSheetQueryModelObj.UserID) == false)
             {
-                return new HttpStatusCodeResult(400, "Given Username does not exists");
+                timeSheetModelList = GetEmployeeTimeSheet(TimeSheetQueryModelObj, out errorMessage, "Team");
+                if (!string.IsNullOrEmpty(errorMessage))
+                {
+                    return new HttpStatusCodeResult(400, "Given Username does not exists");
+                }
             }
             ViewBag.RequestLevelPerson = "Team";
             return PartialView("TimeSheetPartial", timeSheetModelList);

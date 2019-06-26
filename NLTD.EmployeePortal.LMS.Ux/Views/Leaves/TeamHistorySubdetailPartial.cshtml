@@ -13,7 +13,17 @@
                             <div class="col-sm-12">
                                 <div class="row">
                                     <div class="col-sm-6">
-                                        Request Type: @Html.Label(item.LeaveTypeText)
+                                        @{
+                                            if (item.IsExceptionTypeLeave == true)
+                                            {
+                                                <span style="color:red;font-weight:bold">Request Type: Exception: @Html.Label(item.LeaveTypeText)</span>
+                                            }
+                                            else
+                                            {
+                                                <span>Request Type: @Html.Label(item.LeaveTypeText)</span>
+                                            }
+                                        }
+                                        
                                     </div>
                                     <div class="col-sm-4">
                                         <span>Applied By: @Html.Label(item.AppliedByName)</span>

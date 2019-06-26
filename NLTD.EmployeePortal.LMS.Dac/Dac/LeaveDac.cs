@@ -1161,7 +1161,11 @@ namespace NLTD.EmployeePortal.LMS.Dac
                             {
                                 if (empProfile.AvailedLeavePolicyException >= numberOfLeaveExceptionsAllowed)
                                 {
-                                    return "MaxExceptionsAvailed:" + numberOfLeaveExceptionsAllowed.ToString();
+                                    //If LeaveWithoutPay with Exception checked, allow leave else prompt message
+                                    if (adjustBal.Type.ToUpper() != "LEAVE WITHOUT PAY")
+                                    {
+                                        return "MaxExceptionsAvailed:" + numberOfLeaveExceptionsAllowed.ToString();
+                                    }
                                 }
                             }
 

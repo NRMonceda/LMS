@@ -277,7 +277,7 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
                             else if (result == "UnCheckException")
                                 data.ErrorMesage = "No combination of leaves found. Please uncheck avail leave combination exception";
                             else if (result.Contains("MaxExceptionsAvailed:"))
-                                data.ErrorMesage = "You have already availed " + result.Substring(21) + " leave exceptions. Please contact HR for your case.";
+                                data.ErrorMesage = "You have already availed " + result.Substring(21) + " leave exceptions. Please apply Leave Without Pay.";
 
                         }
                     }

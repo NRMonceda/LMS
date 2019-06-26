@@ -36,6 +36,7 @@ namespace NLTD.EmployeePortal.LMS.Ux
                 ServerCheckInterval = TimeSpan.FromMilliseconds(60000),
                 SchedulePollingInterval = TimeSpan.FromMilliseconds(60000)
             });
+            HangfireRecurringJobs jobs = new HangfireRecurringJobs(true);
         }
     }
 

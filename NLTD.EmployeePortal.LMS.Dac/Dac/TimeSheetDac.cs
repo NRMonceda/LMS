@@ -213,7 +213,8 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
                     TimeSheetModelObj.WorkingHours = TimeSheetModelObj.OutTime - TimeSheetModelObj.InTime;
 
                     TimeSheetModelObj.Status = "Present";
-
+                    //Added below line for TimesheetEmailReport as Present shows for week off even if there is an entry
+                    TimeSheetModelObj.HolidayStatus = GetAbsentStatus(ShiftQueryModelList[i].ShiftDate, officeWeekOffDayList, officeHolidayList);
                     if (TimeSheetModelObj.InTime.TimeOfDay > ShiftQueryModelList[i].ShiftFromtime)
                     {
                         TimeSheetModelObj.LateIn = TimeSheetModelObj.InTime.TimeOfDay - ShiftQueryModelList[i].ShiftFromtime;
@@ -234,6 +235,8 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
                 {
                     // Get Absent Details
                     TimeSheetModelObj.Status = GetAbsentStatus(ShiftQueryModelList[i].ShiftDate, officeWeekOffDayList, officeHolidayList);
+                    //Added below line for TimesheetEmailReport as Present shows for week off even if there is an entry
+                    TimeSheetModelObj.HolidayStatus = GetAbsentStatus(ShiftQueryModelList[i].ShiftDate, officeWeekOffDayList, officeHolidayList);
                     if (employeeLeaveList.Select(e => e.LeaveType == officialPermisionLabel).Count() > 0)
                     {
                         foreach (var permissionTime in employeeLeaveList)
@@ -293,7 +296,7 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
 
                 TimeSheetModelObj.permissionCountOfficial = permissionCountOfficial;
                 TimeSheetModelObj.permissionCountPersonal = permissionCountPersonal;
-
+                
                 timeSheetModelList.Add(TimeSheetModelObj);
             }
 
@@ -429,6 +432,80 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
                 throw;
             }
             return StartDateType;
+        }
+        public IList<UserEmailListModel> GetUserEmailData()
+        {
+            IList<UserEmailListModel> lstEmail = new List<UserEmailListModel>();
+            try
+            {
+                using (var context = new NLTDDbContext())
+                {
+                    lstEmail = (from e in context.Employee
+                                join em in context.Employee on e.ReportingToId equals em.UserId
+                                where e.IsActive==true
+                                select new UserEmailListModel
+                                {
+                                    UserId = e.UserId,
+                                    EmployeeEmailAddress = e.EmailAddress,
+                                    ReportingToEmailAddress = em.EmailAddress,
+                                    FirstName=e.FirstName,
+                                    LastName=e.LastName
+
+                                }).ToList();
+                }
+            }
+            catch 
+            {
+                throw;
+            }
+            return lstEmail;
+        }
+        public long GetHrUserId()
+        {
+            long userId = 0;
+            try
+            {
+                using (var context = new NLTDDbContext())
+                {
+                    var hrUsr = (from e in context.Employee    
+                                join r in context.EmployeeRole on e.EmployeeRoleId equals r.RoleId                            
+                                where e.IsActive == true && r.Role.ToUpper()=="HR"
+                                select new {UserId=e.UserId}
+                                ).FirstOrDefault();
+                    userId = hrUsr.UserId;
+                }
+            }
+            catch 
+            {
+                throw;
+            }
+            return userId;
+        }
+        public bool IsUserHR(long userId)
+        {
+            bool result = false;
+            try
+            {
+                using (var context = new NLTDDbContext())
+                {
+                    var hrUsr = (from e in context.Employee
+                                 join r in context.EmployeeRole on e.EmployeeRoleId equals r.RoleId
+                                 where e.UserId==userId 
+                                 select new {Role=r.Role }
+                                ).FirstOrDefault();
+                    if (hrUsr != null)
+                    {
+                        if (hrUsr.Role.ToUpper() == "HR" || hrUsr.Role.ToUpper() == "ADMIN")
+                            result = true;
+                    }
+
+                }
+            }
+            catch
+            {
+                throw;
+            }
+            return result; 
         }
     }
 
