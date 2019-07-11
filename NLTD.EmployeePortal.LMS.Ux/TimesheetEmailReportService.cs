@@ -125,7 +125,7 @@ namespace NLTD.EmployeePortal.LMS.Ux
                 List<string> ccEmailaddresses = new List<string>();
                 foreach (var userId in lstFinalUsers)
                 {
-                    if (lstUserEmail.Where(p => p.UserId == userId).Count() > 0)
+                    if (lstUserEmail.FirstOrDefault(x=>x.UserId==userId).SkipTimesheetCompliance==false)
                     {
                         ccEmailaddresses = new List<string>();
                         body = PrepareEmployeeEmailBody(lstTimeSheetDailyNotMaintained.Count > 0 ? lstTimeSheetDailyNotMaintained.Where(x => x.UserId == userId).ToList() : null, lstTimeSheetWeeklyNotMaintained.Count > 0 ? lstTimeSheetWeeklyNotMaintained.Where(x => x.UserId == userId).ToList() : null);

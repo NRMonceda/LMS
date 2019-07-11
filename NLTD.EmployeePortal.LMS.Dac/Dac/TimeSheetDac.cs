@@ -449,7 +449,8 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
                                     EmployeeEmailAddress = e.EmailAddress,
                                     ReportingToEmailAddress = em.EmailAddress,
                                     FirstName=e.FirstName,
-                                    LastName=e.LastName
+                                    LastName=e.LastName,
+                                    SkipTimesheetCompliance=e.SkipTimesheetCompliance==null?false:true
 
                                 }).ToList();
                 }

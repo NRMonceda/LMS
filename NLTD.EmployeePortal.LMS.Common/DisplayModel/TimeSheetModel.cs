@@ -98,5 +98,8 @@ namespace NLTD.EmployeePortal.LMS.Common.DisplayModel
         public string FirstName { get; set; }
 
         public string LastName { get; set; }
+
+        public Boolean SkipTimesheetCompliance { get; set; }
+        
     }
 }

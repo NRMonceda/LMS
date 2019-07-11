@@ -36,5 +36,7 @@ namespace NLTD.EmployeePortal.LMS.Dac.DbModel
         public DateTime? RelievingDate { get; set; }
 
         public int? AvailedLeavePolicyException { get; set; }
+
+        public Boolean? SkipTimesheetCompliance { get; set; }
     }
 }
