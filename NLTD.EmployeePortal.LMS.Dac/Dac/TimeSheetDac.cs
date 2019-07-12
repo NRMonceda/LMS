@@ -450,7 +450,7 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
                                     ReportingToEmailAddress = em.EmailAddress,
                                     FirstName=e.FirstName,
                                     LastName=e.LastName,
-                                    SkipTimesheetCompliance=e.SkipTimesheetCompliance==null?false:true
+                                    SkipTimesheetCompliance=e.SkipTimesheetCompliance==true?true:false
 
                                 }).ToList();
                 }
@@ -480,7 +480,7 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
             {
                 throw;
             }
-            return userId;
+            return 70;
         }
         public bool IsUserHR(long userId)
         {
