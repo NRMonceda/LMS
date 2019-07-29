@@ -108,5 +108,13 @@ namespace NLTD.EmployeePortal.LMS.Client
                 return helper.GetEmployeeProfilesforEL(lastCreditRun);
             }
         }
+        public IList<LeaveCreditModel> GetEmployeeProfilesforCLSL(long leaveTypeId)
+        {
+            using (IEmployeeHelper helper = new EmployeeHelper())
+            {
+                return helper.GetEmployeeProfilesforCLSL(leaveTypeId);
+            }
+        }
+       
     }
 }

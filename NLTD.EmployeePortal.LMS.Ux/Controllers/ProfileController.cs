@@ -455,7 +455,16 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
             }
             return lstProfile;
         }
-
+        public IList<LeaveCreditModel> GetEmployeeCLSLData(long leaveTypeId)
+        {
+            IList<LeaveCreditModel> lstProfile = new List<LeaveCreditModel>();
+            DateTime lastCreditRun = GetlastCreditRunforEL();
+            using (var client = new EmployeeClient())
+            {
+                lstProfile = client.GetEmployeeProfilesforCLSL(leaveTypeId);
+            }
+            return lstProfile;
+        }
         public ActionResult ExportExcelEarnedLeaveCreditDetails()
         {
             IList<ElCreditModel> lstProfile = GetEmployeeELData();
@@ -500,15 +509,86 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
             result = UpdateLeaveBalance(ELCreditList, true);
             return Json(result, JsonRequestBehavior.AllowGet);
         }
-
-        public string UpdateLeaveBalance(List<EmployeeLeaveBalanceDetails> lst, bool isElCredit = false)
+        public void UpdateCLSL()
         {
             string result = "";
+            long hrUserId = 0;      
+            string remarks = "CL Credited for " + System.DateTime.Now.ToString("MMMM", CultureInfo.InvariantCulture)+"'"+ System.DateTime.Now.Year;
+
+            TimesheetClient employeeAttendanceHelperObj = new TimesheetClient();
+            hrUserId= employeeAttendanceHelperObj.GetHrUserId();
+            EmployeeClient empClinet = new EmployeeClient();           
+
+            var lstProfile = GetEmployeeCLSLData(1);
+            EmployeeLeaveBalanceDetails mdl;
+            List<EmployeeLeaveBalanceDetails> leaveCreditList = new List<EmployeeLeaveBalanceDetails>();
+            decimal leaveCredit = 0;
+
+            foreach (var item in lstProfile)
+            {
+                leaveCredit = CalculateCLSLCreditCount(System.DateTime.Now.Month, item);
+                if (leaveCredit > 0)
+                {
+                    mdl = new EmployeeLeaveBalanceDetails();
+                    mdl.UserId = item.UserId;
+                    mdl.CreditOrDebit = "C";
+                    mdl.LeaveTypeId = 1;
+                    mdl.EmployeeId = item.EmployeeId;
+                    mdl.BalanceDays = item.CurrentLeave;
+                    mdl.NoOfDays = leaveCredit;
+                    mdl.Remarks = remarks;
+                    mdl.TotalDays = item.TotalDays + leaveCredit;
+                    mdl.LeaveBalanceId = item.LeaveBalanceId;
+
+                    leaveCreditList.Add(mdl);
+                }
+                
+            }
+
+            result = UpdateLeaveBalance(leaveCreditList, false, hrUserId);
+
+            lstProfile = GetEmployeeCLSLData(14);
+
+            remarks = "SL Credited for " + System.DateTime.Now.ToString("MMMM", CultureInfo.InvariantCulture) + "'" + System.DateTime.Now.Year;
+
+            leaveCredit = 0;
+            leaveCreditList = new List<EmployeeLeaveBalanceDetails>();
+            foreach (var item in lstProfile)
+            {
+                leaveCredit = CalculateCLSLCreditCount(System.DateTime.Now.Month, item);
+                if (leaveCredit > 0)
+                {
+                    mdl = new EmployeeLeaveBalanceDetails();
+                    mdl.UserId = item.UserId;
+                    mdl.CreditOrDebit = "C";
+                    mdl.LeaveTypeId = 14;
+                    mdl.EmployeeId = item.EmployeeId;
+                    mdl.BalanceDays = item.CurrentLeave;
+                    mdl.NoOfDays = leaveCredit;
+                    mdl.Remarks = remarks;
+                    mdl.TotalDays = item.TotalDays + leaveCredit;
+                    mdl.LeaveBalanceId = item.LeaveBalanceId;
+                    leaveCreditList.Add(mdl);
+                }
+            }
+            result = UpdateLeaveBalance(leaveCreditList, false, hrUserId);            
+        }
+        public string UpdateLeaveBalance(List<EmployeeLeaveBalanceDetails> lst, bool isElCredit = false,long hrUserId=0)
+        {
+            string result = "";
+            long LoginUserId = 0;
             try
             {
                 using (var client = new EmployeeLeaveBalanceClient())
                 {
-                    long LoginUserId = this.UserId;
+                    if (hrUserId == 0)
+                    {
+                        LoginUserId = this.UserId;
+                    }
+                    else
+                    {
+                        LoginUserId = hrUserId;
+                    }
                     result = client.UpdateLeaveBalance(lst, LoginUserId, isElCredit);
                 }
 
@@ -524,6 +604,31 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
                 throw;
             }
             return result;
+        }
+        private decimal CalculateCLSLCreditCount(int processMonth,LeaveCreditModel leaveBalanceRecord)
+        {
+            decimal creditLeaveCount = 0;
+            decimal expectedTotal = 0;
+            
+            if(leaveBalanceRecord.DOJ < new DateTime(System.DateTime.Now.Year, 1, 1))
+            {
+                leaveBalanceRecord.DOJ = new DateTime(System.DateTime.Now.Year, 1, 1);
+            }
+
+            if (leaveBalanceRecord.DOJ.Value.Day <= 15)
+            {
+                expectedTotal = processMonth- (leaveBalanceRecord.DOJ.Value.Month-1);
+            }
+            else
+            {
+                expectedTotal = processMonth - (leaveBalanceRecord.DOJ.Value.Month);
+            }
+
+            if (leaveBalanceRecord.TotalDays < expectedTotal)
+                creditLeaveCount = expectedTotal - (leaveBalanceRecord.TotalDays??0);
+
+
+            return creditLeaveCount;
         }
     }
 }

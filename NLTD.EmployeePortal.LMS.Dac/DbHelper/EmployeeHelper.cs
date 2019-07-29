@@ -100,7 +100,13 @@ namespace NLTD.EmployeePortal.LMS.Dac.DbHelper
                 return dac.GetEmployeeProfilesforEL(lastCreditRun);
             }
         }
-
+        public IList<LeaveCreditModel> GetEmployeeProfilesforCLSL(long leaveTypeId)
+        {
+            using (var dac = new EmployeeDac())
+            {
+                return dac.GetEmployeeProfilesforCLSL(leaveTypeId);
+            }
+        }        
         public string UpdateEmployeeProfile(EmployeeProfile profile, Int64 ModifiedBy)
         {
             using (var dac = new EmployeeDac())

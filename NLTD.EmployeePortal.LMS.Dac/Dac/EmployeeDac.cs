@@ -297,7 +297,49 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
 
             return empProfileModel;
         }
+        public IList<LeaveCreditModel> GetEmployeeProfilesforCLSL(long leaveTypeId)
+        {
+            IList<LeaveCreditModel> empProfileModel = new List<LeaveCreditModel>();
+            DateTime toDate = DateTime.Now.AddMonths(-1);
 
+            try
+            {
+                Int32 year = System.DateTime.Now.Year;
+
+                using (var context = new NLTDDbContext())
+                {
+                    empProfileModel = (from e in context.Employee
+                                      join elb in context.EmployeeLeaveBalance on
+                                      new { p1 = e.UserId, p2 = System.DateTime.Now.Year, p3 = leaveTypeId }
+                                      equals
+                                      new { p1 = elb.UserId, p2 = elb.Year, p3 = elb.LeaveTypeId }
+                                      into leaveBal
+                                      from lb in leaveBal.DefaultIfEmpty()
+                                      where e.IsActive == true && e.ConfirmationDate == null
+                                      orderby e.FirstName
+                                      select new LeaveCreditModel
+                                      {
+                                          UserId = e.UserId,
+                                          EmployeeId = e.EmployeeId,
+                                          Name = e.FirstName + " " + e.LastName,
+                                          DOJ = e.DOJ,
+                                          ConfirmationDate = e.ConfirmationDate,
+                                          CurrentLeave = lb.BalanceDays == null ? 0 : (long)lb.BalanceDays,
+                                          LeaveBalanceId = lb.LeaveBalanceId,
+                                          TotalDays=lb.TotalDays
+                                      }
+                                      ).ToList();
+                   
+                }
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
+            return empProfileModel;
+        }       
+       
         public static int GetELCredit(DateTime fromDate, DateTime toDate, DateTime confirmationDate)
         {
             int elCredit = 0;
