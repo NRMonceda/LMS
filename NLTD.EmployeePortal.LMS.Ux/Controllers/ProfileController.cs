@@ -457,8 +457,7 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
         }
         public IList<LeaveCreditModel> GetEmployeeCLSLData(long leaveTypeId)
         {
-            IList<LeaveCreditModel> lstProfile = new List<LeaveCreditModel>();
-            DateTime lastCreditRun = GetlastCreditRunforEL();
+            IList<LeaveCreditModel> lstProfile = new List<LeaveCreditModel>();            
             using (var client = new EmployeeClient())
             {
                 lstProfile = client.GetEmployeeProfilesforCLSL(leaveTypeId);
@@ -512,12 +511,10 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
         public void UpdateCLSL()
         {
             string result = "";
-            long hrUserId = 0;      
+            
             string remarks = "CL Credited for " + System.DateTime.Now.ToString("MMMM", CultureInfo.InvariantCulture)+"'"+ System.DateTime.Now.Year;
 
             TimesheetClient employeeAttendanceHelperObj = new TimesheetClient();
-            hrUserId= employeeAttendanceHelperObj.GetHrUserId();
-            EmployeeClient empClinet = new EmployeeClient();           
 
             var lstProfile = GetEmployeeCLSLData(1);
             EmployeeLeaveBalanceDetails mdl;
@@ -545,7 +542,7 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
                 
             }
 
-            result = UpdateLeaveBalance(leaveCreditList, false, hrUserId);
+            result = UpdateLeaveBalance(leaveCreditList, false, true);
 
             lstProfile = GetEmployeeCLSLData(14);
 
@@ -571,9 +568,9 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
                     leaveCreditList.Add(mdl);
                 }
             }
-            result = UpdateLeaveBalance(leaveCreditList, false, hrUserId);            
+            result = UpdateLeaveBalance(leaveCreditList, false, true);            
         }
-        public string UpdateLeaveBalance(List<EmployeeLeaveBalanceDetails> lst, bool isElCredit = false,long hrUserId=0)
+        public string UpdateLeaveBalance(List<EmployeeLeaveBalanceDetails> lst, bool isElCredit = false,bool isServiceCall=false)
         {
             string result = "";
             long LoginUserId = 0;
@@ -581,13 +578,13 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
             {
                 using (var client = new EmployeeLeaveBalanceClient())
                 {
-                    if (hrUserId == 0)
+                    if (isServiceCall==false)
                     {
                         LoginUserId = this.UserId;
                     }
                     else
                     {
-                        LoginUserId = hrUserId;
+                        LoginUserId = 0;
                     }
                     result = client.UpdateLeaveBalance(lst, LoginUserId, isElCredit);
                 }

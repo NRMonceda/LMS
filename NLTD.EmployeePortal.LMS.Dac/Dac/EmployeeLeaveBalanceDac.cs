@@ -77,8 +77,17 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
                 using (var context = new NLTDDbContext())
                 {
                     EmployeeDac employeeDac = new EmployeeDac();
-                    string userRole = employeeDac.GetEmployeeRole(LoginUserId);
-                    if (userRole == "HR")
+                    string userRole = string.Empty;
+                    if (LoginUserId == 0)
+                    {
+                        userRole=employeeDac.GetEmployeeRole(LoginUserId);
+                    }
+                    else
+                    {
+                        userRole = "System";
+                    }
+                        
+                    if (userRole == "HR" || userRole=="System")
                     {
                         using (var transaction = context.Database.BeginTransaction())
                         {
