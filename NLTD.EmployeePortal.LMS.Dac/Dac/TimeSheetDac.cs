@@ -118,10 +118,13 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
             EmployeeProfile EmployeeProfileObj = new EmployeeDac().GetEmployeeProfile(UserID);
             string name = string.Empty;
             string reportingManager = string.Empty;
+            DateTime? employeeDOJ = null;
+
             if (EmployeeProfileObj != null)
             {
                 name = EmployeeProfileObj.FirstName + ' ' + EmployeeProfileObj.LastName;
                 reportingManager = EmployeeProfileObj.ReportedToName;
+                employeeDOJ = EmployeeProfileObj.DOJ;
             }
 
             // To get the employee week off Days
@@ -211,8 +214,13 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
                     }
 
                     TimeSheetModelObj.WorkingHours = TimeSheetModelObj.OutTime - TimeSheetModelObj.InTime;
-
+                                        
                     TimeSheetModelObj.Status = "Present";
+                    if (TimeSheetModelObj.WorkingDate < employeeDOJ)
+                    {
+                        TimeSheetModelObj.Status = "Non-Employee (DOJ: " + String.Format("{0:dd-MM-yyyy}", employeeDOJ) + ")";
+                    }
+
                     //Added below line for TimesheetEmailReport as Present shows for week off even if there is an entry
                     TimeSheetModelObj.HolidayStatus = GetAbsentStatus(ShiftQueryModelList[i].ShiftDate, officeWeekOffDayList, officeHolidayList);
                     if (TimeSheetModelObj.InTime.TimeOfDay > ShiftQueryModelList[i].ShiftFromtime)
@@ -233,8 +241,15 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
                 }
                 else// If no record found in the employee for the given date
                 {
-                    // Get Absent Details
-                    TimeSheetModelObj.Status = GetAbsentStatus(ShiftQueryModelList[i].ShiftDate, officeWeekOffDayList, officeHolidayList);
+                    if (TimeSheetModelObj.WorkingDate < employeeDOJ)
+                    {
+                        TimeSheetModelObj.Status = "Non-Employee (DOJ: " + String.Format("{0:dd-MM-yyyy}", employeeDOJ) + ")";
+                    }
+                    else
+                    {
+                        // Get Absent Details
+                        TimeSheetModelObj.Status = GetAbsentStatus(ShiftQueryModelList[i].ShiftDate, officeWeekOffDayList, officeHolidayList);
+                    }
                     //Added below line for TimesheetEmailReport as Present shows for week off even if there is an entry
                     TimeSheetModelObj.HolidayStatus = GetAbsentStatus(ShiftQueryModelList[i].ShiftDate, officeWeekOffDayList, officeHolidayList);
                     if (employeeLeaveList.Select(e => e.LeaveType == officialPermisionLabel).Count() > 0)
