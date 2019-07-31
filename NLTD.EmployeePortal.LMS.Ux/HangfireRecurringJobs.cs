@@ -19,7 +19,6 @@ namespace NLTD.EmployeePortal.LMS.Ux
         public HangfireRecurringJobs(bool runFlag)
         {
             string timesheetWeeklyEmailServiceConfig = ConfigurationManager.AppSettings["TimesheetWeeklyEmailServiceConfig"];
-            //string timesheetMonthlyEmailServiceConfig = ConfigurationManager.AppSettings["TimesheetMonthlyEmailServiceConfig"];
             List<RecurringJobDto> recurringJobList;
             using (var connection = JobStorage.Current.GetConnection())
             {
@@ -74,30 +73,8 @@ namespace NLTD.EmployeePortal.LMS.Ux
             {
                 RecurringJob.AddOrUpdate(() => TimesheetWeeklyEmailService(), timesheetWeeklyEmailServiceConfig, TimeZoneInfo.FindSystemTimeZoneById("India Standard Time"));
             }
-            if (!string.IsNullOrWhiteSpace(timesheetWeeklyEmailServiceConfig))
-            {
-                RecurringJob.AddOrUpdate(() => CreditMonthlyCLSL(), "0 5 29 2 1");
-            }
-            //if (string.IsNullOrWhiteSpace(timesheetMonthlyEmailServiceConfig))
-            //{
-            //    if (recurringJobList != null && recurringJobList.Any())
-            //    {
-            //        var curJob = recurringJobList.FirstOrDefault(x => x.Id == "HangfireRecurringJobs.TimesheetMonthlyEmailService");
-            //        if (curJob != null)
-            //        {
-            //            RecurringJob.RemoveIfExists(curJob.Id);
 
-            //            if (!String.IsNullOrWhiteSpace(curJob.LastJobId))
-            //            {
-            //                RecurringJob.RemoveIfExists(curJob.LastJobId);
-            //            }
-            //        }
-            //    }
-            //}
-            //else
-            //{
-            //    RecurringJob.AddOrUpdate(() => TimesheetMonthlyEmailService(), timesheetMonthlyEmailServiceConfig, TimeZoneInfo.FindSystemTimeZoneById("India Standard Time"));
-            //}
+            RecurringJob.AddOrUpdate(() => CreditMonthlyCLSL(), "0 5 29 2 1");
         }
 
         public void TimesheetWeeklyEmailService()
@@ -105,12 +82,6 @@ namespace NLTD.EmployeePortal.LMS.Ux
             TimesheetEmailReportService srv = new TimesheetEmailReportService();
             srv.ProcessWeeklyReport();
         }
-
-        //public void TimesheetMonthlyEmailService()
-        //{
-        //    TimesheetEmailReportService srv = new TimesheetEmailReportService();
-        //    srv.ProcessMonthlyReport();
-        //}
         public void CreditMonthlyCLSL()
         {
             ProfileController cs = new ProfileController();
