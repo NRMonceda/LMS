@@ -93,7 +93,7 @@ namespace NLTD.EmployeePortal.LMS.Dac.DbHelper
             }
         }
 
-        public IList<ElCreditModel> GetEmployeeProfilesforEL(DateTime lastCreditRun)
+        public IList<LeaveCreditModel> GetEmployeeProfilesforEL(DateTime lastCreditRun)
         {
             using (var dac = new EmployeeDac())
             {

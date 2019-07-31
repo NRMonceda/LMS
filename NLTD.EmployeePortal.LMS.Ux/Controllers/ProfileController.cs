@@ -409,7 +409,7 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
 
         public ActionResult GetEarnedLeaveMasterDetail()
         {
-            IList<ElCreditModel> lstProfile = GetEmployeeELData();
+            IList<LeaveCreditModel> lstProfile = GetEmployeeELData();
             return PartialView("EarnedLeaveCreditPartial", lstProfile);
         }
 
@@ -445,9 +445,9 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
             return currentRun;
         }
 
-        public IList<ElCreditModel> GetEmployeeELData()
+        public IList<LeaveCreditModel> GetEmployeeELData()
         {
-            IList<ElCreditModel> lstProfile = new List<ElCreditModel>();
+            IList<LeaveCreditModel> lstProfile = new List<LeaveCreditModel>();
             DateTime lastCreditRun = GetlastCreditRunforEL();
             using (var client = new EmployeeClient())
             {
@@ -466,8 +466,8 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
         }
         public ActionResult ExportExcelEarnedLeaveCreditDetails()
         {
-            IList<ElCreditModel> lstProfile = GetEmployeeELData();
-            List<ElCreditModel> excelData = new List<ElCreditModel>();
+            IList<LeaveCreditModel> lstProfile = GetEmployeeELData();
+            List<LeaveCreditModel> excelData = new List<LeaveCreditModel>();
             excelData = lstProfile.ToList();
             if (excelData.Count > 0)
             {
@@ -498,27 +498,28 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
                                     CreditOrDebit = "C",
                                     LeaveTypeId = 2,
                                     EmployeeId = l.EmployeeId,
-                                    BalanceDays = l.CurrentEL,
-                                    NoOfDays = l.ELCredit,
+                                    BalanceDays = l.CurrentLeave,
+                                    NoOfDays = l.LeaveCredit,
                                     Remarks = remarks,
-                                    TotalDays = l.NewELBalance,
+                                    TotalDays = l.NewLeaveBalance,
                                     LeaveBalanceId = l.LeaveBalanceId
                                 }).ToList();
 
             result = UpdateLeaveBalance(ELCreditList, true);
             return Json(result, JsonRequestBehavior.AllowGet);
         }
-        public void UpdateCLSL()
+
+        public void UpdateCLSL(long leaveTypeId)
         {
             string result = "";
-            
-            string remarks = "CL Credited for " + System.DateTime.Now.ToString("MMMM", CultureInfo.InvariantCulture)+"'"+ System.DateTime.Now.Year;
 
-            TimesheetClient employeeAttendanceHelperObj = new TimesheetClient();
+            string remarks = "Leave Credited for " + System.DateTime.Now.ToString("MMMM", CultureInfo.InvariantCulture) + "'" + System.DateTime.Now.Year;
 
-            var lstProfile = GetEmployeeCLSLData(1);
-            EmployeeLeaveBalanceDetails mdl;
+            var lstProfile = GetEmployeeCLSLData(leaveTypeId);
+
+            EmployeeLeaveBalanceDetails employeeLeaveBalanceDetailsModel;
             List<EmployeeLeaveBalanceDetails> leaveCreditList = new List<EmployeeLeaveBalanceDetails>();
+
             decimal leaveCredit = 0;
 
             foreach (var item in lstProfile)
@@ -526,51 +527,24 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
                 leaveCredit = CalculateCLSLCreditCount(System.DateTime.Now.Month, item);
                 if (leaveCredit > 0)
                 {
-                    mdl = new EmployeeLeaveBalanceDetails();
-                    mdl.UserId = item.UserId;
-                    mdl.CreditOrDebit = "C";
-                    mdl.LeaveTypeId = 1;
-                    mdl.EmployeeId = item.EmployeeId;
-                    mdl.BalanceDays = item.CurrentLeave;
-                    mdl.NoOfDays = leaveCredit;
-                    mdl.Remarks = remarks;
-                    mdl.TotalDays = item.TotalDays + leaveCredit;
-                    mdl.LeaveBalanceId = item.LeaveBalanceId;
+                    employeeLeaveBalanceDetailsModel = new EmployeeLeaveBalanceDetails();
+                    employeeLeaveBalanceDetailsModel.UserId = item.UserId;
+                    employeeLeaveBalanceDetailsModel.CreditOrDebit = "C";
+                    employeeLeaveBalanceDetailsModel.LeaveTypeId = leaveTypeId;
+                    employeeLeaveBalanceDetailsModel.EmployeeId = item.EmployeeId;
+                    employeeLeaveBalanceDetailsModel.BalanceDays = item.CurrentLeave;
+                    employeeLeaveBalanceDetailsModel.NoOfDays = leaveCredit;
+                    employeeLeaveBalanceDetailsModel.Remarks = remarks;
+                    employeeLeaveBalanceDetailsModel.TotalDays = item.TotalDays + leaveCredit;
+                    employeeLeaveBalanceDetailsModel.LeaveBalanceId = item.LeaveBalanceId;
 
-                    leaveCreditList.Add(mdl);
+                    leaveCreditList.Add(employeeLeaveBalanceDetailsModel);
                 }
-                
-            }
 
+            }            
             result = UpdateLeaveBalance(leaveCreditList, false, true);
-
-            lstProfile = GetEmployeeCLSLData(14);
-
-            remarks = "SL Credited for " + System.DateTime.Now.ToString("MMMM", CultureInfo.InvariantCulture) + "'" + System.DateTime.Now.Year;
-
-            leaveCredit = 0;
-            leaveCreditList = new List<EmployeeLeaveBalanceDetails>();
-            foreach (var item in lstProfile)
-            {
-                leaveCredit = CalculateCLSLCreditCount(System.DateTime.Now.Month, item);
-                if (leaveCredit > 0)
-                {
-                    mdl = new EmployeeLeaveBalanceDetails();
-                    mdl.UserId = item.UserId;
-                    mdl.CreditOrDebit = "C";
-                    mdl.LeaveTypeId = 14;
-                    mdl.EmployeeId = item.EmployeeId;
-                    mdl.BalanceDays = item.CurrentLeave;
-                    mdl.NoOfDays = leaveCredit;
-                    mdl.Remarks = remarks;
-                    mdl.TotalDays = item.TotalDays + leaveCredit;
-                    mdl.LeaveBalanceId = item.LeaveBalanceId;
-                    leaveCreditList.Add(mdl);
-                }
-            }
-            result = UpdateLeaveBalance(leaveCreditList, false, true);            
-        }
-        public string UpdateLeaveBalance(List<EmployeeLeaveBalanceDetails> lst, bool isElCredit = false,bool isServiceCall=false)
+        }        
+        public string UpdateLeaveBalance(List<EmployeeLeaveBalanceDetails> lstEmployeeLeaveBalanceDetails, bool isElCredit = false, bool isServiceCall=false)
         {
             string result = "";
             long LoginUserId = 0;
@@ -578,7 +552,7 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
             {
                 using (var client = new EmployeeLeaveBalanceClient())
                 {
-                    if (isServiceCall==false)
+                    if (isServiceCall == false)
                     {
                         LoginUserId = this.UserId;
                     }
@@ -586,13 +560,13 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
                     {
                         LoginUserId = 0;
                     }
-                    result = client.UpdateLeaveBalance(lst, LoginUserId, isElCredit);
+                    result = client.UpdateLeaveBalance(lstEmployeeLeaveBalanceDetails, LoginUserId, isElCredit);
                 }
 
                 EmailHelper emailHelper = new EmailHelper();
                 try
                 {
-                    emailHelper.SendEmailforAddLeave(lst);
+                    emailHelper.SendEmailforAddLeave(lstEmployeeLeaveBalanceDetails);
                 }
                 catch { }
             }
@@ -614,7 +588,7 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
 
             if (leaveBalanceRecord.DOJ.Value.Day <= 15)
             {
-                expectedTotal = processMonth- (leaveBalanceRecord.DOJ.Value.Month-1);
+                expectedTotal = processMonth - (leaveBalanceRecord.DOJ.Value.Month-1);
             }
             else
             {

@@ -246,9 +246,9 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
             return result;
         }
 
-        public IList<ElCreditModel> GetEmployeeProfilesforEL(DateTime lastCreditRun)
+        public IList<LeaveCreditModel> GetEmployeeProfilesforEL(DateTime lastCreditRun)
         {
-            IList<ElCreditModel> empProfileModel = new List<ElCreditModel>();
+            IList<LeaveCreditModel> empProfileModel = new List<LeaveCreditModel>();
             DateTime toDate = DateTime.Now.AddMonths(-1);
             lastCreditRun = new DateTime(lastCreditRun.Year, lastCreditRun.Month, 1);
             try
@@ -267,15 +267,16 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
                                       from lb in leaveBal.DefaultIfEmpty()
                                       where e.IsActive == true
                                       orderby e.FirstName
-                                      select new ElCreditModel
+                                      select new LeaveCreditModel
                                       {
                                           UserId = e.UserId,
                                           EmployeeId = e.EmployeeId,
                                           Name = e.FirstName + " " + e.LastName,
                                           DOJ = e.DOJ,
                                           ConfirmationDate = e.ConfirmationDate,
-                                          CurrentEL = lb.BalanceDays == null ? 0 : (long)lb.BalanceDays,
-                                          LeaveBalanceId = lb.LeaveBalanceId
+                                          CurrentLeave = lb.BalanceDays == null ? 0 : (long)lb.BalanceDays,
+                                          LeaveBalanceId = lb.LeaveBalanceId,
+                                          TotalDays = lb.TotalDays == null ? 0 : (long)lb.TotalDays
                                       }
                                       ).ToList();
 
@@ -283,8 +284,8 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
                     {
                         if (profile.DOJ != null && profile.ConfirmationDate != null)
                         {
-                            profile.ELCredit = GetELCredit(lastCreditRun, toDate, Convert.ToDateTime(profile.ConfirmationDate));
-                            profile.NewELBalance = profile.CurrentEL + profile.ELCredit;
+                            profile.LeaveCredit = GetELCredit(lastCreditRun, toDate, Convert.ToDateTime(profile.ConfirmationDate));
+                            profile.NewLeaveBalance = profile.CurrentLeave + profile.LeaveCredit;
                         }
                         empProfileModel.Add(profile);
                     }
@@ -299,7 +300,7 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
         }
         public IList<LeaveCreditModel> GetEmployeeProfilesforCLSL(long leaveTypeId)
         {
-            IList<LeaveCreditModel> empProfileModel = new List<LeaveCreditModel>();
+            IList<LeaveCreditModel> leaveCreditModel = new List<LeaveCreditModel>();
             DateTime toDate = DateTime.Now.AddMonths(-1);
 
             try
@@ -308,7 +309,7 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
 
                 using (var context = new NLTDDbContext())
                 {
-                    empProfileModel = (from e in context.Employee
+                    leaveCreditModel = (from e in context.Employee
                                       join elb in context.EmployeeLeaveBalance on
                                       new { p1 = e.UserId, p2 = System.DateTime.Now.Year, p3 = leaveTypeId }
                                       equals
@@ -326,7 +327,7 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
                                           ConfirmationDate = e.ConfirmationDate,
                                           CurrentLeave = lb.BalanceDays == null ? 0 : (long)lb.BalanceDays,
                                           LeaveBalanceId = lb.LeaveBalanceId,
-                                          TotalDays=lb.TotalDays
+                                          TotalDays= lb.TotalDays == null ? 0 : (long)lb.TotalDays
                                       }
                                       ).ToList();
                    
@@ -337,7 +338,7 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
                 throw;
             }
 
-            return empProfileModel;
+            return leaveCreditModel;
         }       
        
         public static int GetELCredit(DateTime fromDate, DateTime toDate, DateTime confirmationDate)

@@ -114,7 +114,8 @@ namespace NLTD.EmployeePortal.LMS.Ux
         public void CreditMonthlyCLSL()
         {
             ProfileController cs = new ProfileController();
-            cs.UpdateCLSL();
+            cs.UpdateCLSL(1);
+            cs.UpdateCLSL(14);
         }
     }
 }
