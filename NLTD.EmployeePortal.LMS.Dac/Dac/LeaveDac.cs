@@ -979,7 +979,6 @@ namespace NLTD.EmployeePortal.LMS.Dac
                         string duplicateRequest = string.Empty;
                         int daysBeforeApplied = 0;
                         decimal leaveDuration = 0;
-                        string leavePolicyDate = ConfigurationManager.AppSettings["LeavePolicyDate"].ToString();
                         string todayDate = System.DateTime.Now.Date.ToString("ddMMyyyy", CultureInfo.InvariantCulture);
                         int numberOfLeaveExceptionsAllowed = Convert.ToInt32(ConfigurationManager.AppSettings["NumberOfLeaveExceptionsAllowed"].ToString());
                         if (isTimeBased)
@@ -1122,10 +1121,8 @@ namespace NLTD.EmployeePortal.LMS.Dac
                             }
                         }
                         var empProfile = context.Employee.Where(x => x.UserId == request.UserId).FirstOrDefault();
-                        //New Leave Policy restrictions
-                        //TODO remove hard coded
-                        if (DateTime.ParseExact(todayDate, "ddMMyyyy", CultureInfo.InvariantCulture).Date > DateTime.ParseExact(leavePolicyDate, "ddMMyyyy",CultureInfo.InvariantCulture).Date)
-                        {
+                        //2019 Leave Policy restrictions
+
                             daysBeforeApplied = (request.LeaveFrom.Date - System.DateTime.Now.Date).Days;
 
                             if (adjustBal.Type == "Casual Leave")
@@ -1168,9 +1165,6 @@ namespace NLTD.EmployeePortal.LMS.Dac
                                     }
                                 }
                             }
-
-                            
-                        }
                         if (adjustBal.AdjustLeaveBalance)
                         {
                             var chkLeaveBalRec = context.EmployeeLeaveBalance.Where(e => e.UserId == request.UserId && e.LeaveTypeId == request.LeaveType && e.Year == request.LeaveFrom.Year).FirstOrDefault();
