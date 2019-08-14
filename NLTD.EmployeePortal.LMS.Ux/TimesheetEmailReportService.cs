@@ -298,7 +298,7 @@ namespace NLTD.EmployeePortal.LMS.Ux
                     officialPermission += day.permissionCountOfficial;
                     personalPermission += day.permissionCountPersonal;
                     leaveDayQty += day.LeaveDayQty;
-                    if (day.Requests == "Work From Home")
+                    if (day.Requests.Contains("Work From Home"))
                     {
                         workFromHome += day.WorkFromHomeDayQty;
                     }
