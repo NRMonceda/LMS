@@ -7,6 +7,8 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
 using System.Web;
+using System.Net;
+using System.Timers;
 
 namespace NLTD.EmployeePortal.LMS.Ux
 {
@@ -18,6 +20,7 @@ namespace NLTD.EmployeePortal.LMS.Ux
 
         public HangfireRecurringJobs(bool runFlag)
         {
+            KeepAwakeIIS();
             string timesheetWeeklyEmailServiceConfig = ConfigurationManager.AppSettings["TimesheetWeeklyEmailServiceConfig"];
             List<RecurringJobDto> recurringJobList;
             using (var connection = JobStorage.Current.GetConnection())
@@ -51,22 +54,7 @@ namespace NLTD.EmployeePortal.LMS.Ux
                         RecurringJob.RemoveIfExists(curJob.LastJobId);
                     }
                 }
-            }
-            var monitor = JobStorage.Current.GetMonitoringApi();
-            var toDelete = new List<string>();
-            foreach (QueueWithTopEnqueuedJobsDto queue in monitor.Queues())
-            {
-                for (var i = 0; i < Math.Ceiling(queue.Length / 1000d); i++)
-                {
-                    monitor.EnqueuedJobs(queue.Name, 1000 * i, 1000)
-                        .ForEach(x => toDelete.Add(x.Key));
-                    monitor.ScheduledJobs(1000 * i, 1000).ForEach(x => toDelete.Add(x.Key));
-                }
-            }
-            foreach (var job in toDelete)
-            {
-                BackgroundJob.Delete(job);
-            }
+            }           
 
             //Add TimesheetWeeklyEmailService if config exists
             if (!string.IsNullOrWhiteSpace(timesheetWeeklyEmailServiceConfig))
@@ -87,6 +75,21 @@ namespace NLTD.EmployeePortal.LMS.Ux
             ProfileController cs = new ProfileController();
             cs.UpdateCLSL(1);
             cs.UpdateCLSL(14);
+        }
+        public void KeepAwakeIIS()
+        {
+            System.Timers.Timer timer = new System.Timers.Timer(TimeSpan.FromMinutes(10).TotalMilliseconds);
+            timer.AutoReset = true;
+            timer.Elapsed += new System.Timers.ElapsedEventHandler(CallWebMethod);
+            timer.Start();
+        }
+        public static void CallWebMethod(object sender, ElapsedEventArgs e)
+        {
+            string heartbeatResponse = string.Empty;
+            using (WebClient wc = new WebClient())
+            {
+                heartbeatResponse = wc.DownloadString(ConfigurationManager.AppSettings["HeartbeatUrl"]);
+            }
         }
     }
 }

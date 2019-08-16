@@ -78,7 +78,7 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
                 {
                     EmployeeDac employeeDac = new EmployeeDac();
                     string userRole = string.Empty;
-                    if (LoginUserId == 0)
+                    if (LoginUserId != 0)
                     {
                         userRole=employeeDac.GetEmployeeRole(LoginUserId);
                     }

@@ -13,5 +13,12 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
         {
             return View();
         }
+
+        [HttpGet]
+        [Route("Heartbeat")]
+        public string Heartbeat()
+        {
+            return ("ONLINE");
+        }
     }
 }
