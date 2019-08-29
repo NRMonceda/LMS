@@ -583,10 +583,14 @@ namespace NLTD.EmployeePortal.LMS.Dac
                 List<LeaveItem> LeaveItems = new List<LeaveItem>();
                 if (qryMdl.OnlyReportedToMe)
                 {
-                    LeaveItems = LeaveItemsquery.Where(x => (x.ReportingToId == qryMdl.LeadId || x.ReportingToId == null)).ToList();
+                    LeaveItems = LeaveItemsquery.Where(x => (x.ReportingToId == qryMdl.LeadId)).ToList();
                 }
                 else
                 {
+                    if (context.Employee.Where(x => x.UserId == qryMdl.LeadId).FirstOrDefault().ReportingToId == null)
+                    {
+                        empList.Add(qryMdl.LeadId);
+                    }
                     LeaveItems = LeaveItemsquery.Where(t => empList.Contains(t.UserId)).ToList();
                 }
 
