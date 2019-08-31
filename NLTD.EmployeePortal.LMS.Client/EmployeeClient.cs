@@ -36,6 +36,20 @@ namespace NLTD.EmployeePortal.LMS.Client
                 return helper.GetNewEmpId(OfficeId);
             }
         }
+        public string GetNewEmpId(Int64 OfficeId,long employmentTypeId)
+        {
+            using (IEmployeeHelper helper = new EmployeeHelper())
+            {
+                return helper.GetNewEmpId(OfficeId, employmentTypeId);
+            }
+        }
+        public IList<DropDownItem> GetEmploymentTypes()
+        {
+            using (IEmployeeHelper helper = new EmployeeHelper())
+            {
+                return helper.GetEmploymentTypes();
+            }
+        }
 
         public long GetUserId(string name)
         {

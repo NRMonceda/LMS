@@ -59,6 +59,15 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
             {
                 ViewBag.RoleList = client.GetAllRoles();
             }
+            using (var client = new EmployeeClient())
+            {
+                var lstEmploymentTypes = client.GetEmploymentTypes();
+                DropDownItem di = new DropDownItem();
+                di.Key = "";
+                di.Value = "";
+                lstEmploymentTypes.Insert(0, di);
+                ViewBag.EmploymentTypeList = lstEmploymentTypes;
+            }
             if (profile != null)
             {
                 using (var client = new EmployeeClient())
@@ -116,17 +125,36 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
                     reptList.Insert(0, di);
                     ViewBag.ReportToList = reptList;
                 }
+                profile.EmploymentTypeId = 1;
                 using (var client = new EmployeeClient())
                 {
-                    profile.EmployeeId = client.GetNewEmpId(OfficeId);
+                    var lstEmploymentTypes = client.GetEmploymentTypes();
+                    DropDownItem di = new DropDownItem();                    
+                    di.Key = "";
+                    di.Value = "";
+                    lstEmploymentTypes.Insert(0, di);
+                    ViewBag.EmploymentTypeList = lstEmploymentTypes;
+                }
+                using (var client = new EmployeeClient())
+                {
+                    profile.EmployeeId = client.GetNewEmpId(OfficeId, profile.EmploymentTypeId);
                 }
                 profile.IsActive = true;
                 profile.Mode = "Add";
                 profile.LogonId = "CORP\\";
                 profile.Sunday = true;
-                profile.Saturday = true;
+                profile.Saturday = true;                
                 return View("EmployeeProfile", profile);
             }
+        }
+        public string GetNewEmpId(long employmentTypeId)
+        {
+            string newempId = string.Empty;
+            using (var client = new EmployeeClient())
+            {
+                newempId = client.GetNewEmpId(OfficeId, employmentTypeId);
+            }
+            return newempId;
         }
 
         public ActionResult UpdateEmployee()
@@ -296,6 +324,16 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
             using (var client = new ShiftClient())
             {
                 ViewBag.ShiftList = client.GetShiftMaster();
+            }
+            
+            using (var client = new EmployeeClient())
+            {
+                var lstEmploymentTypes = client.GetEmploymentTypes();
+                DropDownItem di = new DropDownItem();
+                di.Key = "";
+                di.Value = "";
+                lstEmploymentTypes.Insert(0, di);
+                ViewBag.EmploymentTypeList = lstEmploymentTypes;
             }
             using (var client = new EmployeeClient())
             {

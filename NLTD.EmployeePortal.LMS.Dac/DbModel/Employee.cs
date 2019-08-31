@@ -38,5 +38,7 @@ namespace NLTD.EmployeePortal.LMS.Dac.DbModel
         public int? AvailedLeavePolicyException { get; set; }
 
         public Boolean? SkipTimesheetCompliance { get; set; }
+
+        public Int64 EmploymentTypeId { get; set; }
     }
 }

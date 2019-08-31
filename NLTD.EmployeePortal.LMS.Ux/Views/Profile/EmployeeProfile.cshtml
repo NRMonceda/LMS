@@ -102,18 +102,55 @@
                         </div>
                         <div class="col-sm-3">
                             <div class="form-group">
-                                @Html.LabelFor(e => e.EmployeeId, new { @class = "required" })
+                                @Html.LabelFor(e => e.EmploymentTypeId, "Employment Type", new { @class = "required" })
                                 @{
                                     if (Model.Mode == "Add")
                                     {
-                                        @Html.TextBoxFor(e => e.EmployeeId, null, new { @class = "form-control", autocomplete = "off", maxlength = 100, @onkeypress = "return isNumber(event)" })
-                                        @Html.ValidationMessageFor(e => e.EmployeeId, null, new { @class = "text-danger" })
-                                    }
-                                    else
-                                    {
-                                        @Html.TextBoxFor(e => e.EmployeeId, null, new { @class = "form-control", maxlength = 100, @readonly = true })
-                                    }
+                                        <select id="EmploymentTypeId" name="EmploymentTypeId" class="form-control" onchange="EmploymentTypeChanged(this)">
+                                            @{
+
+                                                if (ViewBag.EmploymentTypeList != null)
+                                                {
+                                                    foreach (var item in (List<NLTD.EmployeePortal.LMS.Common.DisplayModel.DropDownItem>)ViewBag.EmploymentTypeList)
+                                                    {
+                                                        if (item.Key == Model.EmploymentTypeId.ToString())
+                                                        {
+                                                            <option value="@item.Key" selected="selected">@item.Value</option>
+                                                        }
+                                                        else
+                                                        {
+                                                            <option value="@item.Key">@item.Value</option>
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        </select>
+                                                }
+                                                else
+                                                {
+                                                    @Html.HiddenFor(x => x.EmploymentTypeId);
+                                                    <select id="EmploymentTypeId" name="EmploymentTypeId" class="form-control" disabled="disabled">
+                                                        @{
+
+                                                            if (ViewBag.EmploymentTypeList != null)
+                                                            {
+                                                                foreach (var item in (List<NLTD.EmployeePortal.LMS.Common.DisplayModel.DropDownItem>)ViewBag.EmploymentTypeList)
+                                                                {
+                                                                    if (item.Key == Model.EmploymentTypeId.ToString())
+                                                                    {
+                                                                        <option value="@item.Key" selected="selected">@item.Value</option>
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <option value="@item.Key">@item.Value</option>
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    </select>
+                                                            }
                                 }
+                               
                             </div>
                         </div>
                     </div>
@@ -130,13 +167,13 @@
                                 @Html.LabelFor(e => e.Gender, new { @class = "required" })
                                 <select id="Gender" name="Gender" class="form-control">
                                     <option value=""></option>
-                                    <option value="M" @if (Model.Gender == "M") { @Html.Raw("selected=\"selected\"")                                      }>Male</option>
-                                    <option value="F" @if (Model.Gender == "F") { @Html.Raw("selected=\"selected\"")                                      }>Female</option>
+                                    <option value="M" @if (Model.Gender == "M") { @Html.Raw("selected=\"selected\"")                                       }>Male</option>
+                                    <option value="F" @if (Model.Gender == "F") { @Html.Raw("selected=\"selected\"")                                       }>Female</option>
                                 </select>
                                 @Html.ValidationMessageFor(e => e.Gender, null, new { @class = "text-danger" })
                             </div>
                         </div>
-                        <div class="col-sm-6">
+                        <div class="col-sm-3">
                             <div class="form-group">
                                 <div class="form-group">
                                     @Html.Label("Card Number")
@@ -144,33 +181,22 @@
                                 </div>
                             </div>
                         </div>
-                        @*<div class="col-sm-3">
+                        <div class="col-sm-3">
                             <div class="form-group">
-                                <div class="form-group">
-                                    @Html.LabelFor(e => e.ShiftId, "Employee Shift", new { @class = "required" })
-                                    <select id="ShiftId" name="ShiftId" class="form-control">
-                                        <option value=""></option>
-                                        @{
-                                            if (ViewBag.ShiftList != null)
-                                            {
-                                                foreach (var item in (List<NLTD.EmployeePortal.LMS.Common.DisplayModel.Shifts>)ViewBag.ShiftList)
-                                                {
-                                                    if (item.ShiftId == Model.ShiftId)
-                                                    {
-                                                        <option value="@item.ShiftId" selected="selected">@item.Shift</option>
-                                                    }
-                                                    else
-                                                    {
-                                                        <option value="@item.ShiftId">@item.Shift</option>
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    </select>
-                                    @Html.ValidationMessageFor(e => e.ShiftId, null, new { @class = "text-danger" })
-                                </div>
+                                @Html.LabelFor(e => e.EmployeeId, new { @class = "required" })
+                                @{
+                                    if (Model.Mode == "Add")
+                                    {
+                                        @Html.TextBoxFor(e => e.EmployeeId, null, new { @class = "form-control", autocomplete = "off", maxlength = 100, @onkeypress = "return isNumber(event)" })
+                                        @Html.ValidationMessageFor(e => e.EmployeeId, null, new { @class = "text-danger" })
+                                    }
+                                    else
+                                    {
+                                        @Html.TextBoxFor(e => e.EmployeeId, null, new { @class = "form-control", maxlength = 100, @readonly = true })
+                                    }
+                                }
                             </div>
-                        </div>*@
+                        </div>
                     </div>
                     <div class="row">
                         <div class="col-sm-3">
@@ -432,11 +458,11 @@
             }
         }
 
-        $("document").ready(function() {
+        $("document").ready(function () {
             var readOnlyLength = 5;
 
             $('#LogonId').on('keypress, keydown',
-                function(event) {
+                function (event) {
                     var $field = $(this);
                     if ((event.which != 37 && (event.which != 39)) &&
                     ((this.selectionStart < readOnlyLength) ||

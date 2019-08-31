@@ -1,4 +1,5 @@
-﻿using NLTD.EmployeePortal.LMS.Common.DisplayModel;
+﻿using NLTD.EmployeePortal.LMS.Common;
+using NLTD.EmployeePortal.LMS.Common.DisplayModel;
 using NLTD.EmployeePortal.LMS.Dac.DbModel;
 using NLTD.EmployeePortal.LMS.Repository;
 using System;
@@ -27,6 +28,7 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
                                    LastName = employee.LastName,
                                    Gender = employee.Gender,
                                    OfficeHolidayId = employee.OfficeHolidayId,
+                                   EmploymentTypeId=employee.EmploymentTypeId,
                                    OfficeId = employee.OfficeId,
                                    LocationText = "",
                                    MobileNumber = employee.MobileNumber,
@@ -460,6 +462,7 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
                     {
                         profile = (from employee in context.Employee.AsEnumerable()
                                    join rt in context.EmployeeRole on employee.EmployeeRoleId equals rt.RoleId
+                                   join et in context.EmploymentType on employee.EmploymentTypeId equals et.EmploymentTypeId
                                    join o in context.OfficeLocation on employee.OfficeId equals o.OfficeId
                                    join h in context.OfficeHoliday on employee.OfficeHolidayId equals h.OfficeHolidayId
                                    join s in context.ShiftMaster on employee.ShiftId equals s.ShiftID
@@ -474,6 +477,7 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
                                        Gender = employee.Gender == "M" ? "Male" : "Female",
                                        HolidayOfficeId = employee.OfficeHolidayId,
                                        OfficeName = o.OfficeName,
+                                       EmploymentTypeCode=et.Code,
                                        MobileNumber = employee.MobileNumber,
                                        ReportedToId = employee.ReportingToId,
                                        RoleText = rt.Role,
@@ -893,6 +897,7 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
                             employee.LoginId = profile.LogonId.Trim().ToUpper();
                             employee.EmployeeId = profile.EmployeeId;
                             employee.OfficeId = profile.OfficeId;
+                            employee.EmploymentTypeId = profile.EmploymentTypeId;
                             employee.IsActive = profile.IsActive;
                             employee.FirstName = profile.FirstName;
                             employee.LastName = profile.LastName;
@@ -1266,6 +1271,36 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
                 }
             }
         }
+        public string GetNewEmpId(Int64 OfficeId,Int64 employmentTypeId)
+        {
+            Int32 newEmpId = 0;
+
+            try
+            {
+                using (var context = new NLTDDbContext())
+                {
+                    var empPrf = context.Employee.Where(x => x.OfficeId == OfficeId && x.EmploymentTypeId == employmentTypeId).Select(x => x.EmployeeId.Substring(2)).ToList();
+                    var employmentType = context.EmploymentType.Where(x => x.EmploymentTypeId == employmentTypeId).FirstOrDefault();
+
+                    if (empPrf.Count() != 0)
+                        newEmpId = empPrf.Select(int.Parse).ToList().Max();
+
+                    if (empPrf == null)
+                        return employmentType.EmployeeIdPrefix + "-" + "001";
+                    else
+                    {
+                        newEmpId = newEmpId + 1;
+                        return employmentType.EmployeeIdPrefix + "-" + newEmpId.ToString("000");
+                    }                   
+
+                }
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+            
+        }
 
         public string ReportingToName(Int64 userId)
         {
@@ -1309,6 +1344,28 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
                 throw;
             }
             return userIDList;
+        }
+        public IList<DropDownItem> GetEmploymentTypes()
+        {
+            IList<DropDownItem> employmentTypeList = new List<DropDownItem>();
+            try
+            {
+                using (var context = new NLTDDbContext())
+                {
+                    employmentTypeList = (from et in context.EmploymentType
+                                          select new DropDownItem
+                                          {
+                                              Key=et.EmploymentTypeId.ToString(),
+                                              Value=et.Code
+                                          }
+                                          ).ToList();
+                }
+            }
+            catch 
+            {
+                throw;
+            }
+            return employmentTypeList;
         }
     }
 }

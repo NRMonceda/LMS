@@ -31,6 +31,7 @@ namespace NLTD.EmployeePortal.LMS.Repository
         IList<LeaveCreditModel> GetEmployeeProfilesforEL(DateTime lastCreditRun);
 
         IList<LeaveCreditModel> GetEmployeeProfilesforCLSL(long leaveTypeId);
-        
+        string GetNewEmpId(Int64 OfficeId, long employmentTypeId);
+        IList<DropDownItem> GetEmploymentTypes();
     }
 }
