@@ -460,6 +460,7 @@
 
         $("document").ready(function () {
             var readOnlyLength = 5;
+            var readOnlyLengthEmployeeId = 2;
 
             $('#LogonId').on('keypress, keydown',
                 function (event) {
@@ -470,6 +471,17 @@
                         return false;
                     }
                 });
+
+            $('#EmployeeId').on('keypress, keydown',
+              function (event) {
+                  var $field = $(this);
+                  if ((event.which != 37 && (event.which != 39)) &&
+                  ((this.selectionStart < readOnlyLengthEmployeeId) ||
+                      ((this.selectionStart == readOnlyLengthEmployeeId) && (event.which == 8)))) {
+                      return false;
+                  }
+              });
+
             $("#HiddenReliving").val('@Model.RelievingDate');
         });
     </script>
