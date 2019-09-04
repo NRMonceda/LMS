@@ -267,7 +267,7 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
                                       new { p1 = elb.UserId, p2 = elb.Year, p3 = elb.LeaveTypeId }
                                       into leaveBal
                                       from lb in leaveBal.DefaultIfEmpty()
-                                      where e.IsActive == true
+                                      where e.IsActive == true && e.EmploymentTypeId == 1
                                       orderby e.FirstName
                                       select new LeaveCreditModel
                                       {
@@ -318,7 +318,7 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
                                       new { p1 = elb.UserId, p2 = elb.Year, p3 = elb.LeaveTypeId }
                                       into leaveBal
                                       from lb in leaveBal.DefaultIfEmpty()
-                                      where e.IsActive == true && e.ConfirmationDate == null
+                                      where e.IsActive == true && e.ConfirmationDate == null && e.EmploymentTypeId==1
                                       orderby e.FirstName
                                       select new LeaveCreditModel
                                       {
