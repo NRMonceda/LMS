@@ -44,6 +44,20 @@ namespace NLTD.EmployeePortal.LMS.Dac.DbHelper
                 return dac.GetNewEmpId(OfficeId);
             }
         }
+        public string GetNewEmpId(Int64 OfficeId,long employmentTypeId)
+        {
+            using (var dac = new EmployeeDac())
+            {
+                return dac.GetNewEmpId(OfficeId, employmentTypeId);
+            }
+        }
+        public IList<DropDownItem> GetEmploymentTypes()
+        {
+            using (var dac = new EmployeeDac())
+            {
+                return dac.GetEmploymentTypes();
+            }
+        }
 
         public EmployeeProfile GetEmployeeProfile(Int64 userId)
         {

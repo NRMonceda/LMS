@@ -97,6 +97,7 @@
     <Compile Include="DbModel\EmployeeRole.cs" />
     <Compile Include="DbModel\EmployeeTransactionHistory.cs" />
     <Compile Include="DbModel\EmployeeWeekOff.cs" />
+    <Compile Include="DbModel\EmploymentType.cs" />
     <Compile Include="DbModel\Leave.cs" />
     <Compile Include="DbModel\LeaveAttachment.cs" />
     <Compile Include="DbModel\LeaveDetail.cs" />

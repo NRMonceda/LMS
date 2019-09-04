@@ -152,6 +152,17 @@ function SubmitEmpForm(e) {
         }
     });
 }
+function EmploymentTypeChanged(obj) {
+    $.ajax({
+        type: 'GET',
+        cache: false,
+        url: "/Profile/GetNewEmpId",
+        data: { "employmentTypeId": obj.value},
+        success: function (data) {
+            $("#EmployeeId").val(data);
+        }
+    });
+}
 function applyComplete(data) {
     if (data.responseJSON == "Saved") {
         resMessage = "Request submitted Successfully.";

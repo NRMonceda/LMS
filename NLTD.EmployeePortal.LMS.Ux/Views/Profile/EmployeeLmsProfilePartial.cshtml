@@ -37,8 +37,8 @@
                         </div>
                         <div class="col-sm-3">
                             <div class="form-group">
-                                @Html.Label("Employee Id")
-                                @Html.TextBoxFor(e => e.EmployeeId, null, new { @class = "form-control", @readonly = true })
+                                @Html.Label("Employment Type")
+                                @Html.TextBoxFor(e => e.EmploymentTypeCode, null, new { @class = "form-control", @readonly = true })
                             </div>
                         </div>
                     </div>
@@ -57,12 +57,18 @@
                                 @Html.TextBoxFor(e => e.Gender, null, new { @class = "form-control", @readonly = true })
                             </div>
                         </div>
-                        <div class="col-sm-6">
+                        <div class="col-sm-3">
                             <div class="form-group">
                                 <div class="form-group">
                                     @Html.Label("Card Number")
                                     @Html.TextBoxFor(e => e.CardId, null, new { @class = "form-control", @readonly = true })
                                 </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-3">
+                            <div class="form-group">
+                                @Html.Label("Employee Id")
+                                @Html.TextBoxFor(e => e.EmployeeId, null, new { @class = "form-control", @readonly = true })
                             </div>
                         </div>
                         @*<div class="col-sm-3">

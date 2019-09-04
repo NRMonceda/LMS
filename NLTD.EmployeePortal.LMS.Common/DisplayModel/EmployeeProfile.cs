@@ -49,8 +49,8 @@ namespace NLTD.EmployeePortal.LMS.Common.DisplayModel
 
         public Int64 OfficeId { get; set; }
         public String LocationText { get; set; }
+        public Int64 EmploymentTypeId { get; set; }
 
-        
         public Int32? ShiftId { get; set; }
 
         public Int64? CardId { get; set; }

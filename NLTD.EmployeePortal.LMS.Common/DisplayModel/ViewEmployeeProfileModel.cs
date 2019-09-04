@@ -61,5 +61,7 @@ namespace NLTD.EmployeePortal.LMS.Common.DisplayModel
         public string lastCreditRun { get; set; }
 
         public Int64? LeaveBalanceId { get; set; }
+
+        public string EmploymentTypeCode { get; set; }
     }
 }
