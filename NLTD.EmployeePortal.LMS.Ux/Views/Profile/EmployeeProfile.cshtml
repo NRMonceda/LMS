@@ -150,7 +150,7 @@
                                                     </select>
                                                             }
                                 }
-                               
+
                             </div>
                         </div>
                     </div>
@@ -167,8 +167,8 @@
                                 @Html.LabelFor(e => e.Gender, new { @class = "required" })
                                 <select id="Gender" name="Gender" class="form-control">
                                     <option value=""></option>
-                                    <option value="M" @if (Model.Gender == "M") { @Html.Raw("selected=\"selected\"")                                       }>Male</option>
-                                    <option value="F" @if (Model.Gender == "F") { @Html.Raw("selected=\"selected\"")                                       }>Female</option>
+                                    <option value="M" @if (Model.Gender == "M") { @Html.Raw("selected=\"selected\"")                                        }>Male</option>
+                                    <option value="F" @if (Model.Gender == "F") { @Html.Raw("selected=\"selected\"")                                        }>Female</option>
                                 </select>
                                 @Html.ValidationMessageFor(e => e.Gender, null, new { @class = "text-danger" })
                             </div>
@@ -410,37 +410,7 @@
 </div>
 @section readyscript
 {
-    <script>
-        //$('#frmEmployee').formValidation({
-        //    framework: 'bootstrap',
-        //    icon: {
-        //        valid: 'glyphicon glyphicon-ok',
-        //        invalid: 'glyphicon glyphicon-remove',
-        //        validating: 'glyphicon glyphicon-refresh'
-        //    },
-        //    row: {
-        //        valid: 'field-success',
-        //        invalid: 'field-error'
-        //    },
-        //    fields: {
-        //        username: {
-        //            validators: {
-        //                notEmpty: {
-        //                    message: 'The username is required'
-        //                },
-        //                stringLength: {
-        //                    min: 6,
-        //                    max: 30,
-        //                    message: 'The username must be more than 6 and less than 30 characters long'
-        //                },
-        //                regexp: {
-        //                    regexp: /^[a-zA-Z0-9_\.]+$/,
-        //                    message: 'The username can only consist of alphabetical, number, dot and underscore'
-        //                }
-        //            }
-        //        }
-        //    }
-        //});
+    <script>        
 
         function IsActiveChange() {
             if ($("#IsActive").prop('checked') === true) {
@@ -460,7 +430,7 @@
 
         $("document").ready(function () {
             var readOnlyLength = 5;
-            var readOnlyLengthEmployeeId = 2;
+            var readOnlyLengthEmployeeId = 1;
 
             $('#LogonId').on('keypress, keydown',
                 function (event) {

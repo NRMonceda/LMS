@@ -1279,18 +1279,18 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
             {
                 using (var context = new NLTDDbContext())
                 {
-                    var empPrf = context.Employee.Where(x => x.OfficeId == OfficeId && x.EmploymentTypeId == employmentTypeId).Select(x => x.EmployeeId.Substring(2)).ToList();
+                    var empPrf = context.Employee.Where(x => x.OfficeId == OfficeId && x.EmploymentTypeId == employmentTypeId).Select(x => x.EmployeeId.Substring(1)).ToList();
                     var employmentType = context.EmploymentType.Where(x => x.EmploymentTypeId == employmentTypeId).FirstOrDefault();
 
                     if (empPrf.Count() != 0)
                         newEmpId = empPrf.Select(int.Parse).ToList().Max();
 
                     if (empPrf == null)
-                        return employmentType.EmployeeIdPrefix + "-" + "001";
+                        return employmentType.EmployeeIdPrefix +  "001";
                     else
                     {
                         newEmpId = newEmpId + 1;
-                        return employmentType.EmployeeIdPrefix + "-" + newEmpId.ToString("000");
+                        return employmentType.EmployeeIdPrefix +  newEmpId.ToString("000");
                     }                   
 
                 }
@@ -1353,6 +1353,7 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
                 using (var context = new NLTDDbContext())
                 {
                     employmentTypeList = (from et in context.EmploymentType
+                                          orderby et.EmploymentTypeId
                                           select new DropDownItem
                                           {
                                               Key=et.EmploymentTypeId.ToString(),

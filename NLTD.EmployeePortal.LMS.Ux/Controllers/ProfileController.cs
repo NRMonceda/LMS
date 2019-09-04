@@ -62,10 +62,7 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
             using (var client = new EmployeeClient())
             {
                 var lstEmploymentTypes = client.GetEmploymentTypes();
-                DropDownItem di = new DropDownItem();
-                di.Key = "";
-                di.Value = "";
-                lstEmploymentTypes.Insert(0, di);
+                DropDownItem di = new DropDownItem();                 
                 ViewBag.EmploymentTypeList = lstEmploymentTypes;
             }
             if (profile != null)
@@ -129,10 +126,7 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
                 using (var client = new EmployeeClient())
                 {
                     var lstEmploymentTypes = client.GetEmploymentTypes();
-                    DropDownItem di = new DropDownItem();                    
-                    di.Key = "";
-                    di.Value = "";
-                    lstEmploymentTypes.Insert(0, di);
+                    DropDownItem di = new DropDownItem();
                     ViewBag.EmploymentTypeList = lstEmploymentTypes;
                 }
                 using (var client = new EmployeeClient())
