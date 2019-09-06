@@ -1474,7 +1474,7 @@ namespace NLTD.EmployeePortal.LMS.Dac
                              join ld in context.LeaveDetail on l.LeaveId equals ld.LeaveId
                              join lt in context.LeaveType on l.LeaveTypeId equals lt.LeaveTypeId
                              where (l.Status == "P" || l.Status == "A") && ld.LeaveDate.Year==LeaveFrom.Year && ld.IsDayOff==false
-                             && lt.IsLeave == true && l.UserId == UserId
+                             && lt.IsLeave == true && l.UserId == UserId && lt.LeaveCombinationAllowed==false
                              select new LeaveListModel{ LeaveId = l.LeaveId, LeaveDtlId=ld.LeaveDetailId,PartOfDay = ld.PartOfDay,LeaveDate=ld.LeaveDate }
              ).ToList();
             }
