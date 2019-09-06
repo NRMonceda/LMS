@@ -912,6 +912,7 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
                             employee.DOJ = profile.DOJ;
                             employee.ConfirmationDate = profile.ConfirmationDate;
                             employee.RelievingDate = profile.RelievingDate;
+                            employee.OnlyDirectAlerts = false;//When new employee added, setting this default flag
                             employee.ModifiedBy = -1;
                             employee.CreatedBy = ModifiedBy;
                             employee.CreatedOn = System.DateTime.Now;

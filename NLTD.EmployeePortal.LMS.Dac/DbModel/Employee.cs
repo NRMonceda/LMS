@@ -40,5 +40,7 @@ namespace NLTD.EmployeePortal.LMS.Dac.DbModel
         public Boolean? SkipTimesheetCompliance { get; set; }
 
         public Int64 EmploymentTypeId { get; set; }
+
+        public bool OnlyDirectAlerts { get; set; }
     }
 }

@@ -2843,16 +2843,15 @@ namespace NLTD.EmployeePortal.LMS.Dac
             try
             {
                 if (lstCCEmail.Count > 0 && reportingToUserId != null)
-                {
-                    string onlyDirectAlerts = ConfigurationManager.AppSettings["OnlyDirectAlerts"].ToString();
-                    List<string> lstOptoutEmailAddress = onlyDirectAlerts.Split(',').ToList();
+                {                    
+                    List<string> lstOptoutEmailAddress = GetOnlyDirectAlertsEmailIds();
                     using (var context = new NLTDDbContext())
                     {
                         var qryReportingTo = context.Employee.Where(x => x.UserId == reportingToUserId).FirstOrDefault();
 
                         foreach (var item in lstOptoutEmailAddress)
                         {
-                            if (qryReportingTo.EmailAddress.ToUpper() != item.ToUpper())
+                            if (qryReportingTo.EmailAddress.ToUpper() != item.ToUpper())//If employee is not directly reporting to person in OptOut list, remove email from cc list.
                             {
                                 lstCCEmail.Remove(item);
                             }
@@ -2863,6 +2862,19 @@ namespace NLTD.EmployeePortal.LMS.Dac
             catch { throw; }
 
             return lstCCEmail;
+        }
+        private List<string> GetOnlyDirectAlertsEmailIds()
+        {
+            List<string> onlyDirectAlertsEmailIdsList = new List<string>();
+            try
+            {
+                using (var context = new NLTDDbContext())
+                {
+                    onlyDirectAlertsEmailIdsList = context.Employee.Where(x => x.OnlyDirectAlerts == true).Select(x=>x.EmailAddress).ToList();                    
+                }
+            }
+            catch { throw; }
+            return onlyDirectAlertsEmailIdsList;
         }
 
         public EmailDataModel GetEmailData(Int64 leaveId, string actionName)
