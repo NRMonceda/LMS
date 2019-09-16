@@ -1105,7 +1105,7 @@ namespace NLTD.EmployeePortal.LMS.Dac
 
                             #endregion
 
-                            if (adjustBal.IsLeave)
+                            if (adjustBal.LeaveCombinationAllowed==false )
                             {
                                 isExceptionLeave = CheckExceptionLeave(request.LeaveFrom, request.LeaveUpto, request.LeaveFromTime, request.LeaveUptoTime, request.UserId, request.LeaveType);
                                 if (isExceptionLeave == true)
