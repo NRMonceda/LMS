@@ -3,3 +3,34 @@ ADD AvailedLeavePolicyException INT NULL
 
 ALTER TABLE LEAVE
 ADD IsExceptionLeave BIT NULL
+
+/* Below script is for Combination Leave Enhancement to allow Comp Off combined
+
+ALTER TABLE LeaveType ADD LeaveCombinationAllowed bit NULL
+
+UPDATE LeaveType SET LeaveCombinationAllowed=0 WHERE Type in(
+'Casual Leave',
+'Earned Leave',
+'Leave Without Pay',
+'Maternity Leave',
+'Sick/Unplanned Leave'
+)
+
+UPDATE LeaveType SET LeaveCombinationAllowed=1 WHERE Type not in(
+'Casual Leave',
+'Earned Leave',
+'Leave Without Pay',
+'Maternity Leave',
+'Sick/Unplanned Leave'
+)
+
+ALTER TABLE LeaveType ALTER COLUMN LeaveCombinationAllowed bit NOT NULL
+*/ 
+
+/* Below script is to receive email only reporting to that person.
+
+ALTER TABLE Employee ADD OnlyDirectAlerts bit NULL
+UPDATE Employee SET OnlyDirectAlerts=0
+ALTER TABLE Employee ALTER COLUMN OnlyDirectAlerts bit NOT NULL
+
+*/
