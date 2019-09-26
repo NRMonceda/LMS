@@ -1,5 +1,4 @@
-﻿using NLTD.EmployeePortal.LMS.Common;
-using NLTD.EmployeePortal.LMS.Common.DisplayModel;
+﻿using NLTD.EmployeePortal.LMS.Common.DisplayModel;
 using NLTD.EmployeePortal.LMS.Dac.DbModel;
 using NLTD.EmployeePortal.LMS.Repository;
 using System;
@@ -28,7 +27,7 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
                                    LastName = employee.LastName,
                                    Gender = employee.Gender,
                                    OfficeHolidayId = employee.OfficeHolidayId,
-                                   EmploymentTypeId=employee.EmploymentTypeId,
+                                   EmploymentTypeId = employee.EmploymentTypeId,
                                    OfficeId = employee.OfficeId,
                                    LocationText = "",
                                    MobileNumber = employee.MobileNumber,
@@ -300,6 +299,7 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
 
             return empProfileModel;
         }
+
         public IList<LeaveCreditModel> GetEmployeeProfilesforCLSL(long leaveTypeId)
         {
             IList<LeaveCreditModel> leaveCreditModel = new List<LeaveCreditModel>();
@@ -312,27 +312,26 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
                 using (var context = new NLTDDbContext())
                 {
                     leaveCreditModel = (from e in context.Employee
-                                      join elb in context.EmployeeLeaveBalance on
-                                      new { p1 = e.UserId, p2 = System.DateTime.Now.Year, p3 = leaveTypeId }
-                                      equals
-                                      new { p1 = elb.UserId, p2 = elb.Year, p3 = elb.LeaveTypeId }
-                                      into leaveBal
-                                      from lb in leaveBal.DefaultIfEmpty()
-                                      where e.IsActive == true && e.ConfirmationDate == null && e.EmploymentTypeId==1
-                                      orderby e.FirstName
-                                      select new LeaveCreditModel
-                                      {
-                                          UserId = e.UserId,
-                                          EmployeeId = e.EmployeeId,
-                                          Name = e.FirstName + " " + e.LastName,
-                                          DOJ = e.DOJ,
-                                          ConfirmationDate = e.ConfirmationDate,
-                                          CurrentLeave = lb.BalanceDays == null ? 0 : (long)lb.BalanceDays,
-                                          LeaveBalanceId = lb.LeaveBalanceId,
-                                          TotalDays= lb.TotalDays == null ? 0 : (long)lb.TotalDays
-                                      }
+                                        join elb in context.EmployeeLeaveBalance on
+                                        new { p1 = e.UserId, p2 = System.DateTime.Now.Year, p3 = leaveTypeId }
+                                        equals
+                                        new { p1 = elb.UserId, p2 = elb.Year, p3 = elb.LeaveTypeId }
+                                        into leaveBal
+                                        from lb in leaveBal.DefaultIfEmpty()
+                                        where e.IsActive == true && e.ConfirmationDate == null && e.EmploymentTypeId == 1
+                                        orderby e.FirstName
+                                        select new LeaveCreditModel
+                                        {
+                                            UserId = e.UserId,
+                                            EmployeeId = e.EmployeeId,
+                                            Name = e.FirstName + " " + e.LastName,
+                                            DOJ = e.DOJ,
+                                            ConfirmationDate = e.ConfirmationDate,
+                                            CurrentLeave = lb.BalanceDays == null ? 0 : (long)lb.BalanceDays,
+                                            LeaveBalanceId = lb.LeaveBalanceId,
+                                            TotalDays = lb.TotalDays == null ? 0 : (long)lb.TotalDays
+                                        }
                                       ).ToList();
-                   
                 }
             }
             catch (Exception)
@@ -341,8 +340,8 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
             }
 
             return leaveCreditModel;
-        }       
-       
+        }
+
         public static int GetELCredit(DateTime fromDate, DateTime toDate, DateTime confirmationDate)
         {
             int elCredit = 0;
@@ -477,7 +476,7 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
                                        Gender = employee.Gender == "M" ? "Male" : "Female",
                                        HolidayOfficeId = employee.OfficeHolidayId,
                                        OfficeName = o.OfficeName,
-                                       EmploymentTypeCode=et.Code,
+                                       EmploymentTypeCode = et.Code,
                                        MobileNumber = employee.MobileNumber,
                                        ReportedToId = employee.ReportingToId,
                                        RoleText = rt.Role,
@@ -1272,7 +1271,8 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
                 }
             }
         }
-        public string GetNewEmpId(Int64 OfficeId,Int64 employmentTypeId)
+
+        public string GetNewEmpId(Int64 OfficeId, Int64 employmentTypeId)
         {
             Int32 newEmpId = 0;
 
@@ -1280,27 +1280,25 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
             {
                 using (var context = new NLTDDbContext())
                 {
-                    var empPrf = context.Employee.Where(x => x.OfficeId == OfficeId && x.EmploymentTypeId == employmentTypeId).Select(x => x.EmployeeId.Substring(1)).ToList();
-                    var employmentType = context.EmploymentType.Where(x => x.EmploymentTypeId == employmentTypeId).FirstOrDefault();
+                    var employeeIdPrefix = context.EmploymentType.Where(x => x.EmploymentTypeId == employmentTypeId).FirstOrDefault().EmployeeIdPrefix;
+                    var empPrf = context.Employee.Where(x => x.OfficeId == OfficeId && x.EmploymentTypeId == employmentTypeId).Select(x => x.EmployeeId.Replace(employeeIdPrefix, "")).ToList();
 
                     if (empPrf.Count() != 0)
                         newEmpId = empPrf.Select(int.Parse).ToList().Max();
 
                     if (empPrf == null)
-                        return employmentType.EmployeeIdPrefix +  "001";
+                        return employeeIdPrefix + "001";
                     else
                     {
                         newEmpId = newEmpId + 1;
-                        return employmentType.EmployeeIdPrefix +  newEmpId.ToString("000");
-                    }                   
-
+                        return employeeIdPrefix + newEmpId.ToString("000");
+                    }
                 }
             }
             catch (Exception)
             {
                 throw;
             }
-            
         }
 
         public string ReportingToName(Int64 userId)
@@ -1346,6 +1344,7 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
             }
             return userIDList;
         }
+
         public IList<DropDownItem> GetEmploymentTypes()
         {
             IList<DropDownItem> employmentTypeList = new List<DropDownItem>();
@@ -1357,13 +1356,13 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
                                           orderby et.EmploymentTypeId
                                           select new DropDownItem
                                           {
-                                              Key=et.EmploymentTypeId.ToString(),
-                                              Value=et.Code
+                                              Key = et.EmploymentTypeId.ToString(),
+                                              Value = et.Code
                                           }
                                           ).ToList();
                 }
             }
-            catch 
+            catch
             {
                 throw;
             }
