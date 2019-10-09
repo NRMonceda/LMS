@@ -40,7 +40,7 @@
             {
                 @:<tr style="background-color:red;">
             }
-            else if (item.NewELBalance >= 25)
+            else if (item.NewLeaveBalance >= 25)
             {
                 @:<tr style="background-color:#00BCD4;">                    
             }
@@ -64,13 +64,13 @@
                         @Html.DisplayFor(modelItem => item.ConfirmationDate)
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => item.CurrentEL)
+                        @Html.DisplayFor(modelItem => item.CurrentLeave)
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => item.ELCredit)
+                        @Html.DisplayFor(modelItem => item.LeaveCredit)
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => item.NewELBalance)
+                        @Html.DisplayFor(modelItem => item.NewLeaveBalance)
                     </td>
                     <td hidden>
                         @Html.DisplayFor(modelItem => item.LeaveBalanceId)
