@@ -2216,6 +2216,7 @@ namespace NLTD.EmployeePortal.LMS.Dac
                 DateTime QryFromDate = startDate ?? new DateTime(DateTime.Now.Year, 1, 1);
                 DateTime QryToDate = endDate ?? DateTime.Now;
                 qry = qry.Where(x => x.PermissionDate >= QryFromDate && x.PermissionDate <= QryToDate);
+                qry = qry.Where(x => x.Status == "A");
                 if (qry != null)
                 {
                     if (reqUsr == "My")
