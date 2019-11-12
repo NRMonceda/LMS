@@ -1884,7 +1884,8 @@ namespace NLTD.EmployeePortal.LMS.Dac
                                   AdjustLeaveBalance = lt.AdjustLeaveBalance,
                                   PartOfDay = lvd.PartOfDay,
                                   LeaveReason = lv.Remarks,
-                                  ApproverComments = lv.Comments
+                                  ApproverComments = lv.Comments,
+                                  IsException = lv.IsExceptionLeave == false ? "No" : "Yes"
                               }
                             ).AsQueryable();
                 if (IsLeaveOnly)

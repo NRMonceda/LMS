@@ -40,5 +40,8 @@ namespace NLTD.EmployeePortal.LMS.Common.DisplayModel
         public string ReasonShort { get; set; }
 
         public string CommentsShort { get; set; }
+
+        public string IsException { get; set; }
+
     }
 }

@@ -292,7 +292,7 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
             excelData = LeaveRequests.ToList();
             if (excelData.Count > 0)
             {
-                string[] columns = { "Emp Id", "Name", "Request Type", "Leave Balance", "Request Date", "Part Of Day", "Duration", "Status", "Reason", "Approver Comments" };
+                string[] columns = { "Emp Id", "Name", "Request Type", "Leave Balance", "Request Date", "Part Of Day", "Duration", "Status", "Reason", "Approver Comments", "Is Exception" };
                 byte[] filecontent = ExcelExportHelper.ExportExcel(excelData, "", false, columns);
                 return File(filecontent, ExcelExportHelper.ExcelContentType, "DaywiseReport_" + System.DateTime.Now + ".xlsx");
             }

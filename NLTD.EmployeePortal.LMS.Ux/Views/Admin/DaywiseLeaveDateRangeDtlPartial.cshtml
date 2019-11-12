@@ -31,59 +31,74 @@
             <th>
                 @Html.DisplayName("Approver Comments")
             </th>
+            <th>
+                @Html.DisplayName("Is Exception")
+            </th>
         </tr>
     </thead>
 
     <tbody>
         @foreach (var item in Model)
         {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.EmpId)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Name)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.LeaveType)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.LeaveDate)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.PartOfDay)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Duration)
-                </td>
-                <td>
-                    @{
-                        if (item.LeaveStatus == "Pending")
-                        {
-                            <span class="text-purple">@item.LeaveStatus</span>
-                        }
-                        else if (item.LeaveStatus == "Approved")
-                        {
-                            <span class="text-green">@item.LeaveStatus</span>
-                        }
-                        else if (item.LeaveStatus == "Rejected")
-                        {
-                            <span class="text-red">@item.LeaveStatus</span>
-                        }
-                        else if (item.LeaveStatus == "Cancelled")
-                        {
-                            <span class="text-maroon">@item.LeaveStatus</span>
-                        }
-
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.EmpId)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.LeaveType)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.LeaveDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.PartOfDay)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Duration)
+            </td>
+            <td>
+                @{
+                    if (item.LeaveStatus == "Pending")
+                    {
+                        <span class="text-purple">@item.LeaveStatus</span>
                     }
-                </td>
-                <td data-toggle="tooltip" title='@item.LeaveReason' data-placement="left">
-                    @Html.DisplayFor(modelItem => item.ReasonShort)
-                </td>
-                <td data-toggle="tooltip" title='@item.ApproverComments' data-placement="left">
-                    @Html.DisplayFor(modelItem => item.CommentsShort)
-                </td>
-            </tr>
+                    else if (item.LeaveStatus == "Approved")
+                    {
+                        <span class="text-green">@item.LeaveStatus</span>
+                    }
+                    else if (item.LeaveStatus == "Rejected")
+                    {
+                        <span class="text-red">@item.LeaveStatus</span>
+                    }
+                    else if (item.LeaveStatus == "Cancelled")
+                    {
+                        <span class="text-maroon">@item.LeaveStatus</span>
+                    }
+
+                }
+            </td>
+            <td data-toggle="tooltip" title='@item.LeaveReason' data-placement="left">
+                @Html.DisplayFor(modelItem => item.ReasonShort)
+            </td>
+            <td data-toggle="tooltip" title='@item.ApproverComments' data-placement="left">
+                @Html.DisplayFor(modelItem => item.CommentsShort)
+            </td>
+            <td>
+                @{
+                    if (item.IsException == "Yes")
+                    {
+                        <span class="text-red">@item.IsException</span>
+                    }
+                    else
+                    {
+                        @Html.DisplayFor(modelItem => item.IsException)
+                    }
+                }
+            </td>
+        </tr>
         }
     </tbody>
 </table>

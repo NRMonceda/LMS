@@ -71,6 +71,7 @@ namespace NLTD.EmployeePortal.LMS.Ux.AppHelpers
                 dataTable.Columns["LeaveStatus"].ColumnName = "Status";
                 dataTable.Columns["LeaveReason"].ColumnName = "Reason";
                 dataTable.Columns["ApproverComments"].ColumnName = "Approver Comments";
+                dataTable.Columns["IsException"].ColumnName = "Is Exception";
 
                 // add the content into the Excel file
                 workSheet.Cells["A" + startRowFrom].LoadFromDataTable(dataTable, true);
