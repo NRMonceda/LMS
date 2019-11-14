@@ -27,11 +27,6 @@
           <icon></icon>
         </MenuItem>
         <MenuItem>
-          <title>Month wise Report</title>
-          <url>/Admin/MyMonthWiseLeaves</url>
-          <icon></icon>
-        </MenuItem>
-        <MenuItem>
           <title>Leave Balance Report</title>
           <url>/Admin/MyYearWiseLeaveSumary</url>
           <icon></icon>
@@ -77,11 +72,6 @@
         <MenuItem>
           <title>Day wise Report</title>
           <url>/Admin/TeamDaywiseLeaves</url>
-          <icon></icon>
-        </MenuItem>
-        <MenuItem>
-          <title>Month wise Report</title>
-          <url>/Admin/TeamMonthWiseLeaves</url>
           <icon></icon>
         </MenuItem>
         <MenuItem>
