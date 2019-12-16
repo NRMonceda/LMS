@@ -985,6 +985,9 @@ namespace NLTD.EmployeePortal.LMS.Dac
                         decimal leaveDuration = 0;
                         string todayDate = System.DateTime.Now.Date.ToString("ddMMyyyy", CultureInfo.InvariantCulture);
                         int numberOfLeaveExceptionsAllowed = Convert.ToInt32(ConfigurationManager.AppSettings["NumberOfLeaveExceptionsAllowed"].ToString());
+                        DateTime leavePolicyRelaxationDate = DateTime.ParseExact(ConfigurationManager.AppSettings["leavePolicyRelaxationDate"].ToString(), "ddMMyyyy", CultureInfo.InvariantCulture);
+                            
+
                         if (isTimeBased)
                         {
                             request.LeaveUpto = request.LeaveFrom;
@@ -1110,7 +1113,11 @@ namespace NLTD.EmployeePortal.LMS.Dac
                                 isExceptionLeave = CheckExceptionLeave(request.LeaveFrom, request.LeaveUpto, request.LeaveFromTime, request.LeaveUptoTime, request.UserId, request.LeaveType);
                                 if (isExceptionLeave == true)
                                 {
-                                    if (request.IsExceptionTypeLeave == false)
+                                    if (adjustBal.Type == "Casual Leave")
+                                    {
+                                        return "CLExceptionNotAllowed";
+                                    }
+                                    else if (request.IsExceptionTypeLeave == false)
                                     {
                                         return "CheckException";
                                     }
@@ -1125,7 +1132,10 @@ namespace NLTD.EmployeePortal.LMS.Dac
                             }
                         }
                         var empProfile = context.Employee.Where(x => x.UserId == request.UserId).FirstOrDefault();
+
                         //2019 Leave Policy restrictions
+                        if (DateTime.ParseExact(todayDate, "ddMMyyyy", CultureInfo.InvariantCulture).Date > leavePolicyRelaxationDate)
+                        {
 
                             daysBeforeApplied = (request.LeaveFrom.Date - System.DateTime.Now.Date).Days;
 
@@ -1169,6 +1179,7 @@ namespace NLTD.EmployeePortal.LMS.Dac
                                     }
                                 }
                             }
+                        }
                         if (adjustBal.AdjustLeaveBalance)
                         {
                             var chkLeaveBalRec = context.EmployeeLeaveBalance.Where(e => e.UserId == request.UserId && e.LeaveTypeId == request.LeaveType && e.Year == request.LeaveFrom.Year).FirstOrDefault();

@@ -20,7 +20,9 @@ namespace NLTD.EmployeePortal.LMS.Ux
 
         public HangfireRecurringJobs(bool runFlag)
         {
-            KeepAwakeIIS();
+            #if !DEBUG
+                KeepAwakeIIS();
+            #endif
             string timesheetWeeklyEmailServiceConfig = ConfigurationManager.AppSettings["TimesheetWeeklyEmailServiceConfig"];
             List<RecurringJobDto> recurringJobList;
             using (var connection = JobStorage.Current.GetConnection())
@@ -90,6 +92,7 @@ namespace NLTD.EmployeePortal.LMS.Ux
             {
                 heartbeatResponse = wc.DownloadString(ConfigurationManager.AppSettings["HeartbeatUrl"]);
             }
+
         }
     }
 }

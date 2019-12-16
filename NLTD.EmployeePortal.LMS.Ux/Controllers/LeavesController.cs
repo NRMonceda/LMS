@@ -276,6 +276,8 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
                                 data.ErrorMesage = "Combining leaves is an exception. Please avail leave combination exception";
                             else if (result == "UnCheckException")
                                 data.ErrorMesage = "No combination of leaves found. Please uncheck avail leave combination exception";
+                            else if (result == "CLExceptionNotAllowed")
+                                data.ErrorMesage = "Casual leaves cannot be extended. Please apply Sick/Unplanned Leave or Leave Without Pay";
                             else if (result.Contains("MaxExceptionsAvailed:"))
                                 data.ErrorMesage = "You have already availed " + result.Substring(21) + " leave exceptions. Please apply Leave Without Pay.";
 
