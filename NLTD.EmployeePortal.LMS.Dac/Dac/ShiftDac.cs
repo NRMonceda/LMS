@@ -288,12 +288,14 @@ namespace NLTD.EmployeePortal.LMS.Dac
                         }
                         else
                         {
-                            objShiftMaster = new ShiftMaster();
-                            objShiftMaster.ShiftDescription = shiftName;
-                            objShiftMaster.FromTime = fromTime;
-                            objShiftMaster.ToTime = toTime;
-                            objShiftMaster.CreatedBy = mgrId;
-                            objShiftMaster.CreatedDate = DateTime.Now;
+                            objShiftMaster = new ShiftMaster
+                            {
+                                ShiftDescription = shiftName,
+                                FromTime = fromTime,
+                                ToTime = toTime,
+                                CreatedBy = mgrId,
+                                CreatedDate = DateTime.Now
+                            };
                         }
                         context.ShiftMaster.AddOrUpdate(objShiftMaster);
                         isSaved = context.SaveChanges();
@@ -352,11 +354,11 @@ namespace NLTD.EmployeePortal.LMS.Dac
                         List<ShiftAllocation> shiftDetails = new List<ShiftAllocation>();
                         if (RequestMenuUser == "My")
                         {
-                            shiftDetails = getShiftDetails(context, LeaduserId);
+                            shiftDetails = GetShiftDetails(context, LeaduserId);
                         }
                         else if (leadRole == "ADMIN" || leadRole == "HR")
                         {
-                            shiftDetails = getShiftDetails(context, userId);
+                            shiftDetails = GetShiftDetails(context, userId);
                         }
                         else if (RequestMenuUser == "Team")
                         {
@@ -367,7 +369,7 @@ namespace NLTD.EmployeePortal.LMS.Dac
                             var found = LeaveTransactionHistoryDac.FindControlRecursively(user, userId);
                             if (found != null)
                             {
-                                shiftDetails = getShiftDetails(context, userId);
+                                shiftDetails = GetShiftDetails(context, userId);
                             }
                         }
 
@@ -405,7 +407,7 @@ namespace NLTD.EmployeePortal.LMS.Dac
             return retModel;
         }
 
-        public List<ShiftAllocation> getShiftDetails(NLTDDbContext context, long UserId)
+        public List<ShiftAllocation> GetShiftDetails(NLTDDbContext context, long UserId)
         {
             var shiftDetails = (from sm in context.ShiftMapping.AsEnumerable()
                                 join s in context.ShiftMaster.AsEnumerable() on sm.ShiftID equals s.ShiftID
@@ -443,13 +445,15 @@ namespace NLTD.EmployeePortal.LMS.Dac
 
                     isSaved = context.SaveChanges();
 
-                    ShiftTransaction shiftTransaction = new ShiftTransaction();
-                    shiftTransaction.ShiftID = Shift;
-                    shiftTransaction.UserId = UserId;
-                    shiftTransaction.CreatedBy = MgrId;
-                    shiftTransaction.Createddate = DateTime.Now;
-                    shiftTransaction.FromDate = FromDate;
-                    shiftTransaction.ToDate = ToDate;
+                    ShiftTransaction shiftTransaction = new ShiftTransaction
+                    {
+                        ShiftID = Shift,
+                        UserId = UserId,
+                        CreatedBy = MgrId,
+                        Createddate = DateTime.Now,
+                        FromDate = FromDate,
+                        ToDate = ToDate
+                    };
                     context.ShiftTransaction.Add(shiftTransaction);
                     isSaved = context.SaveChanges();
                 }

@@ -32,12 +32,14 @@ namespace NLTD.EmployeePortal.LMS.Common.DisplayModel
 
         public decimal WorkFromHomeDayQty { get; set; }
     }
+
     public class WeeklyDateBlocksModel
     {
         public DateTime WeekDayStartDate { get; set; }
 
         public DateTime WeekDayEndDate { get; set; }
     }
+
     public class WeeklyTimeNotMaintainedModel
     {
         public TimeSpan TotalWeekWorkingHours { get; set; }
@@ -60,9 +62,8 @@ namespace NLTD.EmployeePortal.LMS.Common.DisplayModel
         public decimal Requests { get; set; }
 
         public bool IsWeeklyTimeMet { get; set; }
-
-
     }
+
     public class DailyTimeNotMaintainedModel
     {
         public TimeSpan TotalDayWorkingHours { get; set; }
@@ -72,7 +73,7 @@ namespace NLTD.EmployeePortal.LMS.Common.DisplayModel
         public string ExpectedDayWorkingHoursFormatted { get; set; }
         public long UserId { get; set; }
 
-        public DateTime WorkingDay { get; set; }        
+        public DateTime WorkingDay { get; set; }
 
         public string WorkingDayText { get; set; }
 
@@ -85,8 +86,8 @@ namespace NLTD.EmployeePortal.LMS.Common.DisplayModel
         public string Status { get; set; }
 
         public string Request { get; set; }
-
     }
+
     public class UserEmailListModel
     {
         public long UserId { get; set; }
@@ -100,6 +101,5 @@ namespace NLTD.EmployeePortal.LMS.Common.DisplayModel
         public string LastName { get; set; }
 
         public Boolean SkipTimesheetCompliance { get; set; }
-        
     }
 }

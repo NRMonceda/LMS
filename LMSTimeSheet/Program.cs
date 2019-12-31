@@ -67,8 +67,10 @@ namespace LMSTimeSheet
             SqlCommand comm = new SqlCommand("SELECT MAX(AccessTransactionID) FROM ACCESSTRANSACTIONS ", conn);
             object result = comm.ExecuteScalar();
 
-            conn.Close();
-            conn.Dispose();
+            if (conn != null)
+            {
+                conn.Dispose();
+            }
 
             if (result == null || result == DBNull.Value)
             {
@@ -84,16 +86,14 @@ namespace LMSTimeSheet
 
         private static void MapEmployeeWithTimesheet(string lmsConnection)
         {
-            using (SqlConnection con = new SqlConnection(lmsConnection))
+            using (SqlConnection conn = new SqlConnection(lmsConnection))
             {
-                using (SqlCommand cmd = new SqlCommand("Sp_MapEmployee_Timesheet", con))
+                using (SqlCommand cmd = new SqlCommand("Sp_MapEmployee_Timesheet", conn))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
-                    con.Open();
+                    conn.Open();
                     cmd.ExecuteNonQuery();
                 }
-                con.Close();
-                con.Dispose();
             }
         }
 
@@ -143,7 +143,6 @@ namespace LMSTimeSheet
 
                 // write the data in the "dataTable"
                 bulkCopy.WriteToServer(accessResults);
-                connection.Close();
             }
         }
 

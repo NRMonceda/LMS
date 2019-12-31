@@ -80,14 +80,14 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
                     string userRole = string.Empty;
                     if (LoginUserId != 0)
                     {
-                        userRole=employeeDac.GetEmployeeRole(LoginUserId);
+                        userRole = employeeDac.GetEmployeeRole(LoginUserId);
                     }
                     else
                     {
                         userRole = "System";
                     }
-                        
-                    if (userRole == "HR" || userRole=="System")
+
+                    if (userRole == "HR" || userRole == "System")
                     {
                         using (var transaction = context.Database.BeginTransaction())
                         {
@@ -119,8 +119,10 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
                                     }
                                     else
                                     {
-                                        leaveBalance = new EmployeeLeaveBalance();
-                                        leaveBalance.UserId = Convert.ToInt64(item.UserId);
+                                        leaveBalance = new EmployeeLeaveBalance
+                                        {
+                                            UserId = Convert.ToInt64(item.UserId)
+                                        };
                                         if (isElCredit == false)
                                         {
                                             leaveBalance.Year = DateTime.Now.Year;
@@ -142,15 +144,17 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
                                         isSaved = context.SaveChanges();
                                     }
 
-                                    LeaveTransactionHistory leaveTransactionHistory = new LeaveTransactionHistory();
-                                    leaveTransactionHistory.UserId = Convert.ToInt64(item.UserId);
-                                    leaveTransactionHistory.LeaveTypeId = Convert.ToInt64(item.LeaveTypeId);
-                                    leaveTransactionHistory.LeaveId = -1;
-                                    leaveTransactionHistory.TransactionDate = DateTime.Now;
-                                    leaveTransactionHistory.TransactionType = item.CreditOrDebit;
-                                    leaveTransactionHistory.NumberOfDays = item.NoOfDays;
-                                    leaveTransactionHistory.TransactionBy = LoginUserId;
-                                    leaveTransactionHistory.Remarks = item.Remarks;
+                                    LeaveTransactionHistory leaveTransactionHistory = new LeaveTransactionHistory
+                                    {
+                                        UserId = Convert.ToInt64(item.UserId),
+                                        LeaveTypeId = Convert.ToInt64(item.LeaveTypeId),
+                                        LeaveId = -1,
+                                        TransactionDate = DateTime.Now,
+                                        TransactionType = item.CreditOrDebit,
+                                        NumberOfDays = item.NoOfDays,
+                                        TransactionBy = LoginUserId,
+                                        Remarks = item.Remarks
+                                    };
                                     context.LeaveTransactionHistory.Add(leaveTransactionHistory);
                                     isSaved = context.SaveChanges();
                                     if (isSaved > 0)

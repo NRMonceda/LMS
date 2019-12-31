@@ -44,13 +44,15 @@ namespace NLTD.EmployeePortal.LMS.Dac.DbHelper
                 return dac.GetNewEmpId(OfficeId);
             }
         }
-        public string GetNewEmpId(Int64 OfficeId,long employmentTypeId)
+
+        public string GetNewEmpId(Int64 OfficeId, long employmentTypeId)
         {
             using (var dac = new EmployeeDac())
             {
                 return dac.GetNewEmpId(OfficeId, employmentTypeId);
             }
         }
+
         public IList<DropDownItem> GetEmploymentTypes()
         {
             using (var dac = new EmployeeDac())
@@ -114,13 +116,15 @@ namespace NLTD.EmployeePortal.LMS.Dac.DbHelper
                 return dac.GetEmployeeProfilesforEL(lastCreditRun);
             }
         }
+
         public IList<LeaveCreditModel> GetEmployeeProfilesforCLSL(long leaveTypeId)
         {
             using (var dac = new EmployeeDac())
             {
                 return dac.GetEmployeeProfilesforCLSL(leaveTypeId);
             }
-        }        
+        }
+
         public string UpdateEmployeeProfile(EmployeeProfile profile, Int64 ModifiedBy)
         {
             using (var dac = new EmployeeDac())

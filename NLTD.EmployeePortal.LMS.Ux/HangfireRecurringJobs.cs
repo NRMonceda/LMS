@@ -1,12 +1,10 @@
 ﻿using Hangfire;
 using Hangfire.Storage;
-using Hangfire.Storage.Monitoring;
 using NLTD.EmployeePortal.LMS.Ux.Controllers;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
-using System.Web;
 using System.Net;
 using System.Timers;
 
@@ -20,9 +18,9 @@ namespace NLTD.EmployeePortal.LMS.Ux
 
         public HangfireRecurringJobs(bool runFlag)
         {
-            #if !DEBUG
-                KeepAwakeIIS();
-            #endif
+#if !DEBUG
+            KeepAwakeIIS();
+#endif
             string timesheetWeeklyEmailServiceConfig = ConfigurationManager.AppSettings["TimesheetWeeklyEmailServiceConfig"];
             List<RecurringJobDto> recurringJobList;
             using (var connection = JobStorage.Current.GetConnection())
@@ -56,7 +54,7 @@ namespace NLTD.EmployeePortal.LMS.Ux
                         RecurringJob.RemoveIfExists(curJob.LastJobId);
                     }
                 }
-            }           
+            }
 
             //Add TimesheetWeeklyEmailService if config exists
             if (!string.IsNullOrWhiteSpace(timesheetWeeklyEmailServiceConfig))
@@ -72,19 +70,24 @@ namespace NLTD.EmployeePortal.LMS.Ux
             TimesheetEmailReportService srv = new TimesheetEmailReportService();
             srv.ProcessWeeklyReport();
         }
+
         public void CreditMonthlyCLSL()
         {
             ProfileController cs = new ProfileController();
             cs.UpdateCLSL(1);
             cs.UpdateCLSL(14);
         }
+
         public void KeepAwakeIIS()
         {
-            System.Timers.Timer timer = new System.Timers.Timer(TimeSpan.FromMinutes(10).TotalMilliseconds);
-            timer.AutoReset = true;
+            System.Timers.Timer timer = new System.Timers.Timer(TimeSpan.FromMinutes(10).TotalMilliseconds)
+            {
+                AutoReset = true
+            };
             timer.Elapsed += new System.Timers.ElapsedEventHandler(CallWebMethod);
             timer.Start();
         }
+
         public static void CallWebMethod(object sender, ElapsedEventArgs e)
         {
             string heartbeatResponse = string.Empty;
@@ -92,7 +95,6 @@ namespace NLTD.EmployeePortal.LMS.Ux
             {
                 heartbeatResponse = wc.DownloadString(ConfigurationManager.AppSettings["HeartbeatUrl"]);
             }
-
         }
     }
 }

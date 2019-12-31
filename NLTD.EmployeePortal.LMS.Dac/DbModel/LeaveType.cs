@@ -33,7 +33,5 @@ namespace NLTD.EmployeePortal.LMS.Dac.DbModel
         public long CreatedBy { get; set; }
 
         public long ModifiedBy { get; set; }
-
-
     }
 }

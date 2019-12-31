@@ -11,8 +11,8 @@ namespace NLTD.EmployeePortal.LMS.Dac
 {
     public class ReportDac : IReportHelper
     {
-        private int BeforeShiftBuffer = Convert.ToInt32(ConfigurationManager.AppSettings["BeforeShiftBuffer"]);
-        private int AfterShiftBuffer = Convert.ToInt32(ConfigurationManager.AppSettings["AfterShiftBuffer"]);
+        private readonly int BeforeShiftBuffer = Convert.ToInt32(ConfigurationManager.AppSettings["BeforeShiftBuffer"]);
+        private readonly int AfterShiftBuffer = Convert.ToInt32(ConfigurationManager.AppSettings["AfterShiftBuffer"]);
 
         public List<lateAndEarlyRpt> GetLateAndEarlyEmployees(DateTime FromDate, DateTime ToDate, Int64 UserId, bool OnlyReportedToMe)
         {
@@ -60,8 +60,6 @@ namespace NLTD.EmployeePortal.LMS.Dac
             // To get the employee role, whether he is the Team lead or HR Or admin
             try
             {
-
-
                 List<EmployeeProfile> employeesUnderManager = employeeDac.GetReportingEmployeeProfile(UserID, leadRole, myDirectEmployees).OrderBy(m => m.FirstName).ToList();
                 for (int i = 0; i < employeesUnderManager.Count; i++)
                 {

@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
 using System.Web;
-using Hangfire.Annotations;
 
 [assembly: OwinStartup(typeof(NLTD.EmployeePortal.LMS.Ux.Startup))]
 
@@ -40,13 +39,13 @@ namespace NLTD.EmployeePortal.LMS.Ux
         }
     }
 
-    public class LMSSiteAdminAuthFilter :IDashboardAuthorizationFilter
+    public class LMSSiteAdminAuthFilter : IDashboardAuthorizationFilter
     {
         public bool Authorize(DashboardContext context)
         {
             string hangfireDashboardUsers = ConfigurationManager.AppSettings["SiteAdminUsers"].ToString();
             List<string> lstUsers = hangfireDashboardUsers.Split(',').ToList();
-            
+
             if (HttpContext.Current.User.Identity.IsAuthenticated)
             {
                 if (HttpContext.Current.User.Identity.Name.IndexOf("CORP\\", StringComparison.Ordinal) != -1)
@@ -56,7 +55,6 @@ namespace NLTD.EmployeePortal.LMS.Ux
                         return true;
                     }
                 }
-
             }
 
             return false;
@@ -76,13 +74,13 @@ namespace NLTD.EmployeePortal.LMS.Ux
         //            if(lstUsers.Any(x=>x.ToUpper() == context.Authentication.User.Identity.Name.Substring(5).ToUpper()))
         //            {
         //                return true;
-        //            }                   
+        //            }
         //        }
 
         //    }
-            
+
         //    return false;
-            
+
         //}
     }
 }

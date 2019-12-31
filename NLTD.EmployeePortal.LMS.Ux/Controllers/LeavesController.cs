@@ -1,12 +1,10 @@
-﻿using Hangfire;
-using NLTD.EmployeePortal.LMS.Client;
+﻿using NLTD.EmployeePortal.LMS.Client;
 using NLTD.EmployeePortal.LMS.Common.DisplayModel;
 using NLTD.EmployeePortal.LMS.Common.QueryModel;
 using NLTD.EmployeePortal.LMS.Ux.AppHelpers;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Threading;
 using System.Web.Mvc;
 
 namespace NLTD.EmployeePortal.LMS.Ux.Controllers
@@ -17,8 +15,10 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
         {
             ViewBag.PageTile = "Apply For Leave";
 
-            var request = new LeaveRequestModel();
-            request.UserId = this.UserId;
+            var request = new LeaveRequestModel
+            {
+                UserId = this.UserId
+            };
 
             if (StartDate != null)
             {
@@ -38,7 +38,7 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
             {
                 request.LeaveUpto = System.DateTime.Now;
             }
-            
+
             using (var Client = new LeaveClient())
             {
                 var commonData = Client.ApplyLeaveCommonData(this.OfficeId, this.UserId);
@@ -96,8 +96,10 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
 
         public ActionResult ApplyOnBehalfSearch()
         {
-            ApplyOnBehalfSearchModel qryMdl = new ApplyOnBehalfSearchModel();
-            qryMdl.ApplyMode = "Other";
+            ApplyOnBehalfSearchModel qryMdl = new ApplyOnBehalfSearchModel
+            {
+                ApplyMode = "Other"
+            };
 
             return View("ApplyOnBehalfMainView", qryMdl);
         }
@@ -280,7 +282,6 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
                                 data.ErrorMesage = "Casual leaves cannot be extended. Please apply Sick/Unplanned Leave or Leave Without Pay";
                             else if (result.Contains("MaxExceptionsAvailed:"))
                                 data.ErrorMesage = "You have already availed " + result.Substring(21) + " leave exceptions. Please apply Leave Without Pay.";
-
                         }
                     }
                 }
@@ -314,17 +315,21 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
 
         public ActionResult ManageLeaveRequest()
         {
-            ManageTeamLeavesQueryModel qryMdl = new ManageTeamLeavesQueryModel();
-            qryMdl.OnlyReportedToMe = true;
-            qryMdl.IsAuthorized = this.IsAuthorized;
+            ManageTeamLeavesQueryModel qryMdl = new ManageTeamLeavesQueryModel
+            {
+                OnlyReportedToMe = true,
+                IsAuthorized = this.IsAuthorized
+            };
             return View(qryMdl);
         }
 
         public ActionResult MyLeaveHistory()
         {
             ViewBag.RequestLevelPerson = "My";
-            ManageTeamLeavesQueryModel qyMdl = new ManageTeamLeavesQueryModel();
-            qyMdl.OnlyReportedToMe = true;
+            ManageTeamLeavesQueryModel qyMdl = new ManageTeamLeavesQueryModel
+            {
+                OnlyReportedToMe = true
+            };
             int year = DateTime.Now.Year;
             DateTime firstDay = new DateTime(year, 1, 1);
             DateTime lastDay = new DateTime(year, 12, 31);
@@ -336,8 +341,10 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
         public ActionResult TeamLeaveHistory()
         {
             ViewBag.RequestLevelPerson = "Team";
-            ManageTeamLeavesQueryModel qyMdl = new ManageTeamLeavesQueryModel();
-            qyMdl.OnlyReportedToMe = true;
+            ManageTeamLeavesQueryModel qyMdl = new ManageTeamLeavesQueryModel
+            {
+                OnlyReportedToMe = true
+            };
             int year = DateTime.Now.Year;
             DateTime firstDay = new DateTime(year, 1, 1);
             DateTime lastDay = new DateTime(year, 12, 31);
@@ -349,8 +356,10 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
         public ActionResult AdminLeaveHistory()
         {
             ViewBag.RequestLevelPerson = "Admin";
-            ManageTeamLeavesQueryModel qyMdl = new ManageTeamLeavesQueryModel();
-            qyMdl.OnlyReportedToMe = true;
+            ManageTeamLeavesQueryModel qyMdl = new ManageTeamLeavesQueryModel
+            {
+                OnlyReportedToMe = true
+            };
             int year = DateTime.Now.Year;
             DateTime firstDay = new DateTime(year, 1, 1);
             DateTime lastDay = new DateTime(year, 12, 31);
@@ -375,12 +384,14 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
                     throw;
                 }
             }
-            ManageTeamLeavesQueryModel qryMdl = new ManageTeamLeavesQueryModel();
-            qryMdl.OnlyReportedToMe = ShowOnlyReportedToMe;
-            qryMdl.ShowApprovedLeaves = ShowApprovedLeaves;
-            qryMdl.FromDate = startDateFormatted;
-            qryMdl.ToDate = endDateFormatted;
-            qryMdl.RequestMenuUser = RequestMenuUser;
+            ManageTeamLeavesQueryModel qryMdl = new ManageTeamLeavesQueryModel
+            {
+                OnlyReportedToMe = ShowOnlyReportedToMe,
+                ShowApprovedLeaves = ShowApprovedLeaves,
+                FromDate = startDateFormatted,
+                ToDate = endDateFormatted,
+                RequestMenuUser = RequestMenuUser
+            };
             IList<TeamLeaves> LeaveRequests = null;
             qryMdl.LeadId = UserId;
             using (var client = new LeaveClient())
@@ -412,13 +423,15 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
                 startDateFormatted = System.DateTime.Now.Date;
                 endDateFormatted = System.DateTime.Now.Date;
             }
-            ManageTeamLeavesQueryModel qryMdl = new ManageTeamLeavesQueryModel();
-            qryMdl.OnlyReportedToMe = OnlyReportedToMe;
-            qryMdl.FromDate = startDateFormatted;
-            qryMdl.ToDate = endDateFormatted;
-            qryMdl.RequestMenuUser = RequestMenuUser;
-            qryMdl.IsLeaveOnly = IsLeaveOnly;
-            qryMdl.SearchUserID = paramUserId;
+            ManageTeamLeavesQueryModel qryMdl = new ManageTeamLeavesQueryModel
+            {
+                OnlyReportedToMe = OnlyReportedToMe,
+                FromDate = startDateFormatted,
+                ToDate = endDateFormatted,
+                RequestMenuUser = RequestMenuUser,
+                IsLeaveOnly = IsLeaveOnly,
+                SearchUserID = paramUserId
+            };
             IList<TeamLeaves> LeaveRequests = null;
             qryMdl.LeadId = UserId;
             using (var client = new LeaveClient())

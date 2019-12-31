@@ -17,7 +17,7 @@ namespace NLTD.EmployeePortal.LMS.Dac.DbHelper
 
         public void Dispose()
         {
-            //  throw new NotImplementedException();
+            employeeAttendanceHelper.Dispose();
         }
 
         public List<EmployeeAttendanceModel> GetAttendance(Int64 UserID)

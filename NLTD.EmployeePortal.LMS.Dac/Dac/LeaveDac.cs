@@ -15,7 +15,7 @@ namespace NLTD.EmployeePortal.LMS.Dac
 {
     public class LeaveDac : ILeaveHelper
     {
-        private int BSB = Convert.ToInt32(ConfigurationManager.AppSettings["BeforeShiftBuffer"]);
+        private readonly int BSB = Convert.ToInt32(ConfigurationManager.AppSettings["BeforeShiftBuffer"]);
 
         public string ChangeStatus(LeaveStatusModel status)
         {
@@ -44,7 +44,7 @@ namespace NLTD.EmployeePortal.LMS.Dac
                             leave.ApprovedBy = status.UserId;
                             leave.ApprovedAt = DateTime.Now;
                             leave.Status = status.Status;
-                            
+
                             isSaved = context.SaveChanges();
                             if (isSaved > 0)
                             {
@@ -73,7 +73,7 @@ namespace NLTD.EmployeePortal.LMS.Dac
                                             if (adjustBal.AdjustLeaveBalance)
                                                 empLeaveBal.BalanceDays = (empLeaveBal.BalanceDays ?? 0) + leave.Duration;
                                         }
-                                        
+
                                         empLeaveBal.ModifiedBy = status.UserId;
                                         empLeaveBal.ModifiedOn = DateTime.Now;
                                         isSaved = context.SaveChanges();
@@ -83,7 +83,7 @@ namespace NLTD.EmployeePortal.LMS.Dac
                                             {
                                                 if (leave.Status == "R" || leave.Status == "C")
                                                 {
-                                                    //Reduce 1 from the AvailedLeavePolicyException 
+                                                    //Reduce 1 from the AvailedLeavePolicyException
                                                     var emp = context.Employee.Where(x => x.UserId == leave.UserId).FirstOrDefault();
                                                     emp.AvailedLeavePolicyException = (emp.AvailedLeavePolicyException ?? 0) - 1;
                                                     emp.ModifiedBy = status.UserId;
@@ -92,22 +92,20 @@ namespace NLTD.EmployeePortal.LMS.Dac
                                                 }
                                             }
                                         }
-
                                     }
                                 }
                                 if (isSaved > 0)
                                 {
-                                    
                                     if (adjustBal.IsTimeBased == false)
                                     {
-                                        //if (adjustBal.IsLeave == true)
-                                        //{
-                                        TransactionHistoryModel hist = new TransactionHistoryModel();
-                                        hist.EmployeeId = leave.UserId;
-                                        hist.LeaveTypeId = leave.LeaveTypeId;
-                                        hist.LeaveId = leave.LeaveId;
-                                        hist.NumberOfDays = leave.Duration;
-                                        hist.TransactionBy = status.UserId;
+                                        TransactionHistoryModel hist = new TransactionHistoryModel
+                                        {
+                                            EmployeeId = leave.UserId,
+                                            LeaveTypeId = leave.LeaveTypeId,
+                                            LeaveId = leave.LeaveId,
+                                            NumberOfDays = leave.Duration,
+                                            TransactionBy = status.UserId
+                                        };
                                         if (leave.Status == "A")
                                         {
                                             hist.Remarks = "Approved";
@@ -123,18 +121,20 @@ namespace NLTD.EmployeePortal.LMS.Dac
                                             hist.Remarks = "Rejected";
                                             hist.TransactionType = "C";
                                         }
-                                        //bool retRes = SaveTransactionLog(hist);
-                                        LeaveTransactionHistory histRec = new LeaveTransactionHistory();
-                                        histRec.UserId = hist.EmployeeId;
-                                        histRec.LeaveTypeId = hist.LeaveTypeId;
-                                        histRec.LeaveId = hist.LeaveId;
-                                        histRec.TransactionDate = DateTime.Now;
-                                        histRec.TransactionType = hist.TransactionType;
-                                        histRec.NumberOfDays = hist.NumberOfDays;
-                                        histRec.TransactionBy = hist.TransactionBy;
-                                        histRec.Remarks = hist.Remarks;
+
+                                        LeaveTransactionHistory histRec = new LeaveTransactionHistory
+                                        {
+                                            UserId = hist.EmployeeId,
+                                            LeaveTypeId = hist.LeaveTypeId,
+                                            LeaveId = hist.LeaveId,
+                                            TransactionDate = DateTime.Now,
+                                            TransactionType = hist.TransactionType,
+                                            NumberOfDays = hist.NumberOfDays,
+                                            TransactionBy = hist.TransactionBy,
+                                            Remarks = hist.Remarks
+                                        };
                                         context.LeaveTransactionHistory.Add(histRec);
-                                        isSaved = context.SaveChanges();                                        
+                                        isSaved = context.SaveChanges();
                                         //}
                                     }
                                 }
@@ -472,12 +472,12 @@ namespace NLTD.EmployeePortal.LMS.Dac
             using (var context = new NLTDDbContext())
             {
                 employeeList = (from emp in context.Employee
-                                   where (emp.FirstName + " " + emp.LastName).Contains(param.ToUpper())
-                                   select new EmployeeList
-                                   {
-                                       UserId = emp.UserId,
-                                       Name = emp.FirstName + " " + emp.LastName
-                                   }
+                                where (emp.FirstName + " " + emp.LastName).Contains(param.ToUpper())
+                                select new EmployeeList
+                                {
+                                    UserId = emp.UserId,
+                                    Name = emp.FirstName + " " + emp.LastName
+                                }
                                    ).ToList();
 
                 if (leadRole != "ADMIN" && leadRole != "HR")
@@ -577,7 +577,7 @@ namespace NLTD.EmployeePortal.LMS.Dac
                                            Comments = leave.Comments,
                                            AppliedById = leave.AppliedBy,
                                            LeaveTypeId = types.LeaveTypeId,
-                                           IsExceptionTypeLeave=leave.IsExceptionLeave
+                                           IsExceptionTypeLeave = leave.IsExceptionLeave
                                        }).AsQueryable();
 
                 List<LeaveItem> LeaveItems = new List<LeaveItem>();
@@ -615,7 +615,7 @@ namespace NLTD.EmployeePortal.LMS.Dac
                                   Comments = l.Comments,
                                   PermissionInMonth = (l.isTimeBased == false) ? "" : ReturnPermissionHoursPerMonthInString(l.LeaveFromDate.Month, l.UserId, l.LeaveTypeId, false),
                                   AppliedByName = e.FirstName + " " + e.LastName,
-                                  IsExceptionTypeLeave=l.IsExceptionTypeLeave
+                                  IsExceptionTypeLeave = l.IsExceptionTypeLeave
                               }).ToList();
 
                 var pdLeaveId = (from items in LeaveItems
@@ -647,10 +647,12 @@ namespace NLTD.EmployeePortal.LMS.Dac
                 TeamLeaves newList;
                 foreach (var item in groupedLeavesList)
                 {
-                    newList = new TeamLeaves();
-                    newList.UserId = item.UserId;
-                    newList.TeamLeaveList = item.teamLeaves.OrderByDescending(x => x.LeaveFromDate).ToList();
-                    newList.Name = item.teamLeaves[0].RequesterName;
+                    newList = new TeamLeaves
+                    {
+                        UserId = item.UserId,
+                        TeamLeaveList = item.teamLeaves.OrderByDescending(x => x.LeaveFromDate).ToList(),
+                        Name = item.teamLeaves[0].RequesterName
+                    };
                     retList.Add(newList);
                 }
                 retList = retList.OrderBy(x => x.Name).ToList();
@@ -682,11 +684,11 @@ namespace NLTD.EmployeePortal.LMS.Dac
             {
                 var permissions = (from l in context.Leave
                                    join lp in context.PermissionDetail on l.LeaveId equals lp.LeaveId
-                                   where lp.PermissionDate.Month == month && l.UserId == userId && 
+                                   where lp.PermissionDate.Month == month && l.UserId == userId &&
                                     ((includePending && l.Status == "P") || l.Status == "A")
                                     && l.StartDate.Year == DateTime.Now.Year
                                     && l.LeaveTypeId == leaveTypeId
-                                   select new { TimeFrom = lp.TimeFrom, TimeTo = lp.TimeTo }
+                                   select new { lp.TimeFrom, lp.TimeTo }
                                      )
                                      .ToList();
 
@@ -694,14 +696,14 @@ namespace NLTD.EmployeePortal.LMS.Dac
                 {
                     for (int i = 0; i < permissions.Count; i++)
                     {
-                        totalDuration = totalDuration + calculateDuration(permissions[i].TimeFrom, permissions[i].TimeTo);
+                        totalDuration = totalDuration + CalculateDuration(permissions[i].TimeFrom, permissions[i].TimeTo);
                     }
                 }
             }
             return totalDuration;
         }
 
-        public TimeSpan calculateDuration(string permissionTimeFrom, string permissionTimeTo)
+        public TimeSpan CalculateDuration(string permissionTimeFrom, string permissionTimeTo)
         {
             TimeSpan timeFrom;
             DateTime permissionDateFromTime;
@@ -767,7 +769,7 @@ namespace NLTD.EmployeePortal.LMS.Dac
                                            IsLeave = types.IsLeave,
                                            isTimeBased = types.IsTimeBased,
                                            AppliedById = leave.AppliedBy,
-                                           IsExceptionTypeLeave=leave.IsExceptionLeave
+                                           IsExceptionTypeLeave = leave.IsExceptionLeave
                                        }).AsQueryable();
 
                 if (qryMdl.IsLeaveOnly)
@@ -863,7 +865,7 @@ namespace NLTD.EmployeePortal.LMS.Dac
                                   isTimeBased = l.isTimeBased,
                                   AppliedById = l.AppliedById,
                                   AppliedByName = e.FirstName + " " + e.LastName,
-                                  IsExceptionTypeLeave=l.IsExceptionTypeLeave
+                                  IsExceptionTypeLeave = l.IsExceptionTypeLeave
                               }).ToList();
 
                 var pdLeaveId = (from items in LeaveItems
@@ -895,10 +897,12 @@ namespace NLTD.EmployeePortal.LMS.Dac
                 TeamLeaves newList;
                 foreach (var item in groupedLeaveList)
                 {
-                    newList = new TeamLeaves();
-                    newList.UserId = item.UserId;
-                    newList.TeamLeaveList = item.teamLeaves.OrderByDescending(x => x.LeaveFromDate).ToList();
-                    newList.Name = item.teamLeaves[0].RequesterName;
+                    newList = new TeamLeaves
+                    {
+                        UserId = item.UserId,
+                        TeamLeaveList = item.teamLeaves.OrderByDescending(x => x.LeaveFromDate).ToList(),
+                        Name = item.teamLeaves[0].RequesterName
+                    };
                     retList.Add(newList);
                 }
 
@@ -920,7 +924,7 @@ namespace NLTD.EmployeePortal.LMS.Dac
                                                         LeaveTypeId = types.LeaveTypeId,
                                                         LeaveTypeText = types.Type,
                                                         IsTimeBased = types.IsTimeBased
-                                                    }).ToList();               
+                                                    }).ToList();
                 return LeaveTypes;
             }
         }
@@ -986,7 +990,6 @@ namespace NLTD.EmployeePortal.LMS.Dac
                         string todayDate = System.DateTime.Now.Date.ToString("ddMMyyyy", CultureInfo.InvariantCulture);
                         int numberOfLeaveExceptionsAllowed = Convert.ToInt32(ConfigurationManager.AppSettings["NumberOfLeaveExceptionsAllowed"].ToString());
                         DateTime leavePolicyRelaxationDate = DateTime.ParseExact(ConfigurationManager.AppSettings["leavePolicyRelaxationDate"].ToString(), "ddMMyyyy", CultureInfo.InvariantCulture);
-                            
 
                         if (isTimeBased)
                         {
@@ -998,7 +1001,7 @@ namespace NLTD.EmployeePortal.LMS.Dac
                             request.leaveDetail = GetLeaveDetailCalculation(request.LeaveFrom, request.LeaveUpto, request.LeaveFromTime, request.LeaveUptoTime, request.UserId, request.LeaveType);
                             leaveDuration = request.leaveDetail[0].Total;
 
-                            #region Duplicate Leave Logic                        
+                            #region Duplicate Leave Logic
 
                             var chkLeave = context.Leave
                             .Where(h => h.UserId == request.UserId && (h.Status == "A" || h.Status == "P") && ((request.LeaveFrom >= h.StartDate && request.LeaveFrom <= h.EndDate) || (request.LeaveUpto >= h.StartDate && request.LeaveUpto <= h.EndDate) || (request.LeaveFrom <= h.StartDate && request.LeaveUpto >= h.EndDate))).ToList();
@@ -1106,9 +1109,9 @@ namespace NLTD.EmployeePortal.LMS.Dac
                                     return "Duplicate";
                             }
 
-                            #endregion
+                            #endregion Duplicate Leave Logic
 
-                            if (adjustBal.LeaveCombinationAllowed==false )
+                            if (adjustBal.LeaveCombinationAllowed == false)
                             {
                                 isExceptionLeave = CheckExceptionLeave(request.LeaveFrom, request.LeaveUpto, request.LeaveFromTime, request.LeaveUptoTime, request.UserId, request.LeaveType);
                                 if (isExceptionLeave == true)
@@ -1136,7 +1139,6 @@ namespace NLTD.EmployeePortal.LMS.Dac
                         //2019 Leave Policy restrictions
                         if (DateTime.ParseExact(todayDate, "ddMMyyyy", CultureInfo.InvariantCulture).Date > leavePolicyRelaxationDate)
                         {
-
                             daysBeforeApplied = (request.LeaveFrom.Date - System.DateTime.Now.Date).Days;
 
                             if (adjustBal.Type == "Casual Leave")
@@ -1189,7 +1191,7 @@ namespace NLTD.EmployeePortal.LMS.Dac
                         IList<LeaveSummary> lstSummary = new List<LeaveSummary>();
                         lstSummary = GetLeaveSumary(request.UserId, request.LeaveFrom.Year);
                         decimal nonAdjLeavesTaken = 0;
-                        
+
                         bool isHalfdayRequest = false;
                         if (request.LeaveFromTime == "F")
                             isHalfdayRequest = true;
@@ -1245,8 +1247,8 @@ namespace NLTD.EmployeePortal.LMS.Dac
                                     permissionDateToTime = permissionDateToTime.AddDays(1);
                                 if (permissionDateToTime > permissionDateFromTime)
                                 {
-                                    TimeSpan appliedPermissionHoursPerMonth = ReturnPermissionHoursPerMonth(request.LeaveFrom.Date.Month, request.UserId, request.LeaveType,true);
-                                    if ((permissionDateToTime - permissionDateFromTime).TotalMinutes + appliedPermissionHoursPerMonth.TotalMinutes > (adjustBal.MaximumPerMonth*60))
+                                    TimeSpan appliedPermissionHoursPerMonth = ReturnPermissionHoursPerMonth(request.LeaveFrom.Date.Month, request.UserId, request.LeaveType, true);
+                                    if ((permissionDateToTime - permissionDateFromTime).TotalMinutes + appliedPermissionHoursPerMonth.TotalMinutes > (adjustBal.MaximumPerMonth * 60))
                                     {
                                         return "PermissionDurationTime";
                                     }
@@ -1262,23 +1264,22 @@ namespace NLTD.EmployeePortal.LMS.Dac
                             }
                         }
 
-                       
                         if (adjustBal.MaximumPerRequest != null)
                         {
                             if (leaveDuration > adjustBal.MaximumPerRequest)
                                 return "ExceedMaxPerRequest" + adjustBal.MaximumPerRequest;
                         }
-                       
 
-
-                        Leave leave = new Leave();
-                        leave.AppliedAt = DateTime.Now;
-                        leave.AppliedBy = request.AppliedByUserId;
-                        leave.ApprovedAt = null;
-                        leave.ApprovedBy = null;
-                        leave.Comments = null;
-                        leave.Duration = leaveDuration;
-                        leave.UserId = request.UserId;
+                        Leave leave = new Leave
+                        {
+                            AppliedAt = DateTime.Now,
+                            AppliedBy = request.AppliedByUserId,
+                            ApprovedAt = null,
+                            ApprovedBy = null,
+                            Comments = null,
+                            Duration = leaveDuration,
+                            UserId = request.UserId
+                        };
                         if (isHalfdayRequest)
                         {
                             leave.EndDateType = null;
@@ -1323,24 +1324,28 @@ namespace NLTD.EmployeePortal.LMS.Dac
                                 LeaveDetail ld;
                                 foreach (var item in request.leaveDetail)
                                 {
-                                    ld = new LeaveDetail();
-                                    ld.LeaveId = newId;
-                                    ld.LeaveDate = item.LeaveDayItem;
-                                    ld.PartOfDay = item.PartOfDay;
-                                    ld.LeaveDayQty = item.LeaveDayItemQty;
-                                    ld.IsDayOff = item.IsDayOff;
-                                    ld.Remarks = item.Remarks;
+                                    ld = new LeaveDetail
+                                    {
+                                        LeaveId = newId,
+                                        LeaveDate = item.LeaveDayItem,
+                                        PartOfDay = item.PartOfDay,
+                                        LeaveDayQty = item.LeaveDayItemQty,
+                                        IsDayOff = item.IsDayOff,
+                                        Remarks = item.Remarks
+                                    };
                                     context.LeaveDetail.Add(ld);
                                     isSaved = context.SaveChanges();
                                 }
                             }
                             else
                             {
-                                PermissionDetail pd = new PermissionDetail();
-                                pd.LeaveId = newId;
-                                pd.PermissionDate = request.LeaveFrom.Date;
-                                pd.TimeFrom = request.PermissionTimeFrom;
-                                pd.TimeTo = request.PermissionTimeTo;
+                                PermissionDetail pd = new PermissionDetail
+                                {
+                                    LeaveId = newId,
+                                    PermissionDate = request.LeaveFrom.Date,
+                                    TimeFrom = request.PermissionTimeFrom,
+                                    TimeTo = request.PermissionTimeTo
+                                };
                                 context.PermissionDetail.Add(pd);
                                 isSaved = context.SaveChanges();
                             }
@@ -1352,15 +1357,17 @@ namespace NLTD.EmployeePortal.LMS.Dac
                                     leaveBalRec = context.EmployeeLeaveBalance.Where(e => e.UserId == request.UserId && e.LeaveTypeId == request.LeaveType && e.Year == request.LeaveFrom.Year).FirstOrDefault();
                                     if (leaveBalRec == null)
                                     {
-                                        EmployeeLeaveBalance empBal = new EmployeeLeaveBalance();
-                                        empBal.UserId = request.UserId;
-                                        empBal.Year = request.LeaveFrom.Year;
-                                        empBal.LeaveTypeId = request.LeaveType;
-                                        empBal.PendingApprovalDays = leaveDuration;
-                                        empBal.CreatedBy = request.AppliedByUserId;
-                                        empBal.CreatedOn = DateTime.Now;
-                                        empBal.ModifiedBy = -1;
-                                        empBal.ModifiedOn = DateTime.Now;
+                                        EmployeeLeaveBalance empBal = new EmployeeLeaveBalance
+                                        {
+                                            UserId = request.UserId,
+                                            Year = request.LeaveFrom.Year,
+                                            LeaveTypeId = request.LeaveType,
+                                            PendingApprovalDays = leaveDuration,
+                                            CreatedBy = request.AppliedByUserId,
+                                            CreatedOn = DateTime.Now,
+                                            ModifiedBy = -1,
+                                            ModifiedOn = DateTime.Now
+                                        };
                                         context.EmployeeLeaveBalance.Add(empBal);
                                         isSaved = context.SaveChanges();
                                     }
@@ -1385,13 +1392,15 @@ namespace NLTD.EmployeePortal.LMS.Dac
 
                                     if (isSaved > 0)
                                     {
-                                        TransactionHistoryModel hist = new TransactionHistoryModel();
-                                        hist.EmployeeId = request.UserId;
-                                        hist.LeaveTypeId = leave.LeaveTypeId;
-                                        hist.LeaveId = leave.LeaveId;
-                                        hist.TransactionType = "D";
-                                        hist.NumberOfDays = leaveDuration;
-                                        hist.TransactionBy = request.UserId;
+                                        TransactionHistoryModel hist = new TransactionHistoryModel
+                                        {
+                                            EmployeeId = request.UserId,
+                                            LeaveTypeId = leave.LeaveTypeId,
+                                            LeaveId = leave.LeaveId,
+                                            TransactionType = "D",
+                                            NumberOfDays = leaveDuration,
+                                            TransactionBy = request.UserId
+                                        };
                                         if (empProfile.ReportingToId == null)
                                         {
                                             hist.Remarks = "Auto Approved";
@@ -1402,30 +1411,31 @@ namespace NLTD.EmployeePortal.LMS.Dac
                                         }
                                         //bool retRes = SaveTransactionLog(hist);
 
-                                        LeaveTransactionHistory histRec = new LeaveTransactionHistory();
-                                        histRec.UserId = hist.EmployeeId;
-                                        histRec.LeaveTypeId = hist.LeaveTypeId;
-                                        histRec.LeaveId = hist.LeaveId;
-                                        histRec.TransactionDate = DateTime.Now;
-                                        histRec.TransactionType = hist.TransactionType;
-                                        histRec.NumberOfDays = hist.NumberOfDays;
-                                        histRec.TransactionBy = hist.TransactionBy;
-                                        histRec.Remarks = hist.Remarks;
+                                        LeaveTransactionHistory histRec = new LeaveTransactionHistory
+                                        {
+                                            UserId = hist.EmployeeId,
+                                            LeaveTypeId = hist.LeaveTypeId,
+                                            LeaveId = hist.LeaveId,
+                                            TransactionDate = DateTime.Now,
+                                            TransactionType = hist.TransactionType,
+                                            NumberOfDays = hist.NumberOfDays,
+                                            TransactionBy = hist.TransactionBy,
+                                            Remarks = hist.Remarks
+                                        };
                                         context.LeaveTransactionHistory.Add(histRec);
-                                        isSaved = context.SaveChanges();                                       
+                                        isSaved = context.SaveChanges();
                                     }
                                 }
                             }
                             if (request.IsExceptionTypeLeave)
                             {
-                                //Add 1 to the AvailedLeavePolicyException 
+                                //Add 1 to the AvailedLeavePolicyException
                                 var emp = context.Employee.Where(x => x.UserId == leave.UserId).FirstOrDefault();
                                 emp.AvailedLeavePolicyException = (emp.AvailedLeavePolicyException ?? 0) + 1;
                                 emp.ModifiedBy = request.UserId;
                                 emp.ModifiedOn = DateTime.Now;
                                 isSaved = context.SaveChanges();
                             }
-
                         }
                         if (isSaved != -1)
                         {
@@ -1446,13 +1456,14 @@ namespace NLTD.EmployeePortal.LMS.Dac
                 }
             }
         }
+
         public bool CheckExceptionLeave(DateTime LeaveFrom, DateTime LeaveUpto, string LeaveFromTime, string LeaveUptoTime, Int64 UserId, Int64 LeaveType)
         {
             bool isExceptionType = false;
             bool nextWorkingDay = false;
             bool prevWorkingDay = false;
-            DateTime leaveDate = LeaveFrom;            
-            
+            DateTime leaveDate = LeaveFrom;
+
             using (var context = new NLTDDbContext())
             {
                 var adjustBal = context.LeaveType.Where(e => e.LeaveTypeId == LeaveType).FirstOrDefault();
@@ -1460,10 +1471,10 @@ namespace NLTD.EmployeePortal.LMS.Dac
                 {
                     return false;
                 }
-            }           
+            }
             Int32 leaveDuration = (LeaveUpto - LeaveFrom).Days;
-            DayOfWeek dw;           
-            string partOfDay = string.Empty;            
+            DayOfWeek dw;
+            string partOfDay = string.Empty;
             int addDays = 0;
             IList<HolidayModel> holidayList = GetHolidays(UserId, LeaveFrom.Year);
             IList<WeekOffDayModel> lstOffDays = ReturnWeekOffDays(UserId);
@@ -1484,9 +1495,9 @@ namespace NLTD.EmployeePortal.LMS.Dac
                 lstLeaves = (from l in context.Leave
                              join ld in context.LeaveDetail on l.LeaveId equals ld.LeaveId
                              join lt in context.LeaveType on l.LeaveTypeId equals lt.LeaveTypeId
-                             where (l.Status == "P" || l.Status == "A") && ld.LeaveDate.Year==LeaveFrom.Year && ld.IsDayOff==false
-                             && lt.IsLeave == true && l.UserId == UserId && lt.LeaveCombinationAllowed==false
-                             select new LeaveListModel{ LeaveId = l.LeaveId, LeaveDtlId=ld.LeaveDetailId,PartOfDay = ld.PartOfDay,LeaveDate=ld.LeaveDate }
+                             where (l.Status == "P" || l.Status == "A") && ld.LeaveDate.Year == LeaveFrom.Year && ld.IsDayOff == false
+                             && lt.IsLeave == true && l.UserId == UserId && lt.LeaveCombinationAllowed == false
+                             select new LeaveListModel { LeaveId = l.LeaveId, LeaveDtlId = ld.LeaveDetailId, PartOfDay = ld.PartOfDay, LeaveDate = ld.LeaveDate }
              ).ToList();
             }
             if (LeaveFromTime == "A")
@@ -1495,7 +1506,7 @@ namespace NLTD.EmployeePortal.LMS.Dac
             }
             else
             {
-                if (LeaveFromTime == "F" && LeaveUptoTime=="F")
+                if (LeaveFromTime == "F" && LeaveUptoTime == "F")
                 {
                     isFromDayHalf = true;
                     fromDayHalf = "F";
@@ -1515,7 +1526,7 @@ namespace NLTD.EmployeePortal.LMS.Dac
                     fromDayHalf = "S";
                     isToDayHalf = true;
                     toDayHalf = "F";
-                }                
+                }
             }
 
             //Check if half day leave exists on that From day
@@ -1527,12 +1538,12 @@ namespace NLTD.EmployeePortal.LMS.Dac
             }
             if (LeaveUpto > LeaveFrom)
             {
-                //Check if half day leave exists on that To day                
+                //Check if half day leave exists on that To day
                 var leaveUpto = lstLeaves.Where(x => x.LeaveDate.Date == LeaveUpto.Date).FirstOrDefault();
                 if (leaveUpto != null)
                 {
                     isExceptionType = true;
-                }                
+                }
             }
             if (isExceptionType == false)
             {
@@ -1554,7 +1565,6 @@ namespace NLTD.EmployeePortal.LMS.Dac
                     {
                         if (LeaveUptoTime == "A")
                         {
-
                             partOfDay = "A";
                         }
                         else
@@ -1579,7 +1589,7 @@ namespace NLTD.EmployeePortal.LMS.Dac
                         //Coming to this block is working day
                         nextWorkingDay = true;
                         leaveDate = LeaveUpto.AddDays(addDays);
-                        //check if any leave exists, pending/approved. SL, EL, CL                        
+                        //check if any leave exists, pending/approved. SL, EL, CL
                         var leave = lstLeaves.Where(x => x.LeaveDate.Date == leaveDate.Date).FirstOrDefault();
                         if (leave != null)
                         {
@@ -1597,7 +1607,7 @@ namespace NLTD.EmployeePortal.LMS.Dac
                             {
                                 isNextDayFullDayLeave = true;
                             }
-                        }                        
+                        }
                         nextWorkingDay = true;
                     }
                     addDays++;
@@ -1648,32 +1658,32 @@ namespace NLTD.EmployeePortal.LMS.Dac
                     if (LeaveFrom.Date.AddDays(addDays) == LeaveFrom.Date)
                     {
                         if (LeaveFromTime == "A")
-                        {                            
+                        {
                             partOfDay = "A";
                         }
                         else
-                        {                            
+                        {
                             partOfDay = LeaveFromTime;
                         }
                     }
                     else if (LeaveFrom.Date.AddDays(addDays) == LeaveUpto.Date)
                     {
                         if (LeaveUptoTime == "A")
-                        {                            
+                        {
                             partOfDay = "A";
                         }
                         else
-                        {                            
+                        {
                             partOfDay = LeaveUptoTime;
                         }
                     }
-                    
+
                     dw = LeaveFrom.Date.AddDays(addDays).DayOfWeek;
                     var holDay = holidayList.Where(x => x.HolidayDate.Date == LeaveFrom.Date.AddDays(addDays)).FirstOrDefault();
                     var offDay = lstOffDays.Where(x => x.Day.ToUpper() == dw.ToString().ToUpper()).FirstOrDefault();
                     if (offDay != null)
                     {
-                       //Nothing
+                        //Nothing
                     }
                     else if (holDay != null)
                     {
@@ -1684,7 +1694,7 @@ namespace NLTD.EmployeePortal.LMS.Dac
                         leaveDate = leaveDate.AddDays(addDays);
                         //Coming to this block is working day
                         nextWorkingDay = true;
-                        //check if any leave exists, pending/approved. SL, EL, CL                       
+                        //check if any leave exists, pending/approved. SL, EL, CL
                         var leave = lstLeaves.Where(x => x.LeaveDate.Date == leaveDate.Date).FirstOrDefault();
                         if (leave != null)
                         {
@@ -1695,7 +1705,6 @@ namespace NLTD.EmployeePortal.LMS.Dac
                             }
                             else if (leave.PartOfDay == "F")
                             {
-
                                 isFromDayPrvDayHalf = true;
                                 fromDayPrvDayHalf = "F";
                             }
@@ -1704,14 +1713,14 @@ namespace NLTD.EmployeePortal.LMS.Dac
                                 isPrvDayFullDayLeave = true;
                             }
                         }
-                        
+
                         prevWorkingDay = true;
                     }
                     addDays--;
                 }
                 while (prevWorkingDay == false);
 
-                //If current day half and first half, previous day off shouldn't be S/A    
+                //If current day half and first half, previous day off shouldn't be S/A
                 if (isFromDayHalf)
                 {
                     if (fromDayHalf == "F")
@@ -1721,7 +1730,7 @@ namespace NLTD.EmployeePortal.LMS.Dac
                             if (fromDayPrvDayHalf == "S")
                             {
                                 isExceptionType = true;
-                            }                            
+                            }
                         }
                         else if (isPrvDayFullDayLeave)
                         {
@@ -1739,7 +1748,7 @@ namespace NLTD.EmployeePortal.LMS.Dac
                         if (fromDayPrvDayHalf == "S")
                         {
                             isExceptionType = true;
-                        }                        
+                        }
                     }
                     else if (isPrvDayFullDayLeave)
                     {
@@ -1749,6 +1758,7 @@ namespace NLTD.EmployeePortal.LMS.Dac
             }
             return isExceptionType;
         }
+
         public IList<LeaveDtl> GetLeaveDetailCalculation(DateTime LeaveFrom, DateTime LeaveUpto, string LeaveFromTime, string LeaveUptoTime, Int64 UserId, Int64 LeaveTyp)
         {
             string LeaveTypText = string.Empty;
@@ -1805,28 +1815,34 @@ namespace NLTD.EmployeePortal.LMS.Dac
                 var offDay = lstOffDays.Where(x => x.Day.ToUpper() == dw.ToString().ToUpper()).FirstOrDefault();
                 if (offDay != null)
                 {
-                    dtl = new LeaveDtl();
-                    dtl.LeaveDayItem = LeaveFrom.AddDays(addDays);
-                    dtl.IsDayOff = true;
-                    dtl.LeaveDayItemQty = 0;
-                    dtl.Remarks = "Week Off - " + dw.ToString();
+                    dtl = new LeaveDtl
+                    {
+                        LeaveDayItem = LeaveFrom.AddDays(addDays),
+                        IsDayOff = true,
+                        LeaveDayItemQty = 0,
+                        Remarks = "Week Off - " + dw.ToString()
+                    };
                     leaveDetail.Add(dtl);
                 }
                 else if (holDay != null)
                 {
-                    dtl = new LeaveDtl();
-                    dtl.LeaveDayItem = LeaveFrom.AddDays(addDays);
-                    dtl.IsDayOff = true;
-                    dtl.LeaveDayItemQty = 0;
-                    dtl.Remarks = "Holiday - " + holDay.HolidayText;
+                    dtl = new LeaveDtl
+                    {
+                        LeaveDayItem = LeaveFrom.AddDays(addDays),
+                        IsDayOff = true,
+                        LeaveDayItemQty = 0,
+                        Remarks = "Holiday - " + holDay.HolidayText
+                    };
                     leaveDetail.Add(dtl);
                 }
                 else
                 {
-                    dtl = new LeaveDtl();
-                    dtl.LeaveDayItem = LeaveFrom.AddDays(addDays);
-                    dtl.IsDayOff = false;
-                    dtl.LeaveDayItemQty = leaveQty;
+                    dtl = new LeaveDtl
+                    {
+                        LeaveDayItem = LeaveFrom.AddDays(addDays),
+                        IsDayOff = false,
+                        LeaveDayItemQty = leaveQty
+                    };
                     totalCount = totalCount + leaveQty;
                     if (LeaveTypText.Trim() == "")
                         dtl.Remarks = "Leave";
@@ -2024,7 +2040,7 @@ namespace NLTD.EmployeePortal.LMS.Dac
                                         }).ToList()
                                     }).ToList();
                 var leaveTypes = (from typ in context.LeaveType
-                                  select new { LeaveTypeId = typ.LeaveTypeId, LeaveTypeName = typ.Type }
+                                  select new { typ.LeaveTypeId, LeaveTypeName = typ.Type }
                                   ).ToList();
 
                 foreach (var item in leaves)
@@ -2397,30 +2413,36 @@ namespace NLTD.EmployeePortal.LMS.Dac
                 var offDay = lstOffDays.Where(x => x.Day.ToUpper() == dw.ToString().ToUpper()).FirstOrDefault();
                 if (offDay != null)
                 {
-                    dtl = new LeaveDtl();
-                    dtl.LeaveDayItem = LeaveFrom.AddDays(addDays);
-                    dtl.IsDayOff = true;
-                    dtl.LeaveDayItemQty = 0;
-                    dtl.Remarks = "Week Off - " + dw.ToString();
+                    dtl = new LeaveDtl
+                    {
+                        LeaveDayItem = LeaveFrom.AddDays(addDays),
+                        IsDayOff = true,
+                        LeaveDayItemQty = 0,
+                        Remarks = "Week Off - " + dw.ToString()
+                    };
                     leaveDetail.Add(dtl);
                 }
                 else if (holDay != null)
                 {
-                    dtl = new LeaveDtl();
-                    dtl.LeaveDayItem = LeaveFrom.AddDays(addDays);
-                    dtl.IsDayOff = true;
-                    dtl.LeaveDayItemQty = 0;
-                    dtl.Remarks = "Holiday - " + holDay.HolidayText;
+                    dtl = new LeaveDtl
+                    {
+                        LeaveDayItem = LeaveFrom.AddDays(addDays),
+                        IsDayOff = true,
+                        LeaveDayItemQty = 0,
+                        Remarks = "Holiday - " + holDay.HolidayText
+                    };
                     leaveDetail.Add(dtl);
                 }
                 else
                 {
-                    dtl = new LeaveDtl();
-                    dtl.LeaveDayItem = LeaveFrom.AddDays(addDays);
-                    dtl.IsDayOff = false;
-                    dtl.LeaveDayItemQty = leaveQty;
+                    dtl = new LeaveDtl
+                    {
+                        LeaveDayItem = LeaveFrom.AddDays(addDays),
+                        IsDayOff = false,
+                        LeaveDayItemQty = leaveQty,
+                        Remarks = "Leave"
+                };
                     leaveCount = leaveCount + leaveQty;
-                    dtl.Remarks = "Leave";
                     leaveDetail.Add(dtl);
                 }
                 addDays++;
@@ -2433,15 +2455,17 @@ namespace NLTD.EmployeePortal.LMS.Dac
         {
             bool previousYear = false, nextYear = false;
 
-            DashBoardModel dshMdl = new DashBoardModel();
-            dshMdl.lstLeaveSummary = GetLeaveSumary(UserId, DateTime.Now.Year);
-            dshMdl.lstHolidayModel = GetHolidaysDetails(UserId, DateTime.Now.Year, ref previousYear, ref nextYear);
-            dshMdl.PreviousYear = previousYear;
-            dshMdl.NextYear = nextYear;
-            dshMdl.lstWeekOffs = GetWeekOffs(UserId);
-            dshMdl.PendingApprovalCount = GetPendingApprovalCount(UserId);
-            dshMdl.EmployeeCount = GetEmployeeCount(OfficeId);
-            dshMdl.EmployeeInOfficeCount = GetEmployeeInOfficeCount(OfficeId);
+            DashBoardModel dshMdl = new DashBoardModel
+            {
+                lstLeaveSummary = GetLeaveSumary(UserId, DateTime.Now.Year),
+                lstHolidayModel = GetHolidaysDetails(UserId, DateTime.Now.Year, ref previousYear, ref nextYear),
+                PreviousYear = previousYear,
+                NextYear = nextYear,
+                lstWeekOffs = GetWeekOffs(UserId),
+                PendingApprovalCount = GetPendingApprovalCount(UserId),
+                EmployeeCount = GetEmployeeCount(OfficeId),
+                EmployeeInOfficeCount = GetEmployeeInOfficeCount(OfficeId)
+            };
             return dshMdl;
         }
 
@@ -2489,7 +2513,7 @@ namespace NLTD.EmployeePortal.LMS.Dac
             int count = 0;
             using (var context = new NLTDDbContext())
             {
-                count = context.Employee.Where(x => x.OfficeId == OfficeId && x.IsActive==true).Count();
+                count = context.Employee.Where(x => x.OfficeId == OfficeId && x.IsActive == true).Count();
             }
             return count;
         }
@@ -2503,7 +2527,7 @@ namespace NLTD.EmployeePortal.LMS.Dac
                 var qry = (from l in context.Leave
                            join emp in context.Employee on l.UserId equals emp.UserId
                            where l.Status == "P" && emp.ReportingToId == userId
-                           select new { LeaveId = l.LeaveId }
+                           select new { l.LeaveId }
                          ).AsQueryable();
 
                 count = qry.Count();
@@ -2513,12 +2537,14 @@ namespace NLTD.EmployeePortal.LMS.Dac
 
         public LeaveRequestModel ApplyLeaveCommonData(Int64 OfficeId, Int64 UserId)
         {
-            LeaveRequestModel lrm = new LeaveRequestModel();
-            lrm.lstLeaveTypes = GetLeaveTypes(OfficeId, UserId);
-            lrm.lstSummary = GetLeaveSumary(UserId, DateTime.Now.Year);
-            lrm.WeekOffs = ReturnWeekOff(UserId);
-            lrm.holidayDates = GetHolidayDates(UserId, DateTime.Now.Year);
-            lrm.TimebasedLeaveTypeIds = GetTimeBasedLeaveTypesString(OfficeId, UserId);
+            LeaveRequestModel lrm = new LeaveRequestModel
+            {
+                lstLeaveTypes = GetLeaveTypes(OfficeId, UserId),
+                lstSummary = GetLeaveSumary(UserId, DateTime.Now.Year),
+                WeekOffs = ReturnWeekOff(UserId),
+                holidayDates = GetHolidayDates(UserId, DateTime.Now.Year),
+                TimebasedLeaveTypeIds = GetTimeBasedLeaveTypesString(OfficeId, UserId)
+            };
             return lrm;
         }
 
@@ -2673,9 +2699,11 @@ namespace NLTD.EmployeePortal.LMS.Dac
                                     {
                                         if (retList.Where(x => x.EmpId == item.EmployeeId).FirstOrDefault() == null)//This employee didn't take leaves, we have to show zero.
                                         {
-                                            emp = new MonthwiseCountEmp();
-                                            emp.EmpId = item.EmployeeId;
-                                            emp.Name = item.FirstName + " " + item.LastName;
+                                            emp = new MonthwiseCountEmp
+                                            {
+                                                EmpId = item.EmployeeId,
+                                                Name = item.FirstName + " " + item.LastName
+                                            };
                                             newList.Add(emp);
                                         }
                                     }
@@ -2687,9 +2715,11 @@ namespace NLTD.EmployeePortal.LMS.Dac
                                     {
                                         if (retList.Where(x => x.EmpId == item.EmployeeId).FirstOrDefault() == null)//This employee didn't take leaves, we have to show zero.
                                         {
-                                            emp = new MonthwiseCountEmp();
-                                            emp.EmpId = item.EmployeeId;
-                                            emp.Name = item.FirstName + " " + item.LastName;
+                                            emp = new MonthwiseCountEmp
+                                            {
+                                                EmpId = item.EmployeeId,
+                                                Name = item.FirstName + " " + item.LastName
+                                            };
                                             newList.Add(emp);
                                         }
                                     }
@@ -2704,9 +2734,11 @@ namespace NLTD.EmployeePortal.LMS.Dac
                                     {
                                         if (retList.Where(x => x.EmpId == item.EmployeeId).FirstOrDefault() == null)//This employee didn't take leaves, we have to show zero.
                                         {
-                                            emp = new MonthwiseCountEmp();
-                                            emp.EmpId = item.EmployeeId;
-                                            emp.Name = item.FirstName + " " + item.LastName;
+                                            emp = new MonthwiseCountEmp
+                                            {
+                                                EmpId = item.EmployeeId,
+                                                Name = item.FirstName + " " + item.LastName
+                                            };
                                             newList.Add(emp);
                                         }
                                     }
@@ -2718,9 +2750,11 @@ namespace NLTD.EmployeePortal.LMS.Dac
                                     {
                                         if (retList.Where(x => x.EmpId == item.EmployeeId).FirstOrDefault() == null)//This employee didn't take leaves, we have to show zero.
                                         {
-                                            emp = new MonthwiseCountEmp();
-                                            emp.EmpId = item.EmployeeId;
-                                            emp.Name = item.FirstName + " " + item.LastName;
+                                            emp = new MonthwiseCountEmp
+                                            {
+                                                EmpId = item.EmployeeId,
+                                                Name = item.FirstName + " " + item.LastName
+                                            };
                                             newList.Add(emp);
                                         }
                                     }
@@ -2736,80 +2770,82 @@ namespace NLTD.EmployeePortal.LMS.Dac
 
                     foreach (var item in empIds)
                     {
-                        mdl = new MonthwiseLeavesCountModel();
-                        mdl.EmpId = item.EmpId;
-                        mdl.Name = item.Name;
-                        mdl.CL1 = newList.Where(x => x.Month == 1 && x.LeaveType == "Casual/Sick Leave" && x.EmpId == item.EmpId).FirstOrDefault() == null ? 0 : newList.Where(x => x.Month == 1 && x.LeaveType == "Casual/Sick Leave" && x.EmpId == item.EmpId).FirstOrDefault().Duration;
-                        mdl.PL1 = newList.Where(x => x.Month == 1 && x.LeaveType == "Earned Leave" && x.EmpId == item.EmpId).FirstOrDefault() == null ? 0 : newList.Where(x => x.Month == 1 && x.LeaveType == "Earned Leave" && x.EmpId == item.EmpId).FirstOrDefault().Duration;
-                        mdl.DL1 = newList.Where(x => x.Month == 1 && x.LeaveType == "Debit Leave" && x.EmpId == item.EmpId).FirstOrDefault() == null ? 0 : newList.Where(x => x.Month == 1 && x.LeaveType == "Debit Leave" && x.EmpId == item.EmpId).FirstOrDefault().Duration;
-                        mdl.LWP1 = newList.Where(x => x.Month == 1 && x.LeaveType == "Leave Without Pay" && x.EmpId == item.EmpId).FirstOrDefault() == null ? 0 : newList.Where(x => x.Month == 1 && x.LeaveType == "Leave Without Pay" && x.EmpId == item.EmpId).FirstOrDefault().Duration;
-                        mdl.CO1 = newList.Where(x => x.Month == 1 && x.LeaveType == "Compensatory Off" && x.EmpId == item.EmpId).FirstOrDefault() == null ? 0 : newList.Where(x => x.Month == 1 && x.LeaveType == "Compensatory Off" && x.EmpId == item.EmpId).FirstOrDefault().Duration;
+                        mdl = new MonthwiseLeavesCountModel
+                        {
+                            EmpId = item.EmpId,
+                            Name = item.Name,
+                            CL1 = newList.Where(x => x.Month == 1 && x.LeaveType == "Casual/Sick Leave" && x.EmpId == item.EmpId).FirstOrDefault() == null ? 0 : newList.Where(x => x.Month == 1 && x.LeaveType == "Casual/Sick Leave" && x.EmpId == item.EmpId).FirstOrDefault().Duration,
+                            PL1 = newList.Where(x => x.Month == 1 && x.LeaveType == "Earned Leave" && x.EmpId == item.EmpId).FirstOrDefault() == null ? 0 : newList.Where(x => x.Month == 1 && x.LeaveType == "Earned Leave" && x.EmpId == item.EmpId).FirstOrDefault().Duration,
+                            DL1 = newList.Where(x => x.Month == 1 && x.LeaveType == "Debit Leave" && x.EmpId == item.EmpId).FirstOrDefault() == null ? 0 : newList.Where(x => x.Month == 1 && x.LeaveType == "Debit Leave" && x.EmpId == item.EmpId).FirstOrDefault().Duration,
+                            LWP1 = newList.Where(x => x.Month == 1 && x.LeaveType == "Leave Without Pay" && x.EmpId == item.EmpId).FirstOrDefault() == null ? 0 : newList.Where(x => x.Month == 1 && x.LeaveType == "Leave Without Pay" && x.EmpId == item.EmpId).FirstOrDefault().Duration,
+                            CO1 = newList.Where(x => x.Month == 1 && x.LeaveType == "Compensatory Off" && x.EmpId == item.EmpId).FirstOrDefault() == null ? 0 : newList.Where(x => x.Month == 1 && x.LeaveType == "Compensatory Off" && x.EmpId == item.EmpId).FirstOrDefault().Duration,
 
-                        mdl.CL2 = newList.Where(x => x.Month == 2 && x.LeaveType == "Casual/Sick Leave" && x.EmpId == item.EmpId).FirstOrDefault() == null ? 0 : newList.Where(x => x.Month == 2 && x.LeaveType == "Casual/Sick Leave" && x.EmpId == item.EmpId).FirstOrDefault().Duration;
-                        mdl.PL2 = newList.Where(x => x.Month == 2 && x.LeaveType == "Earned Leave" && x.EmpId == item.EmpId).FirstOrDefault() == null ? 0 : newList.Where(x => x.Month == 2 && x.LeaveType == "Earned Leave" && x.EmpId == item.EmpId).FirstOrDefault().Duration;
-                        mdl.DL2 = newList.Where(x => x.Month == 2 && x.LeaveType == "Debit Leave" && x.EmpId == item.EmpId).FirstOrDefault() == null ? 0 : newList.Where(x => x.Month == 2 && x.LeaveType == "Debit Leave" && x.EmpId == item.EmpId).FirstOrDefault().Duration;
-                        mdl.LWP2 = newList.Where(x => x.Month == 2 && x.LeaveType == "Leave Without Pay" && x.EmpId == item.EmpId).FirstOrDefault() == null ? 0 : newList.Where(x => x.Month == 2 && x.LeaveType == "Leave Without Pay" && x.EmpId == item.EmpId).FirstOrDefault().Duration;
-                        mdl.CO2 = newList.Where(x => x.Month == 2 && x.LeaveType == "Compensatory Off" && x.EmpId == item.EmpId).FirstOrDefault() == null ? 0 : newList.Where(x => x.Month == 2 && x.LeaveType == "Compensatory Off" && x.EmpId == item.EmpId).FirstOrDefault().Duration;
+                            CL2 = newList.Where(x => x.Month == 2 && x.LeaveType == "Casual/Sick Leave" && x.EmpId == item.EmpId).FirstOrDefault() == null ? 0 : newList.Where(x => x.Month == 2 && x.LeaveType == "Casual/Sick Leave" && x.EmpId == item.EmpId).FirstOrDefault().Duration,
+                            PL2 = newList.Where(x => x.Month == 2 && x.LeaveType == "Earned Leave" && x.EmpId == item.EmpId).FirstOrDefault() == null ? 0 : newList.Where(x => x.Month == 2 && x.LeaveType == "Earned Leave" && x.EmpId == item.EmpId).FirstOrDefault().Duration,
+                            DL2 = newList.Where(x => x.Month == 2 && x.LeaveType == "Debit Leave" && x.EmpId == item.EmpId).FirstOrDefault() == null ? 0 : newList.Where(x => x.Month == 2 && x.LeaveType == "Debit Leave" && x.EmpId == item.EmpId).FirstOrDefault().Duration,
+                            LWP2 = newList.Where(x => x.Month == 2 && x.LeaveType == "Leave Without Pay" && x.EmpId == item.EmpId).FirstOrDefault() == null ? 0 : newList.Where(x => x.Month == 2 && x.LeaveType == "Leave Without Pay" && x.EmpId == item.EmpId).FirstOrDefault().Duration,
+                            CO2 = newList.Where(x => x.Month == 2 && x.LeaveType == "Compensatory Off" && x.EmpId == item.EmpId).FirstOrDefault() == null ? 0 : newList.Where(x => x.Month == 2 && x.LeaveType == "Compensatory Off" && x.EmpId == item.EmpId).FirstOrDefault().Duration,
 
-                        mdl.CL3 = newList.Where(x => x.Month == 3 && x.LeaveType == "Casual/Sick Leave" && x.EmpId == item.EmpId).FirstOrDefault() == null ? 0 : newList.Where(x => x.Month == 3 && x.LeaveType == "Casual/Sick Leave" && x.EmpId == item.EmpId).FirstOrDefault().Duration;
-                        mdl.PL3 = newList.Where(x => x.Month == 3 && x.LeaveType == "Earned Leave" && x.EmpId == item.EmpId).FirstOrDefault() == null ? 0 : newList.Where(x => x.Month == 3 && x.LeaveType == "Earned Leave" && x.EmpId == item.EmpId).FirstOrDefault().Duration;
-                        mdl.DL3 = newList.Where(x => x.Month == 3 && x.LeaveType == "Debit Leave" && x.EmpId == item.EmpId).FirstOrDefault() == null ? 0 : newList.Where(x => x.Month == 3 && x.LeaveType == "Debit Leave" && x.EmpId == item.EmpId).FirstOrDefault().Duration;
-                        mdl.LWP3 = newList.Where(x => x.Month == 3 && x.LeaveType == "Leave Without Pay" && x.EmpId == item.EmpId).FirstOrDefault() == null ? 0 : newList.Where(x => x.Month == 3 && x.LeaveType == "Leave Without Pay" && x.EmpId == item.EmpId).FirstOrDefault().Duration;
-                        mdl.CO3 = newList.Where(x => x.Month == 3 && x.LeaveType == "Compensatory Off" && x.EmpId == item.EmpId).FirstOrDefault() == null ? 0 : newList.Where(x => x.Month == 3 && x.LeaveType == "Compensatory Off" && x.EmpId == item.EmpId).FirstOrDefault().Duration;
+                            CL3 = newList.Where(x => x.Month == 3 && x.LeaveType == "Casual/Sick Leave" && x.EmpId == item.EmpId).FirstOrDefault() == null ? 0 : newList.Where(x => x.Month == 3 && x.LeaveType == "Casual/Sick Leave" && x.EmpId == item.EmpId).FirstOrDefault().Duration,
+                            PL3 = newList.Where(x => x.Month == 3 && x.LeaveType == "Earned Leave" && x.EmpId == item.EmpId).FirstOrDefault() == null ? 0 : newList.Where(x => x.Month == 3 && x.LeaveType == "Earned Leave" && x.EmpId == item.EmpId).FirstOrDefault().Duration,
+                            DL3 = newList.Where(x => x.Month == 3 && x.LeaveType == "Debit Leave" && x.EmpId == item.EmpId).FirstOrDefault() == null ? 0 : newList.Where(x => x.Month == 3 && x.LeaveType == "Debit Leave" && x.EmpId == item.EmpId).FirstOrDefault().Duration,
+                            LWP3 = newList.Where(x => x.Month == 3 && x.LeaveType == "Leave Without Pay" && x.EmpId == item.EmpId).FirstOrDefault() == null ? 0 : newList.Where(x => x.Month == 3 && x.LeaveType == "Leave Without Pay" && x.EmpId == item.EmpId).FirstOrDefault().Duration,
+                            CO3 = newList.Where(x => x.Month == 3 && x.LeaveType == "Compensatory Off" && x.EmpId == item.EmpId).FirstOrDefault() == null ? 0 : newList.Where(x => x.Month == 3 && x.LeaveType == "Compensatory Off" && x.EmpId == item.EmpId).FirstOrDefault().Duration,
 
-                        mdl.CL4 = newList.Where(x => x.Month == 4 && x.LeaveType == "Casual/Sick Leave" && x.EmpId == item.EmpId).FirstOrDefault() == null ? 0 : newList.Where(x => x.Month == 4 && x.LeaveType == "Casual/Sick Leave" && x.EmpId == item.EmpId).FirstOrDefault().Duration;
-                        mdl.PL4 = newList.Where(x => x.Month == 4 && x.LeaveType == "Earned Leave" && x.EmpId == item.EmpId).FirstOrDefault() == null ? 0 : newList.Where(x => x.Month == 4 && x.LeaveType == "Earned Leave" && x.EmpId == item.EmpId).FirstOrDefault().Duration;
-                        mdl.DL4 = newList.Where(x => x.Month == 4 && x.LeaveType == "Debit Leave" && x.EmpId == item.EmpId).FirstOrDefault() == null ? 0 : newList.Where(x => x.Month == 4 && x.LeaveType == "Debit Leave" && x.EmpId == item.EmpId).FirstOrDefault().Duration;
-                        mdl.LWP4 = newList.Where(x => x.Month == 4 && x.LeaveType == "Leave Without Pay" && x.EmpId == item.EmpId).FirstOrDefault() == null ? 0 : newList.Where(x => x.Month == 4 && x.LeaveType == "Leave Without Pay" && x.EmpId == item.EmpId).FirstOrDefault().Duration;
-                        mdl.CO4 = newList.Where(x => x.Month == 4 && x.LeaveType == "Compensatory Off" && x.EmpId == item.EmpId).FirstOrDefault() == null ? 0 : newList.Where(x => x.Month == 4 && x.LeaveType == "Compensatory Off" && x.EmpId == item.EmpId).FirstOrDefault().Duration;
+                            CL4 = newList.Where(x => x.Month == 4 && x.LeaveType == "Casual/Sick Leave" && x.EmpId == item.EmpId).FirstOrDefault() == null ? 0 : newList.Where(x => x.Month == 4 && x.LeaveType == "Casual/Sick Leave" && x.EmpId == item.EmpId).FirstOrDefault().Duration,
+                            PL4 = newList.Where(x => x.Month == 4 && x.LeaveType == "Earned Leave" && x.EmpId == item.EmpId).FirstOrDefault() == null ? 0 : newList.Where(x => x.Month == 4 && x.LeaveType == "Earned Leave" && x.EmpId == item.EmpId).FirstOrDefault().Duration,
+                            DL4 = newList.Where(x => x.Month == 4 && x.LeaveType == "Debit Leave" && x.EmpId == item.EmpId).FirstOrDefault() == null ? 0 : newList.Where(x => x.Month == 4 && x.LeaveType == "Debit Leave" && x.EmpId == item.EmpId).FirstOrDefault().Duration,
+                            LWP4 = newList.Where(x => x.Month == 4 && x.LeaveType == "Leave Without Pay" && x.EmpId == item.EmpId).FirstOrDefault() == null ? 0 : newList.Where(x => x.Month == 4 && x.LeaveType == "Leave Without Pay" && x.EmpId == item.EmpId).FirstOrDefault().Duration,
+                            CO4 = newList.Where(x => x.Month == 4 && x.LeaveType == "Compensatory Off" && x.EmpId == item.EmpId).FirstOrDefault() == null ? 0 : newList.Where(x => x.Month == 4 && x.LeaveType == "Compensatory Off" && x.EmpId == item.EmpId).FirstOrDefault().Duration,
 
-                        mdl.CL5 = newList.Where(x => x.Month == 5 && x.LeaveType == "Casual/Sick Leave" && x.EmpId == item.EmpId).FirstOrDefault() == null ? 0 : newList.Where(x => x.Month == 5 && x.LeaveType == "Casual/Sick Leave" && x.EmpId == item.EmpId).FirstOrDefault().Duration;
-                        mdl.PL5 = newList.Where(x => x.Month == 5 && x.LeaveType == "Earned Leave" && x.EmpId == item.EmpId).FirstOrDefault() == null ? 0 : newList.Where(x => x.Month == 5 && x.LeaveType == "Earned Leave" && x.EmpId == item.EmpId).FirstOrDefault().Duration;
-                        mdl.DL5 = newList.Where(x => x.Month == 5 && x.LeaveType == "Debit Leave" && x.EmpId == item.EmpId).FirstOrDefault() == null ? 0 : newList.Where(x => x.Month == 5 && x.LeaveType == "Debit Leave" && x.EmpId == item.EmpId).FirstOrDefault().Duration;
-                        mdl.LWP5 = newList.Where(x => x.Month == 5 && x.LeaveType == "Leave Without Pay" && x.EmpId == item.EmpId).FirstOrDefault() == null ? 0 : newList.Where(x => x.Month == 5 && x.LeaveType == "Leave Without Pay" && x.EmpId == item.EmpId).FirstOrDefault().Duration;
-                        mdl.CO5 = newList.Where(x => x.Month == 5 && x.LeaveType == "Compensatory Off" && x.EmpId == item.EmpId).FirstOrDefault() == null ? 0 : newList.Where(x => x.Month == 5 && x.LeaveType == "Compensatory Off" && x.EmpId == item.EmpId).FirstOrDefault().Duration;
+                            CL5 = newList.Where(x => x.Month == 5 && x.LeaveType == "Casual/Sick Leave" && x.EmpId == item.EmpId).FirstOrDefault() == null ? 0 : newList.Where(x => x.Month == 5 && x.LeaveType == "Casual/Sick Leave" && x.EmpId == item.EmpId).FirstOrDefault().Duration,
+                            PL5 = newList.Where(x => x.Month == 5 && x.LeaveType == "Earned Leave" && x.EmpId == item.EmpId).FirstOrDefault() == null ? 0 : newList.Where(x => x.Month == 5 && x.LeaveType == "Earned Leave" && x.EmpId == item.EmpId).FirstOrDefault().Duration,
+                            DL5 = newList.Where(x => x.Month == 5 && x.LeaveType == "Debit Leave" && x.EmpId == item.EmpId).FirstOrDefault() == null ? 0 : newList.Where(x => x.Month == 5 && x.LeaveType == "Debit Leave" && x.EmpId == item.EmpId).FirstOrDefault().Duration,
+                            LWP5 = newList.Where(x => x.Month == 5 && x.LeaveType == "Leave Without Pay" && x.EmpId == item.EmpId).FirstOrDefault() == null ? 0 : newList.Where(x => x.Month == 5 && x.LeaveType == "Leave Without Pay" && x.EmpId == item.EmpId).FirstOrDefault().Duration,
+                            CO5 = newList.Where(x => x.Month == 5 && x.LeaveType == "Compensatory Off" && x.EmpId == item.EmpId).FirstOrDefault() == null ? 0 : newList.Where(x => x.Month == 5 && x.LeaveType == "Compensatory Off" && x.EmpId == item.EmpId).FirstOrDefault().Duration,
 
-                        mdl.CL6 = newList.Where(x => x.Month == 6 && x.LeaveType == "Casual/Sick Leave" && x.EmpId == item.EmpId).FirstOrDefault() == null ? 0 : newList.Where(x => x.Month == 6 && x.LeaveType == "Casual/Sick Leave" && x.EmpId == item.EmpId).FirstOrDefault().Duration;
-                        mdl.PL6 = newList.Where(x => x.Month == 6 && x.LeaveType == "Earned Leave" && x.EmpId == item.EmpId).FirstOrDefault() == null ? 0 : newList.Where(x => x.Month == 6 && x.LeaveType == "Earned Leave" && x.EmpId == item.EmpId).FirstOrDefault().Duration;
-                        mdl.DL6 = newList.Where(x => x.Month == 6 && x.LeaveType == "Debit Leave" && x.EmpId == item.EmpId).FirstOrDefault() == null ? 0 : newList.Where(x => x.Month == 6 && x.LeaveType == "Debit Leave" && x.EmpId == item.EmpId).FirstOrDefault().Duration;
-                        mdl.LWP6 = newList.Where(x => x.Month == 6 && x.LeaveType == "Leave Without Pay" && x.EmpId == item.EmpId).FirstOrDefault() == null ? 0 : newList.Where(x => x.Month == 6 && x.LeaveType == "Leave Without Pay" && x.EmpId == item.EmpId).FirstOrDefault().Duration;
-                        mdl.CO6 = newList.Where(x => x.Month == 6 && x.LeaveType == "Compensatory Off" && x.EmpId == item.EmpId).FirstOrDefault() == null ? 0 : newList.Where(x => x.Month == 6 && x.LeaveType == "Compensatory Off" && x.EmpId == item.EmpId).FirstOrDefault().Duration;
+                            CL6 = newList.Where(x => x.Month == 6 && x.LeaveType == "Casual/Sick Leave" && x.EmpId == item.EmpId).FirstOrDefault() == null ? 0 : newList.Where(x => x.Month == 6 && x.LeaveType == "Casual/Sick Leave" && x.EmpId == item.EmpId).FirstOrDefault().Duration,
+                            PL6 = newList.Where(x => x.Month == 6 && x.LeaveType == "Earned Leave" && x.EmpId == item.EmpId).FirstOrDefault() == null ? 0 : newList.Where(x => x.Month == 6 && x.LeaveType == "Earned Leave" && x.EmpId == item.EmpId).FirstOrDefault().Duration,
+                            DL6 = newList.Where(x => x.Month == 6 && x.LeaveType == "Debit Leave" && x.EmpId == item.EmpId).FirstOrDefault() == null ? 0 : newList.Where(x => x.Month == 6 && x.LeaveType == "Debit Leave" && x.EmpId == item.EmpId).FirstOrDefault().Duration,
+                            LWP6 = newList.Where(x => x.Month == 6 && x.LeaveType == "Leave Without Pay" && x.EmpId == item.EmpId).FirstOrDefault() == null ? 0 : newList.Where(x => x.Month == 6 && x.LeaveType == "Leave Without Pay" && x.EmpId == item.EmpId).FirstOrDefault().Duration,
+                            CO6 = newList.Where(x => x.Month == 6 && x.LeaveType == "Compensatory Off" && x.EmpId == item.EmpId).FirstOrDefault() == null ? 0 : newList.Where(x => x.Month == 6 && x.LeaveType == "Compensatory Off" && x.EmpId == item.EmpId).FirstOrDefault().Duration,
 
-                        mdl.CL7 = newList.Where(x => x.Month == 7 && x.LeaveType == "Casual/Sick Leave" && x.EmpId == item.EmpId).FirstOrDefault() == null ? 0 : newList.Where(x => x.Month == 7 && x.LeaveType == "Casual/Sick Leave" && x.EmpId == item.EmpId).FirstOrDefault().Duration;
-                        mdl.PL7 = newList.Where(x => x.Month == 7 && x.LeaveType == "Earned Leave" && x.EmpId == item.EmpId).FirstOrDefault() == null ? 0 : newList.Where(x => x.Month == 7 && x.LeaveType == "Earned Leave" && x.EmpId == item.EmpId).FirstOrDefault().Duration;
-                        mdl.DL7 = newList.Where(x => x.Month == 7 && x.LeaveType == "Debit Leave" && x.EmpId == item.EmpId).FirstOrDefault() == null ? 0 : newList.Where(x => x.Month == 7 && x.LeaveType == "Debit Leave" && x.EmpId == item.EmpId).FirstOrDefault().Duration;
-                        mdl.LWP7 = newList.Where(x => x.Month == 7 && x.LeaveType == "Leave Without Pay" && x.EmpId == item.EmpId).FirstOrDefault() == null ? 0 : newList.Where(x => x.Month == 7 && x.LeaveType == "Leave Without Pay" && x.EmpId == item.EmpId).FirstOrDefault().Duration;
-                        mdl.CO7 = newList.Where(x => x.Month == 7 && x.LeaveType == "Compensatory Off" && x.EmpId == item.EmpId).FirstOrDefault() == null ? 0 : newList.Where(x => x.Month == 7 && x.LeaveType == "Compensatory Off" && x.EmpId == item.EmpId).FirstOrDefault().Duration;
+                            CL7 = newList.Where(x => x.Month == 7 && x.LeaveType == "Casual/Sick Leave" && x.EmpId == item.EmpId).FirstOrDefault() == null ? 0 : newList.Where(x => x.Month == 7 && x.LeaveType == "Casual/Sick Leave" && x.EmpId == item.EmpId).FirstOrDefault().Duration,
+                            PL7 = newList.Where(x => x.Month == 7 && x.LeaveType == "Earned Leave" && x.EmpId == item.EmpId).FirstOrDefault() == null ? 0 : newList.Where(x => x.Month == 7 && x.LeaveType == "Earned Leave" && x.EmpId == item.EmpId).FirstOrDefault().Duration,
+                            DL7 = newList.Where(x => x.Month == 7 && x.LeaveType == "Debit Leave" && x.EmpId == item.EmpId).FirstOrDefault() == null ? 0 : newList.Where(x => x.Month == 7 && x.LeaveType == "Debit Leave" && x.EmpId == item.EmpId).FirstOrDefault().Duration,
+                            LWP7 = newList.Where(x => x.Month == 7 && x.LeaveType == "Leave Without Pay" && x.EmpId == item.EmpId).FirstOrDefault() == null ? 0 : newList.Where(x => x.Month == 7 && x.LeaveType == "Leave Without Pay" && x.EmpId == item.EmpId).FirstOrDefault().Duration,
+                            CO7 = newList.Where(x => x.Month == 7 && x.LeaveType == "Compensatory Off" && x.EmpId == item.EmpId).FirstOrDefault() == null ? 0 : newList.Where(x => x.Month == 7 && x.LeaveType == "Compensatory Off" && x.EmpId == item.EmpId).FirstOrDefault().Duration,
 
-                        mdl.CL8 = newList.Where(x => x.Month == 8 && x.LeaveType == "Casual/Sick Leave" && x.EmpId == item.EmpId).FirstOrDefault() == null ? 0 : newList.Where(x => x.Month == 8 && x.LeaveType == "Casual/Sick Leave" && x.EmpId == item.EmpId).FirstOrDefault().Duration;
-                        mdl.PL8 = newList.Where(x => x.Month == 8 && x.LeaveType == "Earned Leave" && x.EmpId == item.EmpId).FirstOrDefault() == null ? 0 : newList.Where(x => x.Month == 8 && x.LeaveType == "Earned Leave" && x.EmpId == item.EmpId).FirstOrDefault().Duration;
-                        mdl.DL8 = newList.Where(x => x.Month == 8 && x.LeaveType == "Debit Leave" && x.EmpId == item.EmpId).FirstOrDefault() == null ? 0 : newList.Where(x => x.Month == 8 && x.LeaveType == "Debit Leave" && x.EmpId == item.EmpId).FirstOrDefault().Duration;
-                        mdl.LWP8 = newList.Where(x => x.Month == 8 && x.LeaveType == "Leave Without Pay" && x.EmpId == item.EmpId).FirstOrDefault() == null ? 0 : newList.Where(x => x.Month == 8 && x.LeaveType == "Leave Without Pay" && x.EmpId == item.EmpId).FirstOrDefault().Duration;
-                        mdl.CO8 = newList.Where(x => x.Month == 8 && x.LeaveType == "Compensatory Off" && x.EmpId == item.EmpId).FirstOrDefault() == null ? 0 : newList.Where(x => x.Month == 8 && x.LeaveType == "Compensatory Off" && x.EmpId == item.EmpId).FirstOrDefault().Duration;
+                            CL8 = newList.Where(x => x.Month == 8 && x.LeaveType == "Casual/Sick Leave" && x.EmpId == item.EmpId).FirstOrDefault() == null ? 0 : newList.Where(x => x.Month == 8 && x.LeaveType == "Casual/Sick Leave" && x.EmpId == item.EmpId).FirstOrDefault().Duration,
+                            PL8 = newList.Where(x => x.Month == 8 && x.LeaveType == "Earned Leave" && x.EmpId == item.EmpId).FirstOrDefault() == null ? 0 : newList.Where(x => x.Month == 8 && x.LeaveType == "Earned Leave" && x.EmpId == item.EmpId).FirstOrDefault().Duration,
+                            DL8 = newList.Where(x => x.Month == 8 && x.LeaveType == "Debit Leave" && x.EmpId == item.EmpId).FirstOrDefault() == null ? 0 : newList.Where(x => x.Month == 8 && x.LeaveType == "Debit Leave" && x.EmpId == item.EmpId).FirstOrDefault().Duration,
+                            LWP8 = newList.Where(x => x.Month == 8 && x.LeaveType == "Leave Without Pay" && x.EmpId == item.EmpId).FirstOrDefault() == null ? 0 : newList.Where(x => x.Month == 8 && x.LeaveType == "Leave Without Pay" && x.EmpId == item.EmpId).FirstOrDefault().Duration,
+                            CO8 = newList.Where(x => x.Month == 8 && x.LeaveType == "Compensatory Off" && x.EmpId == item.EmpId).FirstOrDefault() == null ? 0 : newList.Where(x => x.Month == 8 && x.LeaveType == "Compensatory Off" && x.EmpId == item.EmpId).FirstOrDefault().Duration,
 
-                        mdl.CL9 = newList.Where(x => x.Month == 9 && x.LeaveType == "Casual/Sick Leave" && x.EmpId == item.EmpId).FirstOrDefault() == null ? 0 : newList.Where(x => x.Month == 9 && x.LeaveType == "Casual/Sick Leave" && x.EmpId == item.EmpId).FirstOrDefault().Duration;
-                        mdl.PL9 = newList.Where(x => x.Month == 9 && x.LeaveType == "Earned Leave" && x.EmpId == item.EmpId).FirstOrDefault() == null ? 0 : newList.Where(x => x.Month == 9 && x.LeaveType == "Earned Leave" && x.EmpId == item.EmpId).FirstOrDefault().Duration;
-                        mdl.DL9 = newList.Where(x => x.Month == 9 && x.LeaveType == "Debit Leave" && x.EmpId == item.EmpId).FirstOrDefault() == null ? 0 : newList.Where(x => x.Month == 9 && x.LeaveType == "Debit Leave" && x.EmpId == item.EmpId).FirstOrDefault().Duration;
-                        mdl.LWP9 = newList.Where(x => x.Month == 9 && x.LeaveType == "Leave Without Pay" && x.EmpId == item.EmpId).FirstOrDefault() == null ? 0 : newList.Where(x => x.Month == 9 && x.LeaveType == "Leave Without Pay" && x.EmpId == item.EmpId).FirstOrDefault().Duration;
-                        mdl.CO9 = newList.Where(x => x.Month == 9 && x.LeaveType == "Compensatory Off" && x.EmpId == item.EmpId).FirstOrDefault() == null ? 0 : newList.Where(x => x.Month == 9 && x.LeaveType == "Compensatory Off" && x.EmpId == item.EmpId).FirstOrDefault().Duration;
+                            CL9 = newList.Where(x => x.Month == 9 && x.LeaveType == "Casual/Sick Leave" && x.EmpId == item.EmpId).FirstOrDefault() == null ? 0 : newList.Where(x => x.Month == 9 && x.LeaveType == "Casual/Sick Leave" && x.EmpId == item.EmpId).FirstOrDefault().Duration,
+                            PL9 = newList.Where(x => x.Month == 9 && x.LeaveType == "Earned Leave" && x.EmpId == item.EmpId).FirstOrDefault() == null ? 0 : newList.Where(x => x.Month == 9 && x.LeaveType == "Earned Leave" && x.EmpId == item.EmpId).FirstOrDefault().Duration,
+                            DL9 = newList.Where(x => x.Month == 9 && x.LeaveType == "Debit Leave" && x.EmpId == item.EmpId).FirstOrDefault() == null ? 0 : newList.Where(x => x.Month == 9 && x.LeaveType == "Debit Leave" && x.EmpId == item.EmpId).FirstOrDefault().Duration,
+                            LWP9 = newList.Where(x => x.Month == 9 && x.LeaveType == "Leave Without Pay" && x.EmpId == item.EmpId).FirstOrDefault() == null ? 0 : newList.Where(x => x.Month == 9 && x.LeaveType == "Leave Without Pay" && x.EmpId == item.EmpId).FirstOrDefault().Duration,
+                            CO9 = newList.Where(x => x.Month == 9 && x.LeaveType == "Compensatory Off" && x.EmpId == item.EmpId).FirstOrDefault() == null ? 0 : newList.Where(x => x.Month == 9 && x.LeaveType == "Compensatory Off" && x.EmpId == item.EmpId).FirstOrDefault().Duration,
 
-                        mdl.CL10 = newList.Where(x => x.Month == 10 && x.LeaveType == "Casual/Sick Leave" && x.EmpId == item.EmpId).FirstOrDefault() == null ? 0 : newList.Where(x => x.Month == 10 && x.LeaveType == "Casual/Sick Leave" && x.EmpId == item.EmpId).FirstOrDefault().Duration;
-                        mdl.PL10 = newList.Where(x => x.Month == 10 && x.LeaveType == "Earned Leave" && x.EmpId == item.EmpId).FirstOrDefault() == null ? 0 : newList.Where(x => x.Month == 10 && x.LeaveType == "Earned Leave" && x.EmpId == item.EmpId).FirstOrDefault().Duration;
-                        mdl.DL10 = newList.Where(x => x.Month == 10 && x.LeaveType == "Debit Leave" && x.EmpId == item.EmpId).FirstOrDefault() == null ? 0 : newList.Where(x => x.Month == 10 && x.LeaveType == "Debit Leave" && x.EmpId == item.EmpId).FirstOrDefault().Duration;
-                        mdl.LWP10 = newList.Where(x => x.Month == 10 && x.LeaveType == "Leave Without Pay" && x.EmpId == item.EmpId).FirstOrDefault() == null ? 0 : newList.Where(x => x.Month == 10 && x.LeaveType == "Leave Without Pay" && x.EmpId == item.EmpId).FirstOrDefault().Duration;
-                        mdl.CO10 = newList.Where(x => x.Month == 10 && x.LeaveType == "Compensatory Off" && x.EmpId == item.EmpId).FirstOrDefault() == null ? 0 : newList.Where(x => x.Month == 10 && x.LeaveType == "Compensatory Off" && x.EmpId == item.EmpId).FirstOrDefault().Duration;
+                            CL10 = newList.Where(x => x.Month == 10 && x.LeaveType == "Casual/Sick Leave" && x.EmpId == item.EmpId).FirstOrDefault() == null ? 0 : newList.Where(x => x.Month == 10 && x.LeaveType == "Casual/Sick Leave" && x.EmpId == item.EmpId).FirstOrDefault().Duration,
+                            PL10 = newList.Where(x => x.Month == 10 && x.LeaveType == "Earned Leave" && x.EmpId == item.EmpId).FirstOrDefault() == null ? 0 : newList.Where(x => x.Month == 10 && x.LeaveType == "Earned Leave" && x.EmpId == item.EmpId).FirstOrDefault().Duration,
+                            DL10 = newList.Where(x => x.Month == 10 && x.LeaveType == "Debit Leave" && x.EmpId == item.EmpId).FirstOrDefault() == null ? 0 : newList.Where(x => x.Month == 10 && x.LeaveType == "Debit Leave" && x.EmpId == item.EmpId).FirstOrDefault().Duration,
+                            LWP10 = newList.Where(x => x.Month == 10 && x.LeaveType == "Leave Without Pay" && x.EmpId == item.EmpId).FirstOrDefault() == null ? 0 : newList.Where(x => x.Month == 10 && x.LeaveType == "Leave Without Pay" && x.EmpId == item.EmpId).FirstOrDefault().Duration,
+                            CO10 = newList.Where(x => x.Month == 10 && x.LeaveType == "Compensatory Off" && x.EmpId == item.EmpId).FirstOrDefault() == null ? 0 : newList.Where(x => x.Month == 10 && x.LeaveType == "Compensatory Off" && x.EmpId == item.EmpId).FirstOrDefault().Duration,
 
-                        mdl.CL11 = newList.Where(x => x.Month == 11 && x.LeaveType == "Casual/Sick Leave" && x.EmpId == item.EmpId).FirstOrDefault() == null ? 0 : newList.Where(x => x.Month == 11 && x.LeaveType == "Casual/Sick Leave" && x.EmpId == item.EmpId).FirstOrDefault().Duration;
-                        mdl.PL11 = newList.Where(x => x.Month == 11 && x.LeaveType == "Earned Leave" && x.EmpId == item.EmpId).FirstOrDefault() == null ? 0 : newList.Where(x => x.Month == 11 && x.LeaveType == "Earned Leave" && x.EmpId == item.EmpId).FirstOrDefault().Duration;
-                        mdl.DL11 = newList.Where(x => x.Month == 11 && x.LeaveType == "Debit Leave" && x.EmpId == item.EmpId).FirstOrDefault() == null ? 0 : newList.Where(x => x.Month == 11 && x.LeaveType == "Debit Leave" && x.EmpId == item.EmpId).FirstOrDefault().Duration;
-                        mdl.LWP11 = newList.Where(x => x.Month == 11 && x.LeaveType == "Leave Without Pay" && x.EmpId == item.EmpId).FirstOrDefault() == null ? 0 : newList.Where(x => x.Month == 11 && x.LeaveType == "Leave Without Pay" && x.EmpId == item.EmpId).FirstOrDefault().Duration;
-                        mdl.CO11 = newList.Where(x => x.Month == 11 && x.LeaveType == "Compensatory Off" && x.EmpId == item.EmpId).FirstOrDefault() == null ? 0 : newList.Where(x => x.Month == 11 && x.LeaveType == "Compensatory Off" && x.EmpId == item.EmpId).FirstOrDefault().Duration;
+                            CL11 = newList.Where(x => x.Month == 11 && x.LeaveType == "Casual/Sick Leave" && x.EmpId == item.EmpId).FirstOrDefault() == null ? 0 : newList.Where(x => x.Month == 11 && x.LeaveType == "Casual/Sick Leave" && x.EmpId == item.EmpId).FirstOrDefault().Duration,
+                            PL11 = newList.Where(x => x.Month == 11 && x.LeaveType == "Earned Leave" && x.EmpId == item.EmpId).FirstOrDefault() == null ? 0 : newList.Where(x => x.Month == 11 && x.LeaveType == "Earned Leave" && x.EmpId == item.EmpId).FirstOrDefault().Duration,
+                            DL11 = newList.Where(x => x.Month == 11 && x.LeaveType == "Debit Leave" && x.EmpId == item.EmpId).FirstOrDefault() == null ? 0 : newList.Where(x => x.Month == 11 && x.LeaveType == "Debit Leave" && x.EmpId == item.EmpId).FirstOrDefault().Duration,
+                            LWP11 = newList.Where(x => x.Month == 11 && x.LeaveType == "Leave Without Pay" && x.EmpId == item.EmpId).FirstOrDefault() == null ? 0 : newList.Where(x => x.Month == 11 && x.LeaveType == "Leave Without Pay" && x.EmpId == item.EmpId).FirstOrDefault().Duration,
+                            CO11 = newList.Where(x => x.Month == 11 && x.LeaveType == "Compensatory Off" && x.EmpId == item.EmpId).FirstOrDefault() == null ? 0 : newList.Where(x => x.Month == 11 && x.LeaveType == "Compensatory Off" && x.EmpId == item.EmpId).FirstOrDefault().Duration,
 
-                        mdl.CL12 = newList.Where(x => x.Month == 12 && x.LeaveType == "Casual/Sick Leave" && x.EmpId == item.EmpId).FirstOrDefault() == null ? 0 : newList.Where(x => x.Month == 12 && x.LeaveType == "Casual/Sick Leave" && x.EmpId == item.EmpId).FirstOrDefault().Duration;
-                        mdl.PL12 = newList.Where(x => x.Month == 12 && x.LeaveType == "Earned Leave" && x.EmpId == item.EmpId).FirstOrDefault() == null ? 0 : newList.Where(x => x.Month == 12 && x.LeaveType == "Earned Leave" && x.EmpId == item.EmpId).FirstOrDefault().Duration;
-                        mdl.DL12 = newList.Where(x => x.Month == 12 && x.LeaveType == "Debit Leave" && x.EmpId == item.EmpId).FirstOrDefault() == null ? 0 : newList.Where(x => x.Month == 12 && x.LeaveType == "Debit Leave" && x.EmpId == item.EmpId).FirstOrDefault().Duration;
-                        mdl.LWP12 = newList.Where(x => x.Month == 12 && x.LeaveType == "Leave Without Pay" && x.EmpId == item.EmpId).FirstOrDefault() == null ? 0 : newList.Where(x => x.Month == 12 && x.LeaveType == "Leave Without Pay" && x.EmpId == item.EmpId).FirstOrDefault().Duration;
-                        mdl.CO12 = newList.Where(x => x.Month == 12 && x.LeaveType == "Compensatory Off" && x.EmpId == item.EmpId).FirstOrDefault() == null ? 0 : newList.Where(x => x.Month == 12 && x.LeaveType == "Compensatory Off" && x.EmpId == item.EmpId).FirstOrDefault().Duration;
+                            CL12 = newList.Where(x => x.Month == 12 && x.LeaveType == "Casual/Sick Leave" && x.EmpId == item.EmpId).FirstOrDefault() == null ? 0 : newList.Where(x => x.Month == 12 && x.LeaveType == "Casual/Sick Leave" && x.EmpId == item.EmpId).FirstOrDefault().Duration,
+                            PL12 = newList.Where(x => x.Month == 12 && x.LeaveType == "Earned Leave" && x.EmpId == item.EmpId).FirstOrDefault() == null ? 0 : newList.Where(x => x.Month == 12 && x.LeaveType == "Earned Leave" && x.EmpId == item.EmpId).FirstOrDefault().Duration,
+                            DL12 = newList.Where(x => x.Month == 12 && x.LeaveType == "Debit Leave" && x.EmpId == item.EmpId).FirstOrDefault() == null ? 0 : newList.Where(x => x.Month == 12 && x.LeaveType == "Debit Leave" && x.EmpId == item.EmpId).FirstOrDefault().Duration,
+                            LWP12 = newList.Where(x => x.Month == 12 && x.LeaveType == "Leave Without Pay" && x.EmpId == item.EmpId).FirstOrDefault() == null ? 0 : newList.Where(x => x.Month == 12 && x.LeaveType == "Leave Without Pay" && x.EmpId == item.EmpId).FirstOrDefault().Duration,
+                            CO12 = newList.Where(x => x.Month == 12 && x.LeaveType == "Compensatory Off" && x.EmpId == item.EmpId).FirstOrDefault() == null ? 0 : newList.Where(x => x.Month == 12 && x.LeaveType == "Compensatory Off" && x.EmpId == item.EmpId).FirstOrDefault().Duration
+                        };
 
                         lstMdl.Add(mdl);
                     }
@@ -2855,7 +2891,7 @@ namespace NLTD.EmployeePortal.LMS.Dac
             try
             {
                 if (lstCCEmail.Count > 0 && reportingToUserId != null)
-                {                    
+                {
                     List<string> lstOptoutEmailAddress = GetOnlyDirectAlertsEmailIds();
                     using (var context = new NLTDDbContext())
                     {
@@ -2875,6 +2911,7 @@ namespace NLTD.EmployeePortal.LMS.Dac
 
             return lstCCEmail;
         }
+
         private List<string> GetOnlyDirectAlertsEmailIds()
         {
             List<string> onlyDirectAlertsEmailIdsList = new List<string>();
@@ -2882,7 +2919,7 @@ namespace NLTD.EmployeePortal.LMS.Dac
             {
                 using (var context = new NLTDDbContext())
                 {
-                    onlyDirectAlertsEmailIdsList = context.Employee.Where(x => x.OnlyDirectAlerts == true).Select(x=>x.EmailAddress).ToList();                    
+                    onlyDirectAlertsEmailIdsList = context.Employee.Where(x => x.OnlyDirectAlerts == true).Select(x => x.EmailAddress).ToList();
                 }
             }
             catch { throw; }

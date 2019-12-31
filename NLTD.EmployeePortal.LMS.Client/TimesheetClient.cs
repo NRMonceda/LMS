@@ -26,16 +26,19 @@ namespace NLTD.EmployeePortal.LMS.Client
             List<TimeSheetModel> timeSheetModelList = TimesheetHelper.GetMyTeamTimeSheet(UserID, FromDate, ToDate, myDirectEmployees);
             return timeSheetModelList;
         }
+
         public IList<UserEmailListModel> GetUserEmailData()
         {
             IList<UserEmailListModel> usrEmailList = TimesheetHelper.GetUserEmailData();
             return usrEmailList;
         }
+
         public long GetHrUserId()
         {
             long usrId = TimesheetHelper.GetHrUserId();
             return usrId;
         }
+
         public bool IsUserHR(long userId)
         {
             bool result = TimesheetHelper.IsUserHR(userId);

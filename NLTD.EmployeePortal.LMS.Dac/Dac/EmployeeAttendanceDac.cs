@@ -10,8 +10,8 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
 {
     public class EmployeeAttendanceDac : IEmployeeAttendanceHelper
     {
-        private int BeforeShiftBuffer = Convert.ToInt32(ConfigurationManager.AppSettings["BeforeShiftBuffer"]);
-        private int AfterShiftBuffer = Convert.ToInt32(ConfigurationManager.AppSettings["AfterShiftBuffer"]);
+        private readonly int BeforeShiftBuffer = Convert.ToInt32(ConfigurationManager.AppSettings["BeforeShiftBuffer"]);
+        private readonly int AfterShiftBuffer = Convert.ToInt32(ConfigurationManager.AppSettings["AfterShiftBuffer"]);
 
         public void Dispose()
         {

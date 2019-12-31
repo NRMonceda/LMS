@@ -11,8 +11,8 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
 {
     public class TimeSheetDac : ITimesheetHelper
     {
-        private int BeforeShiftBuffer = Convert.ToInt32(ConfigurationManager.AppSettings["BeforeShiftBuffer"]);
-        private int AfterShiftBuffer = Convert.ToInt32(ConfigurationManager.AppSettings["AfterShiftBuffer"]);
+        private readonly int BeforeShiftBuffer = Convert.ToInt32(ConfigurationManager.AppSettings["BeforeShiftBuffer"]);
+        private readonly int AfterShiftBuffer = Convert.ToInt32(ConfigurationManager.AppSettings["AfterShiftBuffer"]);
 
         public List<ShiftQueryModel> GetShiftDetails(Int64 UserID, DateTime FromDate, DateTime ToDate)
         {
@@ -215,14 +215,26 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
 
                     TimeSheetModelObj.WorkingHours = TimeSheetModelObj.OutTime - TimeSheetModelObj.InTime;
                                         
-                    TimeSheetModelObj.Status = "Present";
                     if (TimeSheetModelObj.WorkingDate < employeeDOJ)
                     {
                         TimeSheetModelObj.Status = "Non-Employee (DOJ: " + String.Format("{0:dd-MM-yyyy}", employeeDOJ) + ")";
                     }
+                    else
+                    {
+                        string holidayStatus = GetAbsentStatus(ShiftQueryModelList[i].ShiftDate, officeWeekOffDayList, officeHolidayList);
 
-                    //Added below line for TimesheetEmailReport as Present shows for week off even if there is an entry
-                    TimeSheetModelObj.HolidayStatus = GetAbsentStatus(ShiftQueryModelList[i].ShiftDate, officeWeekOffDayList, officeHolidayList);
+                        if (holidayStatus == "")
+                        {
+                            TimeSheetModelObj.Status = "Present";
+                        }
+                        else
+                        {
+                            TimeSheetModelObj.Status = "Present (" + holidayStatus + ")";
+                            TimeSheetModelObj.HolidayStatus = holidayStatus;
+                        }
+                    }
+
+                    
                     if (TimeSheetModelObj.InTime.TimeOfDay > ShiftQueryModelList[i].ShiftFromtime)
                     {
                         TimeSheetModelObj.LateIn = TimeSheetModelObj.InTime.TimeOfDay - ShiftQueryModelList[i].ShiftFromtime;
@@ -248,10 +260,11 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
                     else
                     {
                         // Get Absent Details
-                        TimeSheetModelObj.Status = GetAbsentStatus(ShiftQueryModelList[i].ShiftDate, officeWeekOffDayList, officeHolidayList);
+                        string holidayStatus = GetAbsentStatus(ShiftQueryModelList[i].ShiftDate, officeWeekOffDayList, officeHolidayList);
+                        TimeSheetModelObj.Status = holidayStatus;
+                        TimeSheetModelObj.HolidayStatus = holidayStatus;
                     }
-                    //Added below line for TimesheetEmailReport as Present shows for week off even if there is an entry
-                    TimeSheetModelObj.HolidayStatus = GetAbsentStatus(ShiftQueryModelList[i].ShiftDate, officeWeekOffDayList, officeHolidayList);
+                    
                     if (employeeLeaveList.Select(e => e.LeaveType == officialPermisionLabel).Count() > 0)
                     {
                         foreach (var permissionTime in employeeLeaveList)
@@ -296,14 +309,10 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
                     }
                 }
 
-                string StartDateType = "";
-                string EndDateType = "";
-
                 // To get the employee Leave Details
-
                 TimeSheetModelObj.Requests = GetLMSStatus(employeeLeaveList, ShiftQueryModelList[i].ShiftDate);
-                TimeSheetModelObj.StartDateType = GetHalfDayLMSType(employeeLeaveList, ShiftQueryModelList[i].ShiftDate, out StartDateType);
-                TimeSheetModelObj.EndDateType = GetHalfDayLMSType(employeeLeaveList, ShiftQueryModelList[i].ShiftDate, out EndDateType);
+                TimeSheetModelObj.StartDateType = GetHalfDayLMSType(employeeLeaveList, ShiftQueryModelList[i].ShiftDate, out string StartDateType);
+                TimeSheetModelObj.EndDateType = GetHalfDayLMSType(employeeLeaveList, ShiftQueryModelList[i].ShiftDate, out string EndDateType);
 
                 TimeSheetModelObj.LeaveDayQty = LeaveDayQty;
                 TimeSheetModelObj.WorkFromHomeDayQty = WorkFromHomeDayQty;
@@ -311,7 +320,7 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
 
                 TimeSheetModelObj.permissionCountOfficial = permissionCountOfficial;
                 TimeSheetModelObj.permissionCountPersonal = permissionCountPersonal;
-                
+
                 timeSheetModelList.Add(TimeSheetModelObj);
             }
 
@@ -448,6 +457,7 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
             }
             return StartDateType;
         }
+
         public IList<UserEmailListModel> GetUserEmailData()
         {
             IList<UserEmailListModel> lstEmail = new List<UserEmailListModel>();
@@ -457,25 +467,25 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
                 {
                     lstEmail = (from e in context.Employee
                                 join em in context.Employee on e.ReportingToId equals em.UserId
-                                where e.IsActive==true
+                                where e.IsActive == true
                                 select new UserEmailListModel
                                 {
                                     UserId = e.UserId,
                                     EmployeeEmailAddress = e.EmailAddress,
                                     ReportingToEmailAddress = em.EmailAddress,
-                                    FirstName=e.FirstName,
-                                    LastName=e.LastName,
-                                    SkipTimesheetCompliance=e.SkipTimesheetCompliance==true?true:false
-
+                                    FirstName = e.FirstName,
+                                    LastName = e.LastName,
+                                    SkipTimesheetCompliance = e.SkipTimesheetCompliance == true ? true : false
                                 }).ToList();
                 }
             }
-            catch 
+            catch
             {
                 throw;
             }
             return lstEmail;
         }
+
         public long GetHrUserId()
         {
             long userId = 0;
@@ -483,20 +493,21 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
             {
                 using (var context = new NLTDDbContext())
                 {
-                    var hrUsr = (from e in context.Employee    
-                                join r in context.EmployeeRole on e.EmployeeRoleId equals r.RoleId                            
-                                where e.IsActive == true && r.Role.ToUpper()=="HR"
-                                select new {UserId=e.UserId}
+                    var hrUsr = (from e in context.Employee
+                                 join r in context.EmployeeRole on e.EmployeeRoleId equals r.RoleId
+                                 where e.IsActive == true && r.Role.ToUpper() == "HR"
+                                 select new { e.UserId }
                                 ).FirstOrDefault();
                     userId = hrUsr.UserId;
                 }
             }
-            catch 
+            catch
             {
                 throw;
             }
             return userId;
         }
+
         public bool IsUserHR(long userId)
         {
             bool result = false;
@@ -506,22 +517,21 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
                 {
                     var hrUsr = (from e in context.Employee
                                  join r in context.EmployeeRole on e.EmployeeRoleId equals r.RoleId
-                                 where e.UserId==userId 
-                                 select new {Role=r.Role }
+                                 where e.UserId == userId
+                                 select new { r.Role }
                                 ).FirstOrDefault();
                     if (hrUsr != null)
                     {
                         if (hrUsr.Role.ToUpper() == "HR" || hrUsr.Role.ToUpper() == "ADMIN")
                             result = true;
                     }
-
                 }
             }
             catch
             {
                 throw;
             }
-            return result; 
+            return result;
         }
     }
 

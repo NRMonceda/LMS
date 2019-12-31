@@ -1,8 +1,6 @@
 using NLTD.EmployeePortal.LMS.Client;
 using NLTD.EmployeePortal.LMS.Common.DisplayModel;
-using NLTD.EmployeePortal.LMS.Ux.Models;
 using System;
-using System.Net;
 using System.Security.Principal;
 using System.Web.Mvc;
 using System.Web.SessionState;
@@ -35,9 +33,9 @@ namespace NLTD.EmployeePortal.LMS.Ux.AppHelpers
                 string menu = string.Empty;
 
                 var windowsLoginName = identity.Name.ToUpper();
-                #if DEBUG
+#if DEBUG
                 //windowsLoginName = "CORP\\SHMoses";
-                #endif
+#endif
                 if (Request.QueryString["Username"] != null)
                 {
                     windowsLoginName = Convert.ToString(Request.QueryString["Username"]).Replace(".", "\\");
@@ -67,7 +65,7 @@ namespace NLTD.EmployeePortal.LMS.Ux.AppHelpers
 
                         if (profile.RoleId.HasValue)
                         {
-                            if (Session["MenuItemsList"] == null || Session["MenuItemsList"] == "")
+                            if (string.IsNullOrEmpty((string)Session["MenuItemsList"]))
                             {
                                 menu = MenuHelper.GetMenu(profile.RoleText, profile.IsHandleMembers);
                                 ViewBag.MenuText = menu;

@@ -1,5 +1,4 @@
-﻿using Elmah;
-using Hangfire;
+﻿using Hangfire;
 using NLTD.EmployeePortal.LMS.Client;
 using NLTD.EmployeePortal.LMS.Common.DisplayModel;
 using System;
@@ -8,14 +7,13 @@ using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Net.Mail;
-using System.Web;
 using System.Web.Hosting;
 
 namespace NLTD.EmployeePortal.LMS.Ux.AppHelpers
 {
     public class EmailHelper
     {
-        private string mailBaseUrlBody = ConfigurationManager.AppSettings["LMSUrl"];
+        private readonly string mailBaseUrlBody = ConfigurationManager.AppSettings["LMSUrl"];
 
         public void SendHtmlFormattedEmail(string recepientEmail, IList<string> ccEmail, string subject, string body)
         {
@@ -40,12 +38,16 @@ namespace NLTD.EmployeePortal.LMS.Ux.AppHelpers
                         mailMessage.CC.Add(item);
                     }
 
-                    SmtpClient smtp = new SmtpClient();
-                    smtp.Host = mailHost;
-                    smtp.EnableSsl = mailEnableSsl;
-                    System.Net.NetworkCredential NetworkCred = new System.Net.NetworkCredential();
-                    NetworkCred.UserName = mailUserName;
-                    NetworkCred.Password = mailPassword;
+                    SmtpClient smtp = new SmtpClient
+                    {
+                        Host = mailHost,
+                        EnableSsl = mailEnableSsl
+                    };
+                    System.Net.NetworkCredential NetworkCred = new System.Net.NetworkCredential
+                    {
+                        UserName = mailUserName,
+                        Password = mailPassword
+                    };
                     smtp.UseDefaultCredentials = true;
                     smtp.Credentials = NetworkCred;
                     smtp.Port = mailPort;
@@ -169,7 +171,7 @@ namespace NLTD.EmployeePortal.LMS.Ux.AppHelpers
 #if DEBUG
                 SendHtmlFormattedEmail(recepientEmail, ccEmail, subject, body);
 #else
-            BackgroundJob.Enqueue(() => SendHtmlFormattedEmail(recepientEmail, ccEmail, subject, body));
+                BackgroundJob.Enqueue(() => SendHtmlFormattedEmail(recepientEmail, ccEmail, subject, body));
 
 #endif
             }
@@ -241,7 +243,6 @@ namespace NLTD.EmployeePortal.LMS.Ux.AppHelpers
                 using (StreamWriter writer = new StreamWriter(path, true))
                 {
                     writer.WriteLine(message);
-                    writer.Close();
                 }
             }
             catch { }
