@@ -42,6 +42,8 @@ namespace NLTD.EmployeePortal.LMS.Dac
         public DbSet<ShiftMapping> ShiftMapping { get; set; }
         public DbSet<ShiftTransaction> ShiftTransaction { get; set; }
 
+        public DbSet<EmploymentType> EmploymentType { get; set; }
+
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Employee>().HasKey(e => e.UserId).ToTable("Employee");
@@ -64,6 +66,7 @@ namespace NLTD.EmployeePortal.LMS.Dac
             modelBuilder.Entity<ShiftMaster>().HasKey(e => e.ShiftID).ToTable("ShiftMaster");
             modelBuilder.Entity<ShiftMapping>().HasKey(e => e.ShiftMappingID).ToTable("ShiftMapping");
             modelBuilder.Entity<ShiftTransaction>().HasKey(e => e.ShiftTransactionID).ToTable("ShiftTransaction");
+            modelBuilder.Entity<EmploymentType>().HasKey(e => e.EmploymentTypeId).ToTable("EmploymentType");
         }
     }
 }

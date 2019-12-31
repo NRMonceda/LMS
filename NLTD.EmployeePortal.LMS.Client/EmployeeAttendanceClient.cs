@@ -17,6 +17,7 @@ namespace NLTD.EmployeePortal.LMS.Client
 
         public void Dispose()
         {
+            employeeAttendanceHelper.Dispose();
         }
 
         public List<EmployeeAttendanceModel> GetAttendance(Int64 EmployeeID)

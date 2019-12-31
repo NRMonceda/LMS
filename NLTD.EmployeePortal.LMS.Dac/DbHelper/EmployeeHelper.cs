@@ -45,6 +45,22 @@ namespace NLTD.EmployeePortal.LMS.Dac.DbHelper
             }
         }
 
+        public string GetNewEmpId(Int64 OfficeId, long employmentTypeId)
+        {
+            using (var dac = new EmployeeDac())
+            {
+                return dac.GetNewEmpId(OfficeId, employmentTypeId);
+            }
+        }
+
+        public IList<DropDownItem> GetEmploymentTypes()
+        {
+            using (var dac = new EmployeeDac())
+            {
+                return dac.GetEmploymentTypes();
+            }
+        }
+
         public EmployeeProfile GetEmployeeProfile(Int64 userId)
         {
             using (var dac = new EmployeeDac())
@@ -93,11 +109,19 @@ namespace NLTD.EmployeePortal.LMS.Dac.DbHelper
             }
         }
 
-        public IList<ElCreditModel> GetEmployeeProfilesforEL(DateTime lastCreditRun)
+        public IList<LeaveCreditModel> GetEmployeeProfilesforEL(DateTime lastCreditRun)
         {
             using (var dac = new EmployeeDac())
             {
                 return dac.GetEmployeeProfilesforEL(lastCreditRun);
+            }
+        }
+
+        public IList<LeaveCreditModel> GetEmployeeProfilesforCLSL(long leaveTypeId)
+        {
+            using (var dac = new EmployeeDac())
+            {
+                return dac.GetEmployeeProfilesforCLSL(leaveTypeId);
             }
         }
 

@@ -2,9 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Web.Hosting;
 using System.Xml.Serialization;
 
@@ -17,61 +15,53 @@ namespace NLTD.EmployeePortal.LMS.Ux.AppHelpers
             Menu menu = new Menu();
 
             String path = "";
-            string path1 = HostingEnvironment.MapPath("~/menuconfigs/employee.xml");
-            string path2 = HostingEnvironment.MapPath("~/menuconfigs/lead.xml");
-            string path3 = HostingEnvironment.MapPath("~/menuconfigs/admin.xml");
-            string path4 = HostingEnvironment.MapPath("~/menuconfigs/hr.xml");
-            string path5 = HostingEnvironment.MapPath("~/menuconfigs/help.xml");
+            string employeePath = HostingEnvironment.MapPath("~/menuconfigs/employee.xml");
+            string leadPath = HostingEnvironment.MapPath("~/menuconfigs/lead.xml");
+            string adminPath = HostingEnvironment.MapPath("~/menuconfigs/admin.xml");
+            string hrPath = HostingEnvironment.MapPath("~/menuconfigs/hr.xml");
+            string commonPath = HostingEnvironment.MapPath("~/menuconfigs/help.xml");
             switch (RoleText.ToUpper())
             {
                 case "ADMIN":
-                    path = path3;
+                    path = adminPath;
                     break;
 
                 case "HR":
-                    path = path4;
+                    path = hrPath;
                     break;
 
                 case "EMPLOYEE":
                     if (IsHandlingTeam)
                     {
-                        path = path2;
+                        path = leadPath;
                     }
                     else
                     {
-                        path = path1;
+                        path = employeePath;
                     }
                     break;
 
                 default://check and remove this
                     break;
             }
-            if (true)     //!String.IsNullOrEmpty(path))
-            {
-                menu.menuitem = new List<MenuItem>();
-                Menu menuPerPath = null;
-                XmlSerializer serializer = new XmlSerializer(typeof(Menu));
+            menu.menuitem = new List<MenuItem>();
+            Menu menuPerPath = null;
+            XmlSerializer serializer = new XmlSerializer(typeof(Menu));
 
-                using (var stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read))
-                {
-                    StreamReader reader = new StreamReader(stream);
-                    menuPerPath = (Menu)serializer.Deserialize(reader);
-                    menu.menuitem.AddRange(menuPerPath.menuitem);
-                }
-
-                using (var stream = new FileStream(path5, FileMode.Open, FileAccess.Read, FileShare.Read))
-                {
-                    StreamReader reader = new StreamReader(stream);
-                    menuPerPath = (Menu)serializer.Deserialize(reader);
-                    menu.menuitem.AddRange(menuPerPath.menuitem);
-                }
-                //menu.menuitem=RemoveDublicates(menu.menuitem);
-                return FormatMenuForAdminLTE(menu);
-            }
-            else
+            using (var stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read))
             {
-                return "";
+                StreamReader reader = new StreamReader(stream);
+                menuPerPath = (Menu)serializer.Deserialize(reader);
+                menu.menuitem.AddRange(menuPerPath.menuitem);
             }
+
+            using (var stream = new FileStream(commonPath, FileMode.Open, FileAccess.Read, FileShare.Read))
+            {
+                StreamReader reader = new StreamReader(stream);
+                menuPerPath = (Menu)serializer.Deserialize(reader);
+                menu.menuitem.AddRange(menuPerPath.menuitem);
+            }
+            return FormatMenuForAdminLTE(menu);
         }
 
         private static string FormatMenuForAdminLTE(Menu menu)

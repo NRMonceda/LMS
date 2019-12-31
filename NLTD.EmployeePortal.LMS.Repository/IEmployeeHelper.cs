@@ -28,6 +28,12 @@ namespace NLTD.EmployeePortal.LMS.Repository
 
         IList<ViewEmployeeProfileModel> GetTeamProfiles(Int64 userId, bool onlyReportedToMe, Int64? paramUserId, string requestMenuUser, bool hideInactiveEmp);
 
-        IList<ElCreditModel> GetEmployeeProfilesforEL(DateTime lastCreditRun);
+        IList<LeaveCreditModel> GetEmployeeProfilesforEL(DateTime lastCreditRun);
+
+        IList<LeaveCreditModel> GetEmployeeProfilesforCLSL(long leaveTypeId);
+
+        string GetNewEmpId(Int64 OfficeId, long employmentTypeId);
+
+        IList<DropDownItem> GetEmploymentTypes();
     }
 }

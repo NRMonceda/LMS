@@ -49,7 +49,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DisplayModel\ElCreditModel.cs" />
+    <Compile Include="DisplayModel\LeaveCreditModel.cs" />
     <Compile Include="DisplayModel\EmployeeAttendanceModel.cs" />
     <Compile Include="DisplayModel\CalendarEventItem.cs" />
     <Compile Include="DisplayModel\DashBoardModel.cs" />

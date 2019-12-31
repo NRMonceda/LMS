@@ -36,8 +36,10 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
                 ViewBag.YearsInLeaveBal = result;
             }
             ViewBag.RequestLevelPerson = "My";
-            YearwiseLeaveSummaryQueryModel qryMdl = new YearwiseLeaveSummaryQueryModel();
-            qryMdl.OnlyReportedToMe = true;
+            YearwiseLeaveSummaryQueryModel qryMdl = new YearwiseLeaveSummaryQueryModel
+            {
+                OnlyReportedToMe = true
+            };
             return View("ViewEmployeeWiseLeaveSummary", qryMdl);
         }
 
@@ -49,8 +51,10 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
                 ViewBag.YearsInLeaveBal = result;
             }
             ViewBag.RequestLevelPerson = "Team";
-            YearwiseLeaveSummaryQueryModel qryMdl = new YearwiseLeaveSummaryQueryModel();
-            qryMdl.OnlyReportedToMe = true;
+            YearwiseLeaveSummaryQueryModel qryMdl = new YearwiseLeaveSummaryQueryModel
+            {
+                OnlyReportedToMe = true
+            };
             return View("ViewEmployeeWiseLeaveSummary", qryMdl);
         }
 
@@ -62,12 +66,14 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
                 ViewBag.YearsInLeaveBal = result;
             }
             ViewBag.RequestLevelPerson = "Admin";
-            YearwiseLeaveSummaryQueryModel qryMdl = new YearwiseLeaveSummaryQueryModel();
-            qryMdl.OnlyReportedToMe = true;
+            YearwiseLeaveSummaryQueryModel qryMdl = new YearwiseLeaveSummaryQueryModel
+            {
+                OnlyReportedToMe = true
+            };
             return View("ViewEmployeeWiseLeaveSummary", qryMdl);
         }
 
-        public ActionResult loadYearwiseLeaveSummary(int Year, string reqUsr, Int64? paramUserId, bool OnlyReportedToMe)
+        public ActionResult LoadYearwiseLeaveSummary(int Year, string reqUsr, Int64? paramUserId, bool OnlyReportedToMe)
         {
             IList<EmployeeWiseLeaveSummaryModel> LeaveRequests = null;
 
@@ -115,8 +121,10 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
             }
             ViewBag.RequestLevelPerson = "My";
 
-            YearwiseLeaveSummaryQueryModel qryMdl = new YearwiseLeaveSummaryQueryModel();
-            qryMdl.OnlyReportedToMe = true;
+            YearwiseLeaveSummaryQueryModel qryMdl = new YearwiseLeaveSummaryQueryModel
+            {
+                OnlyReportedToMe = true
+            };
             return View("MonthwiseLeaveCount", qryMdl);
         }
 
@@ -129,8 +137,10 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
             }
             ViewBag.RequestLevelPerson = "Team";
 
-            YearwiseLeaveSummaryQueryModel qryMdl = new YearwiseLeaveSummaryQueryModel();
-            qryMdl.OnlyReportedToMe = true;
+            YearwiseLeaveSummaryQueryModel qryMdl = new YearwiseLeaveSummaryQueryModel
+            {
+                OnlyReportedToMe = true
+            };
             return View("MonthwiseLeaveCount", qryMdl);
         }
 
@@ -143,8 +153,10 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
             }
             ViewBag.RequestLevelPerson = "Admin";
 
-            YearwiseLeaveSummaryQueryModel qryMdl = new YearwiseLeaveSummaryQueryModel();
-            qryMdl.OnlyReportedToMe = true;
+            YearwiseLeaveSummaryQueryModel qryMdl = new YearwiseLeaveSummaryQueryModel
+            {
+                OnlyReportedToMe = true
+            };
             return View("MonthwiseLeaveCount", qryMdl);
         }
 
@@ -214,7 +226,7 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
             return View("DaywiseLeaveDateRangeView", mdl);
         }
 
-        public ActionResult loadDaywiseLeaves(Int64? paramUserId, string FromDate, string ToDate, bool IsLeaveOnly, bool OnlyReportedToMe, string reqUsr, bool DonotShowRejected)
+        public ActionResult LoadDaywiseLeaves(Int64? paramUserId, string FromDate, string ToDate, bool IsLeaveOnly, bool OnlyReportedToMe, string reqUsr, bool DonotShowRejected)
         {
             DateTime? startDateFormatted = null;
             DateTime? endDateFormatted = null;
@@ -456,24 +468,30 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
         public ActionResult ViewTransactionLog()
         {
             ViewBag.RequestLevelPerson = "Admin";
-            ManageTeamLeavesQueryModel qyMdl = new ManageTeamLeavesQueryModel();
-            qyMdl.OnlyReportedToMe = true;
+            ManageTeamLeavesQueryModel qyMdl = new ManageTeamLeavesQueryModel
+            {
+                OnlyReportedToMe = true
+            };
             return View("SearchTransactionLog", qyMdl);
         }
 
         public ActionResult MyTransactionLogs()
         {
             ViewBag.RequestLevelPerson = "My";
-            ManageTeamLeavesQueryModel qyMdl = new ManageTeamLeavesQueryModel();
-            qyMdl.OnlyReportedToMe = true;
+            ManageTeamLeavesQueryModel qyMdl = new ManageTeamLeavesQueryModel
+            {
+                OnlyReportedToMe = true
+            };
             return View("SearchTransactionLog", qyMdl);
         }
 
         public ActionResult TeamTransactionLogs()
         {
             ViewBag.RequestLevelPerson = "Team";
-            ManageTeamLeavesQueryModel qyMdl = new ManageTeamLeavesQueryModel();
-            qyMdl.OnlyReportedToMe = true;
+            ManageTeamLeavesQueryModel qyMdl = new ManageTeamLeavesQueryModel
+            {
+                OnlyReportedToMe = true
+            };
             return View("SearchTransactionLog", qyMdl);
         }
 
@@ -495,14 +513,14 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
             return PartialView("ViewTransactionLogPartial", transactionHistory);
         }
 
-        public ActionResult loadEmployeeAttendance(string ID, string FromDate, string ToDate, string requestLevelPerson, bool myDirectEmployees)
+        public ActionResult LoadEmployeeAttendance(string ID, string FromDate, string ToDate, string requestLevelPerson, bool myDirectEmployees)
         {
             IList<EmployeeAttendanceModel> employeeAttendanceModelList = GetEmployeeAttendanceList(ID, FromDate, ToDate, requestLevelPerson, myDirectEmployees, true);
             ViewBag.RequestLevelPerson = requestLevelPerson;
             return PartialView("EmployeeAttendanceDtlPartial", employeeAttendanceModelList);
         }
 
-        public ActionResult loadAccesCardEmployeeAttendance(string ID, string FromDate, string ToDate, string requestLevelPerson)
+        public ActionResult LoadAccesCardEmployeeAttendance(string ID, string FromDate, string ToDate, string requestLevelPerson)
         {
             IList<EmployeeAttendanceModel> employeeAttendanceModelList = GetAccessCardEmployeeAttendanceList(ID, FromDate, ToDate, requestLevelPerson);
             ViewBag.RequestLevelPerson = requestLevelPerson;
@@ -643,10 +661,15 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
         public ActionResult LoadMyTeamTimesheet(TimeSheetQueryModel TimeSheetQueryModelObj)
         {
             string errorMessage = string.Empty;
-            List<TimeSheetModel> timeSheetModelList = GetEmployeeTimeSheet(TimeSheetQueryModelObj, out errorMessage, "Team");
-            if (!string.IsNullOrEmpty(errorMessage))
+            TimesheetClient tsClient = new TimesheetClient();
+            List<TimeSheetModel> timeSheetModelList = new List<TimeSheetModel>();
+            if (tsClient.IsUserHR(TimeSheetQueryModelObj.UserID) == false)
             {
-                return new HttpStatusCodeResult(400, "Given Username does not exists");
+                timeSheetModelList = GetEmployeeTimeSheet(TimeSheetQueryModelObj, out errorMessage, "Team");
+                if (!string.IsNullOrEmpty(errorMessage))
+                {
+                    return new HttpStatusCodeResult(400, "Given Username does not exists");
+                }
             }
             ViewBag.RequestLevelPerson = "Team";
             return PartialView("TimeSheetPartial", timeSheetModelList);
@@ -698,8 +721,10 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
                     ViewBag.YearsInLeaveBal = result;
                 }
                 ViewBag.RequestLevelPerson = RequestLevelPerson;
-                EmployeeAttendanceQueryModel data = new EmployeeAttendanceQueryModel();
-                data.ErrorMsg = "Excel file is not generated as no data returned.";
+                EmployeeAttendanceQueryModel data = new EmployeeAttendanceQueryModel
+                {
+                    ErrorMsg = "Excel file is not generated as no data returned."
+                };
                 return View("~/Views/Attendance/TimeSheet.cshtml", data);
             }
         }
@@ -725,8 +750,10 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
             else
             {
                 ViewBag.RequestLevelPerson = RequestLevelPerson;
-                EmployeeAttendanceQueryModel data = new EmployeeAttendanceQueryModel();
-                data.ErrorMsg = "Excel file is not generated as no data returned.";
+                EmployeeAttendanceQueryModel data = new EmployeeAttendanceQueryModel
+                {
+                    ErrorMsg = "Excel file is not generated as no data returned."
+                };
                 return View("~/Views/Attendance/MyAttendance.cshtml", data);
             }
         }
@@ -751,8 +778,10 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
             else
             {
                 ViewBag.RequestLevelPerson = RequestLevelPerson;
-                EmployeeAttendanceQueryModel data = new EmployeeAttendanceQueryModel();
-                data.ErrorMsg = "Excel file is not generated as no data returned.";
+                EmployeeAttendanceQueryModel data = new EmployeeAttendanceQueryModel
+                {
+                    ErrorMsg = "Excel file is not generated as no data returned."
+                };
                 return View("~/Views/Attendance/AccessCardAttendance.cshtml", data);
             }
         }

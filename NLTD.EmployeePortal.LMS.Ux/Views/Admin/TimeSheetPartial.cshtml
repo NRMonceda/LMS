@@ -4,7 +4,7 @@
 
 @model IList<TimeSheetModel>
 
-<script type="text/javascript" src="~/Scripts/lms.js?v=1.12"></script>
+<script type="text/javascript" src="~/Scripts/lms.js?v=1.13"></script>
 
 <style type="text/css">
     .panel-group .panel {
@@ -410,7 +410,7 @@ else
             totalHours = "0" + totalHours;
         }
         return string.Format("{0}:{1}", totalHours, t.ToString("mm\\:ss"));
-    }    
+    }
 
     public TimeSheetConsolidate GetWeeklyHoursConsolidation(List<TimeSheetModel> TimeSheetModelList, DateTime fromDatetime, Int64 userID, string type)
     {
@@ -433,7 +433,7 @@ else
                                                             hours = new TimeSpan(g.Sum(r => r.WorkingHours.Ticks)),
                                                             permissionCountPersonal = g.Sum(r => r.permissionCountPersonal),
                                                             permissionCountOfficial = g.Sum(r => r.permissionCountOfficial),
-                                                            leaveCount = (g.Where(k => k.Requests.Contains("Leave")).Select(x => x.LeaveDayQty)).Sum(),
+                                                            leaveCount = (g.Where(k => k.Requests.Contains("Leave") || k.Requests== "Compensatory Off").Select(x => x.LeaveDayQty)).Sum(),
                                                             lateCount = g.Count(k => k.LateIn > new TimeSpan()),
                                                             earlyCount = g.Count(k => k.EarlyOut > new TimeSpan()),
                                                             fromDatetime = g.Min(k => k.WorkingDate),

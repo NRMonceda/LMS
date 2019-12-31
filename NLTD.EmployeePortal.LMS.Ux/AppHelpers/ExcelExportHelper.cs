@@ -7,7 +7,6 @@ using System.ComponentModel;
 using System.Configuration;
 using System.Data;
 using System.Linq;
-using System.Web;
 
 namespace NLTD.EmployeePortal.LMS.Ux.AppHelpers
 {
@@ -172,9 +171,9 @@ namespace NLTD.EmployeePortal.LMS.Ux.AppHelpers
                 dataTable.Columns["Name"].ColumnName = "Name";
                 dataTable.Columns["DOJ"].ColumnName = "Joining Date";
                 dataTable.Columns["ConfirmationDate"].ColumnName = "Confirmation Date";
-                dataTable.Columns["CurrentEL"].ColumnName = "Existing EL Balance";
-                dataTable.Columns["ELCredit"].ColumnName = "EL Credit";
-                dataTable.Columns["NewELBalance"].ColumnName = "Total EL Balance";
+                dataTable.Columns["CurrentLeave"].ColumnName = "Existing EL Balance";
+                dataTable.Columns["LeaveCredit"].ColumnName = "EL Credit";
+                dataTable.Columns["NewLeaveBalance"].ColumnName = "Total EL Balance";
 
                 // add the content into the Excel file
                 workSheet.Cells["A" + startRowFrom].LoadFromDataTable(dataTable, true);

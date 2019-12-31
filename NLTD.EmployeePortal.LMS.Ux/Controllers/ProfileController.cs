@@ -1,16 +1,12 @@
-﻿using Hangfire;
-using NLTD.EmployeePortal.LMS.Client;
+﻿using NLTD.EmployeePortal.LMS.Client;
 using NLTD.EmployeePortal.LMS.Common.DisplayModel;
 using NLTD.EmployeePortal.LMS.Common.QueryModel;
 using NLTD.EmployeePortal.LMS.Dac;
-using NLTD.EmployeePortal.LMS.Dac.DbModel;
 using NLTD.EmployeePortal.LMS.Ux.AppHelpers;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Net.Mail;
 using System.Text.RegularExpressions;
 using System.Web.Mvc;
 
@@ -59,14 +55,22 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
             {
                 ViewBag.RoleList = client.GetAllRoles();
             }
+            using (var client = new EmployeeClient())
+            {
+                var lstEmploymentTypes = client.GetEmploymentTypes();
+                DropDownItem di = new DropDownItem();
+                ViewBag.EmploymentTypeList = lstEmploymentTypes;
+            }
             if (profile != null)
             {
                 using (var client = new EmployeeClient())
                 {
                     IList<DropDownItem> reptList = client.GetActiveEmpList(profile.OfficeId, userIdForProfile);
-                    DropDownItem di = new DropDownItem();
-                    di.Key = "";
-                    di.Value = "";
+                    DropDownItem di = new DropDownItem
+                    {
+                        Key = "",
+                        Value = ""
+                    };
                     reptList.Insert(0, di);
                     ViewBag.ReportToList = reptList;
                 }
@@ -110,15 +114,24 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
                 using (var client = new EmployeeClient())
                 {
                     IList<DropDownItem> reptList = client.GetActiveEmpList(OfficeId, null);
-                    DropDownItem di = new DropDownItem();
-                    di.Key = "";
-                    di.Value = "";
+                    DropDownItem di = new DropDownItem
+                    {
+                        Key = "",
+                        Value = ""
+                    };
                     reptList.Insert(0, di);
                     ViewBag.ReportToList = reptList;
                 }
+                profile.EmploymentTypeId = 1;
                 using (var client = new EmployeeClient())
                 {
-                    profile.EmployeeId = client.GetNewEmpId(OfficeId);
+                    var lstEmploymentTypes = client.GetEmploymentTypes();
+                    DropDownItem di = new DropDownItem();
+                    ViewBag.EmploymentTypeList = lstEmploymentTypes;
+                }
+                using (var client = new EmployeeClient())
+                {
+                    profile.EmployeeId = client.GetNewEmpId(OfficeId, profile.EmploymentTypeId);
                 }
                 profile.IsActive = true;
                 profile.Mode = "Add";
@@ -127,6 +140,16 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
                 profile.Saturday = true;
                 return View("EmployeeProfile", profile);
             }
+        }
+
+        public string GetNewEmpId(long employmentTypeId)
+        {
+            string newempId = string.Empty;
+            using (var client = new EmployeeClient())
+            {
+                newempId = client.GetNewEmpId(OfficeId, employmentTypeId);
+            }
+            return newempId;
         }
 
         public ActionResult UpdateEmployee()
@@ -251,7 +274,7 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
                     employee.LogonId = employee.LogonId.ToUpper();
                     employee.FirstName = System.Globalization.CultureInfo.CurrentCulture.TextInfo.ToTitleCase(employee.FirstName.ToLower().Trim());
                     employee.LastName = System.Globalization.CultureInfo.CurrentCulture.TextInfo.ToTitleCase(employee.LastName.ToLower().Trim());
-                    employee.EmailAddress = employee.EmailAddress == null ? null : employee.EmailAddress.ToLower().Trim();
+                    employee.EmailAddress = employee.EmailAddress?.ToLower().Trim();
 
                     using (var client = new EmployeeClient())
                     {
@@ -283,9 +306,11 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
                 var lstOfc = client.GetAllOfficeLocations();
 
                 ViewBag.EmpOffice = lstOfc.Where(x => x.Key == Convert.ToString(OfficeId)).ToList();
-                DropDownItem di = new DropDownItem();
-                di.Key = "";
-                di.Value = "";
+                DropDownItem di = new DropDownItem
+                {
+                    Key = "",
+                    Value = ""
+                };
                 lstOfc.Insert(0, di);
                 ViewBag.OfficeLocationList = lstOfc;
             }
@@ -296,6 +321,18 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
             using (var client = new ShiftClient())
             {
                 ViewBag.ShiftList = client.GetShiftMaster();
+            }
+
+            using (var client = new EmployeeClient())
+            {
+                var lstEmploymentTypes = client.GetEmploymentTypes();
+                DropDownItem di = new DropDownItem
+                {
+                    Key = "",
+                    Value = ""
+                };
+                lstEmploymentTypes.Insert(0, di);
+                ViewBag.EmploymentTypeList = lstEmploymentTypes;
             }
             using (var client = new EmployeeClient())
             {
@@ -309,9 +346,11 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
                     ViewBag.ReportToList = client.GetActiveEmpList(employee.OfficeId, employee.UserId);
                 }
 
-                DropDownItem di = new DropDownItem();
-                di.Key = "";
-                di.Value = "";
+                DropDownItem di = new DropDownItem
+                {
+                    Key = "",
+                    Value = ""
+                };
                 reptList.Insert(0, di);
             }
             return View("EmployeeProfile", employee);
@@ -319,17 +358,21 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
 
         public ActionResult MyLmsProfile()
         {
-            EmployeeProfileSearchModel mdl = new EmployeeProfileSearchModel();
-            mdl.RequestLevelPerson = "My";
+            EmployeeProfileSearchModel mdl = new EmployeeProfileSearchModel
+            {
+                RequestLevelPerson = "My"
+            };
 
             return View("SearchTeamLmsProfile", mdl);
         }
 
         public ActionResult TeamLmsProfile()
         {
-            EmployeeProfileSearchModel mdl = new EmployeeProfileSearchModel();
-            mdl.RequestLevelPerson = "Team";
-            mdl.OnlyReportedToMe = true;
+            EmployeeProfileSearchModel mdl = new EmployeeProfileSearchModel
+            {
+                RequestLevelPerson = "Team",
+                OnlyReportedToMe = true
+            };
             using (var client = new ShiftClient())
             {
                 ViewBag.ShiftList = client.GetShiftMaster();
@@ -339,9 +382,11 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
 
         public ActionResult AdminLmsProfile()
         {
-            EmployeeProfileSearchModel mdl = new EmployeeProfileSearchModel();
-            mdl.RequestLevelPerson = "Admin";
-            mdl.HideInactiveEmp = true;
+            EmployeeProfileSearchModel mdl = new EmployeeProfileSearchModel
+            {
+                RequestLevelPerson = "Admin",
+                HideInactiveEmp = true
+            };
             return View("SearchTeamLmsProfile", mdl);
         }
 
@@ -409,7 +454,7 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
 
         public ActionResult GetEarnedLeaveMasterDetail()
         {
-            IList<ElCreditModel> lstProfile = GetEmployeeELData();
+            IList<LeaveCreditModel> lstProfile = GetEmployeeELData();
             return PartialView("EarnedLeaveCreditPartial", lstProfile);
         }
 
@@ -445,9 +490,9 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
             return currentRun;
         }
 
-        public IList<ElCreditModel> GetEmployeeELData()
+        public IList<LeaveCreditModel> GetEmployeeELData()
         {
-            IList<ElCreditModel> lstProfile = new List<ElCreditModel>();
+            IList<LeaveCreditModel> lstProfile = new List<LeaveCreditModel>();
             DateTime lastCreditRun = GetlastCreditRunforEL();
             using (var client = new EmployeeClient())
             {
@@ -456,10 +501,20 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
             return lstProfile;
         }
 
+        public IList<LeaveCreditModel> GetEmployeeCLSLData(long leaveTypeId)
+        {
+            IList<LeaveCreditModel> lstProfile = new List<LeaveCreditModel>();
+            using (var client = new EmployeeClient())
+            {
+                lstProfile = client.GetEmployeeProfilesforCLSL(leaveTypeId);
+            }
+            return lstProfile;
+        }
+
         public ActionResult ExportExcelEarnedLeaveCreditDetails()
         {
-            IList<ElCreditModel> lstProfile = GetEmployeeELData();
-            List<ElCreditModel> excelData = new List<ElCreditModel>();
+            IList<LeaveCreditModel> lstProfile = GetEmployeeELData();
+            List<LeaveCreditModel> excelData = new List<LeaveCreditModel>();
             excelData = lstProfile.ToList();
             if (excelData.Count > 0)
             {
@@ -472,7 +527,6 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
                 ViewBag.ErrorMsg = "Excel file is not generated as no data returned.";
                 return View("EarnedLeaveCredit");
             }
-            return Json("Downloaded");
         }
 
         public ActionResult UpdateEarnedLeaves()
@@ -490,10 +544,10 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
                                     CreditOrDebit = "C",
                                     LeaveTypeId = 2,
                                     EmployeeId = l.EmployeeId,
-                                    BalanceDays = l.CurrentEL,
-                                    NoOfDays = l.ELCredit,
+                                    BalanceDays = l.CurrentLeave,
+                                    NoOfDays = l.LeaveCredit,
                                     Remarks = remarks,
-                                    TotalDays = l.NewELBalance,
+                                    TotalDays = l.NewLeaveBalance,
                                     LeaveBalanceId = l.LeaveBalanceId
                                 }).ToList();
 
@@ -501,21 +555,66 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
             return Json(result, JsonRequestBehavior.AllowGet);
         }
 
-        public string UpdateLeaveBalance(List<EmployeeLeaveBalanceDetails> lst, bool isElCredit = false)
+        public void UpdateCLSL(long leaveTypeId)
         {
             string result = "";
+
+            string remarks = "Leave Credited for " + System.DateTime.Now.ToString("MMMM", CultureInfo.InvariantCulture) + "'" + System.DateTime.Now.Year;
+
+            var lstProfile = GetEmployeeCLSLData(leaveTypeId);
+
+            EmployeeLeaveBalanceDetails employeeLeaveBalanceDetailsModel;
+            List<EmployeeLeaveBalanceDetails> leaveCreditList = new List<EmployeeLeaveBalanceDetails>();
+
+            decimal leaveCredit = 0;
+
+            foreach (var item in lstProfile)
+            {
+                leaveCredit = CalculateCLSLCreditCount(System.DateTime.Now.Month, item);
+                if (leaveCredit > 0)
+                {
+                    employeeLeaveBalanceDetailsModel = new EmployeeLeaveBalanceDetails
+                    {
+                        UserId = item.UserId,
+                        CreditOrDebit = "C",
+                        LeaveTypeId = leaveTypeId,
+                        EmployeeId = item.EmployeeId,
+                        BalanceDays = item.CurrentLeave,
+                        NoOfDays = leaveCredit,
+                        Remarks = remarks,
+                        TotalDays = item.TotalDays + leaveCredit,
+                        LeaveBalanceId = item.LeaveBalanceId
+                    };
+
+                    leaveCreditList.Add(employeeLeaveBalanceDetailsModel);
+                }
+            }
+            result = UpdateLeaveBalance(leaveCreditList, false, true);
+        }
+
+        public string UpdateLeaveBalance(List<EmployeeLeaveBalanceDetails> lstEmployeeLeaveBalanceDetails, bool isElCredit = false, bool isServiceCall = false)
+        {
+            string result = "";
+            long LoginUserId = 0;
             try
             {
                 using (var client = new EmployeeLeaveBalanceClient())
                 {
-                    long LoginUserId = this.UserId;
-                    result = client.UpdateLeaveBalance(lst, LoginUserId, isElCredit);
+                    if (isServiceCall == false)
+                    {
+                        LoginUserId = this.UserId;
+                    }
+                    else
+                    {
+                        LoginUserId = 0;
+                    }
+                    result = client.UpdateLeaveBalance(lstEmployeeLeaveBalanceDetails, LoginUserId, isElCredit);
                 }
 
                 EmailHelper emailHelper = new EmailHelper();
                 try
                 {
-                    emailHelper.SendEmailforAddLeave(lst);
+                    emailHelper.SendEmailforAddLeave(lstEmployeeLeaveBalanceDetails);
                 }
                 catch { }
             }
@@ -524,6 +623,31 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
                 throw;
             }
             return result;
+        }
+
+        private decimal CalculateCLSLCreditCount(int processMonth, LeaveCreditModel leaveBalanceRecord)
+        {
+            decimal creditLeaveCount = 0;
+            decimal expectedTotal = 0;
+
+            if (leaveBalanceRecord.DOJ < new DateTime(System.DateTime.Now.Year, 1, 1))
+            {
+                leaveBalanceRecord.DOJ = new DateTime(System.DateTime.Now.Year, 1, 1);
+            }
+
+            if (leaveBalanceRecord.DOJ.Value.Day <= 15)
+            {
+                expectedTotal = processMonth - (leaveBalanceRecord.DOJ.Value.Month - 1);
+            }
+            else
+            {
+                expectedTotal = processMonth - (leaveBalanceRecord.DOJ.Value.Month);
+            }
+
+            if (leaveBalanceRecord.TotalDays < expectedTotal)
+                creditLeaveCount = expectedTotal - (leaveBalanceRecord.TotalDays ?? 0);
+
+            return creditLeaveCount;
         }
     }
 }

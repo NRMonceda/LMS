@@ -25,6 +25,8 @@ namespace NLTD.EmployeePortal.LMS.Dac.DbModel
 
         public DateTime? lastCreditRun { get; set; }
 
+        public bool LeaveCombinationAllowed { get; set; }
+
         public DateTime Createdon { get; set; }
         public DateTime Modifiedon { get; set; }
 

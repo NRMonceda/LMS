@@ -27,6 +27,7 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
                                    LastName = employee.LastName,
                                    Gender = employee.Gender,
                                    OfficeHolidayId = employee.OfficeHolidayId,
+                                   EmploymentTypeId = employee.EmploymentTypeId,
                                    OfficeId = employee.OfficeId,
                                    LocationText = "",
                                    MobileNumber = employee.MobileNumber,
@@ -57,7 +58,7 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
                                         join wo in context.EmployeeWeekOff on e.UserId equals wo.UserId
                                         join w in context.DayOfWeek on wo.DaysOfWeekId equals w.DaysOfWeekId
                                         where e.UserId == profile.UserId
-                                        select new { Day = w.Day }
+                                        select new { w.Day }
                                       ).ToList();
 
                         if (weekOffs.Count > 0)
@@ -135,7 +136,7 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
             {
                 using (var context = new NLTDDbContext())
                 {
-                    if (role.ToUpper() == "ADMIN" || role.ToUpper() == "HR")
+                    if ((role.ToUpper() == "ADMIN" || role.ToUpper() == "HR") && !myDirectEmployees)
                     {// If the user role is admin we retrieve all the employees in the company
                         employeeProfileList = (from employee in context.Employee
                                                join rt in context.EmployeeRole on employee.EmployeeRoleId equals rt.RoleId
@@ -246,9 +247,9 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
             return result;
         }
 
-        public IList<ElCreditModel> GetEmployeeProfilesforEL(DateTime lastCreditRun)
+        public IList<LeaveCreditModel> GetEmployeeProfilesforEL(DateTime lastCreditRun)
         {
-            IList<ElCreditModel> empProfileModel = new List<ElCreditModel>();
+            IList<LeaveCreditModel> empProfileModel = new List<LeaveCreditModel>();
             DateTime toDate = DateTime.Now.AddMonths(-1);
             lastCreditRun = new DateTime(lastCreditRun.Year, lastCreditRun.Month, 1);
             try
@@ -265,17 +266,18 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
                                       new { p1 = elb.UserId, p2 = elb.Year, p3 = elb.LeaveTypeId }
                                       into leaveBal
                                       from lb in leaveBal.DefaultIfEmpty()
-                                      where e.IsActive == true
+                                      where e.IsActive == true && e.EmploymentTypeId == 1
                                       orderby e.FirstName
-                                      select new ElCreditModel
+                                      select new LeaveCreditModel
                                       {
                                           UserId = e.UserId,
                                           EmployeeId = e.EmployeeId,
                                           Name = e.FirstName + " " + e.LastName,
                                           DOJ = e.DOJ,
                                           ConfirmationDate = e.ConfirmationDate,
-                                          CurrentEL = lb.BalanceDays == null ? 0 : (long)lb.BalanceDays,
-                                          LeaveBalanceId = lb.LeaveBalanceId
+                                          CurrentLeave = lb.BalanceDays == null ? 0 : (long)lb.BalanceDays,
+                                          LeaveBalanceId = lb.LeaveBalanceId,
+                                          TotalDays = lb.TotalDays == null ? 0 : lb.TotalDays
                                       }
                                       ).ToList();
 
@@ -283,8 +285,8 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
                     {
                         if (profile.DOJ != null && profile.ConfirmationDate != null)
                         {
-                            profile.ELCredit = GetELCredit(lastCreditRun, toDate, Convert.ToDateTime(profile.ConfirmationDate));
-                            profile.NewELBalance = profile.CurrentEL + profile.ELCredit;
+                            profile.LeaveCredit = GetELCredit(lastCreditRun, toDate, Convert.ToDateTime(profile.ConfirmationDate));
+                            profile.NewLeaveBalance = profile.CurrentLeave + profile.LeaveCredit;
                         }
                         empProfileModel.Add(profile);
                     }
@@ -296,6 +298,48 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
             }
 
             return empProfileModel;
+        }
+
+        public IList<LeaveCreditModel> GetEmployeeProfilesforCLSL(long leaveTypeId)
+        {
+            IList<LeaveCreditModel> leaveCreditModel = new List<LeaveCreditModel>();
+            DateTime toDate = DateTime.Now.AddMonths(-1);
+
+            try
+            {
+                Int32 year = System.DateTime.Now.Year;
+
+                using (var context = new NLTDDbContext())
+                {
+                    leaveCreditModel = (from e in context.Employee
+                                        join elb in context.EmployeeLeaveBalance on
+                                        new { p1 = e.UserId, p2 = System.DateTime.Now.Year, p3 = leaveTypeId }
+                                        equals
+                                        new { p1 = elb.UserId, p2 = elb.Year, p3 = elb.LeaveTypeId }
+                                        into leaveBal
+                                        from lb in leaveBal.DefaultIfEmpty()
+                                        where e.IsActive == true && e.ConfirmationDate == null && e.EmploymentTypeId == 1
+                                        orderby e.FirstName
+                                        select new LeaveCreditModel
+                                        {
+                                            UserId = e.UserId,
+                                            EmployeeId = e.EmployeeId,
+                                            Name = e.FirstName + " " + e.LastName,
+                                            DOJ = e.DOJ,
+                                            ConfirmationDate = e.ConfirmationDate,
+                                            CurrentLeave = lb.BalanceDays == null ? 0 : (long)lb.BalanceDays,
+                                            LeaveBalanceId = lb.LeaveBalanceId,
+                                            TotalDays = lb.TotalDays == null ? 0 : lb.TotalDays
+                                        }
+                                      ).ToList();
+                }
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
+            return leaveCreditModel;
         }
 
         public static int GetELCredit(DateTime fromDate, DateTime toDate, DateTime confirmationDate)
@@ -417,6 +461,7 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
                     {
                         profile = (from employee in context.Employee.AsEnumerable()
                                    join rt in context.EmployeeRole on employee.EmployeeRoleId equals rt.RoleId
+                                   join et in context.EmploymentType on employee.EmploymentTypeId equals et.EmploymentTypeId
                                    join o in context.OfficeLocation on employee.OfficeId equals o.OfficeId
                                    join h in context.OfficeHoliday on employee.OfficeHolidayId equals h.OfficeHolidayId
                                    join s in context.ShiftMaster on employee.ShiftId equals s.ShiftID
@@ -431,6 +476,7 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
                                        Gender = employee.Gender == "M" ? "Male" : "Female",
                                        HolidayOfficeId = employee.OfficeHolidayId,
                                        OfficeName = o.OfficeName,
+                                       EmploymentTypeCode = et.Code,
                                        MobileNumber = employee.MobileNumber,
                                        ReportedToId = employee.ReportingToId,
                                        RoleText = rt.Role,
@@ -455,7 +501,7 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
                                             join wo in context.EmployeeWeekOff on e.UserId equals wo.UserId
                                             join w in context.DayOfWeek on wo.DaysOfWeekId equals w.DaysOfWeekId
                                             where e.UserId == profile.UserId
-                                            select new { Day = w.Day }
+                                            select new { w.Day }
                                           ).ToList();
 
                             if (weekOffs.Count > 0)
@@ -551,7 +597,7 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
                                         join wo in context.EmployeeWeekOff on e.UserId equals wo.UserId
                                         join w in context.DayOfWeek on wo.DaysOfWeekId equals w.DaysOfWeekId
                                         where e.UserId == profile.UserId
-                                        select new { Day = w.Day }
+                                        select new { w.Day }
                                       ).ToList();
 
                         if (weekOffs.Count > 0)
@@ -846,28 +892,32 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
                             remarks = remarks + "#ConfirmationDate" + "^" + profile.ConfirmationDate;
                             remarks = remarks + "#RelievingDate" + "^" + profile.RelievingDate;
 
-                            employee = new Employee();
-                            employee.LoginId = profile.LogonId.Trim().ToUpper();
-                            employee.EmployeeId = profile.EmployeeId;
-                            employee.OfficeId = profile.OfficeId;
-                            employee.IsActive = profile.IsActive;
-                            employee.FirstName = profile.FirstName;
-                            employee.LastName = profile.LastName;
-                            employee.Gender = profile.Gender;
-                            employee.MobileNumber = profile.MobileNumber;
-                            employee.EmailAddress = profile.EmailAddress;
-                            employee.EmployeeRoleId = profile.RoleId;
-                            employee.ReportingToId = profile.ReportedToId;
-                            employee.OfficeHolidayId = profile.OfficeHolidayId;
-                            employee.ShiftId = 1;//Hard coded as default shift
-                            employee.Cardid = profile.CardId;
-                            employee.DOJ = profile.DOJ;
-                            employee.ConfirmationDate = profile.ConfirmationDate;
-                            employee.RelievingDate = profile.RelievingDate;
-                            employee.ModifiedBy = -1;
-                            employee.CreatedBy = ModifiedBy;
-                            employee.CreatedOn = System.DateTime.Now;
-                            employee.ModifiedOn = System.DateTime.Now;
+                            employee = new Employee
+                            {
+                                LoginId = profile.LogonId.Trim().ToUpper(),
+                                EmployeeId = profile.EmployeeId,
+                                OfficeId = profile.OfficeId,
+                                EmploymentTypeId = profile.EmploymentTypeId,
+                                IsActive = profile.IsActive,
+                                FirstName = profile.FirstName,
+                                LastName = profile.LastName,
+                                Gender = profile.Gender,
+                                MobileNumber = profile.MobileNumber,
+                                EmailAddress = profile.EmailAddress,
+                                EmployeeRoleId = profile.RoleId,
+                                ReportingToId = profile.ReportedToId,
+                                OfficeHolidayId = profile.OfficeHolidayId,
+                                ShiftId = 1,//Hard coded as default shift
+                                Cardid = profile.CardId,
+                                DOJ = profile.DOJ,
+                                ConfirmationDate = profile.ConfirmationDate,
+                                RelievingDate = profile.RelievingDate,
+                                OnlyDirectAlerts = false,//When new employee added, setting this default flag
+                                ModifiedBy = -1,
+                                CreatedBy = ModifiedBy,
+                                CreatedOn = System.DateTime.Now,
+                                ModifiedOn = System.DateTime.Now
+                            };
 
                             context.Employee.Add(employee);
                             isSaved = context.SaveChanges();
@@ -899,25 +949,29 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
                                 foreach (var item in lstNewWeekOffs)
                                 {
                                     dayOfWeek = context.DayOfWeek.Where(x => x.Day.ToUpper() == item.ToUpper()).FirstOrDefault().DaysOfWeekId;
-                                    ew = new EmployeeWeekOff();
-                                    ew.UserId = employee.UserId;
-                                    ew.DaysOfWeekId = dayOfWeek;
-                                    ew.ModifiedBy = -1;
-                                    ew.ModifiedOn = System.DateTime.Now;
-                                    ew.CreatedBy = ModifiedBy;
-                                    ew.CreatedOn = System.DateTime.Now;
+                                    ew = new EmployeeWeekOff
+                                    {
+                                        UserId = employee.UserId,
+                                        DaysOfWeekId = dayOfWeek,
+                                        ModifiedBy = -1,
+                                        ModifiedOn = System.DateTime.Now,
+                                        CreatedBy = ModifiedBy,
+                                        CreatedOn = System.DateTime.Now
+                                    };
                                     context.EmployeeWeekOff.Add(ew);
                                     isSaved = context.SaveChanges();
                                 }
                             }
                             if (isSaved > 0)
                             {
-                                EmployeeTransactionHistory hist = new EmployeeTransactionHistory();
-                                hist.UserId = employee.UserId;
-                                hist.TransactionDate = System.DateTime.Now;
-                                hist.TransactionType = "Insert";
-                                hist.TransactionBy = ModifiedBy;
-                                hist.Remarks = remarks;
+                                EmployeeTransactionHistory hist = new EmployeeTransactionHistory
+                                {
+                                    UserId = employee.UserId,
+                                    TransactionDate = System.DateTime.Now,
+                                    TransactionType = "Insert",
+                                    TransactionBy = ModifiedBy,
+                                    Remarks = remarks
+                                };
                                 context.EmployeeTransactionHistory.Add(hist);
                                 isSaved = context.SaveChanges();
                             }
@@ -1022,7 +1076,7 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
                             var existingWeekOffs = (from wo in context.EmployeeWeekOff
                                                     join w in context.DayOfWeek on wo.DaysOfWeekId equals w.DaysOfWeekId
                                                     where wo.UserId == employee.UserId
-                                                    select new { Day = w.Day, EmpWeekOffId = wo.EmployeeWeekOffId }
+                                                    select new { w.Day, EmpWeekOffId = wo.EmployeeWeekOffId }
                                                   ).ToList();
 
                             List<String> lstNewWeekOffs = new List<string>();
@@ -1093,13 +1147,15 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
                                     foreach (var item in lstNewWeekOffs)
                                     {
                                         dayOfWeek = context.DayOfWeek.Where(x => x.Day.ToUpper() == item.ToUpper()).FirstOrDefault().DaysOfWeekId;
-                                        ew = new EmployeeWeekOff();
-                                        ew.UserId = employee.UserId;
-                                        ew.DaysOfWeekId = dayOfWeek;
-                                        ew.ModifiedBy = -1;
-                                        ew.ModifiedOn = System.DateTime.Now;
-                                        ew.CreatedBy = ModifiedBy;
-                                        ew.CreatedOn = System.DateTime.Now;
+                                        ew = new EmployeeWeekOff
+                                        {
+                                            UserId = employee.UserId,
+                                            DaysOfWeekId = dayOfWeek,
+                                            ModifiedBy = -1,
+                                            ModifiedOn = System.DateTime.Now,
+                                            CreatedBy = ModifiedBy,
+                                            CreatedOn = System.DateTime.Now
+                                        };
                                         context.EmployeeWeekOff.Add(ew);
                                         isSaved = context.SaveChanges();
                                     }
@@ -1123,12 +1179,14 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
 
                             if (isSaved > 0)
                             {
-                                EmployeeTransactionHistory hist = new EmployeeTransactionHistory();
-                                hist.UserId = profile.UserId;
-                                hist.TransactionDate = System.DateTime.Now;
-                                hist.TransactionType = "Update";
-                                hist.TransactionBy = ModifiedBy;
-                                hist.Remarks = remarks;
+                                EmployeeTransactionHistory hist = new EmployeeTransactionHistory
+                                {
+                                    UserId = profile.UserId,
+                                    TransactionDate = System.DateTime.Now,
+                                    TransactionType = "Update",
+                                    TransactionBy = ModifiedBy,
+                                    Remarks = remarks
+                                };
                                 context.EmployeeTransactionHistory.Add(hist);
                                 isSaved = context.SaveChanges();
                             }
@@ -1224,6 +1282,35 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
             }
         }
 
+        public string GetNewEmpId(Int64 OfficeId, Int64 employmentTypeId)
+        {
+            Int32 newEmpId = 0;
+
+            try
+            {
+                using (var context = new NLTDDbContext())
+                {
+                    var employeeIdPrefix = context.EmploymentType.Where(x => x.EmploymentTypeId == employmentTypeId).FirstOrDefault().EmployeeIdPrefix;
+                    var empPrf = context.Employee.Where(x => x.OfficeId == OfficeId && x.EmploymentTypeId == employmentTypeId).Select(x => x.EmployeeId.Replace(employeeIdPrefix, "")).ToList();
+
+                    if (empPrf.Count() != 0)
+                        newEmpId = empPrf.Select(int.Parse).ToList().Max();
+
+                    if (empPrf == null)
+                        return employeeIdPrefix + "001";
+                    else
+                    {
+                        newEmpId = newEmpId + 1;
+                        return employeeIdPrefix + newEmpId.ToString("000");
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
         public string ReportingToName(Int64 userId)
         {
             using (var context = new NLTDDbContext())
@@ -1233,7 +1320,7 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
                     var user = (from e in context.Employee
                                 join r in context.Employee on e.ReportingToId equals r.UserId
                                 where e.UserId == userId
-                                select new { FirstName = r.FirstName, LastName = r.LastName }
+                                select new { r.FirstName, r.LastName }
                                        ).FirstOrDefault();
                     if (user == null)
                     {
@@ -1266,6 +1353,30 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
                 throw;
             }
             return userIDList;
+        }
+
+        public IList<DropDownItem> GetEmploymentTypes()
+        {
+            IList<DropDownItem> employmentTypeList = new List<DropDownItem>();
+            try
+            {
+                using (var context = new NLTDDbContext())
+                {
+                    employmentTypeList = (from et in context.EmploymentType
+                                          orderby et.EmploymentTypeId
+                                          select new DropDownItem
+                                          {
+                                              Key = et.EmploymentTypeId.ToString(),
+                                              Value = et.Code
+                                          }
+                                          ).ToList();
+                }
+            }
+            catch
+            {
+                throw;
+            }
+            return employmentTypeList;
         }
     }
 }

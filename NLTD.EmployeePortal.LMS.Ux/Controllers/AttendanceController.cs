@@ -1,18 +1,13 @@
 ﻿using NLTD.EmployeePortal.LMS.Client;
-using NLTD.EmployeePortal.LMS.Common.DisplayModel;
 using NLTD.EmployeePortal.LMS.Repository;
 using NLTD.EmployeePortal.LMS.Ux.AppHelpers;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 
 namespace NLTD.EmployeePortal.LMS.Ux.Controllers
 {
     public class AttendanceController : BaseController
     {
-        private IEmployeeAttendanceHelper EmployeeAttendanceHelper;
+        private readonly IEmployeeAttendanceHelper EmployeeAttendanceHelper;
 
         // GET: Attendance
         public AttendanceController()

@@ -35,7 +35,7 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
                         List<LeaveTransactionHistoryModel> transactionDetails = new List<LeaveTransactionHistoryModel>();
                         if (RequestMenuUser == "My")
                         {
-                            transactionDetails = getTransactionDetails(context, leadUserId);
+                            transactionDetails = GetTransactionDetails(context, leadUserId);
                         }
                         if (RequestMenuUser == "Team")
                         {
@@ -43,7 +43,7 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
 
                             if (leadRole == "ADMIN" || leadRole == "HR")
                             {
-                                transactionDetails = getTransactionDetails(context, userId);
+                                transactionDetails = GetTransactionDetails(context, userId);
                             }
                             else
                             {
@@ -51,7 +51,7 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
 
                                 if (user > 0)
                                 {
-                                    transactionDetails = getTransactionDetails(context, userId);
+                                    transactionDetails = GetTransactionDetails(context, userId);
                                 }
                             }
                         }
@@ -105,7 +105,7 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
             return null;
         }
 
-        public List<LeaveTransactionHistoryModel> getTransactionDetails(NLTDDbContext context, long userId)
+        public List<LeaveTransactionHistoryModel> GetTransactionDetails(NLTDDbContext context, long userId)
         {
             var transactionDetails = (from lth in context.LeaveTransactionHistory
                                       join lt in context.LeaveType on lth.LeaveTypeId equals lt.LeaveTypeId
@@ -176,7 +176,7 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
                                                           }
                                  ).ToList();
 
-                    PermissionList.ForEach(pl => pl.PermissionCount = Math.Round((decimal)(lv.calculateDuration(pl.TimeFrom, pl.TimeTo).TotalMinutes) / 60, 2));
+                    PermissionList.ForEach(pl => pl.PermissionCount = Math.Round((decimal)(lv.CalculateDuration(pl.TimeFrom, pl.TimeTo).TotalMinutes) / 60, 2));
 
                     if (PermissionList.Count > 0)
                         leaveList.AddRange(PermissionList);

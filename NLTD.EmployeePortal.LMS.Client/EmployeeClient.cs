@@ -37,6 +37,22 @@ namespace NLTD.EmployeePortal.LMS.Client
             }
         }
 
+        public string GetNewEmpId(Int64 OfficeId, long employmentTypeId)
+        {
+            using (IEmployeeHelper helper = new EmployeeHelper())
+            {
+                return helper.GetNewEmpId(OfficeId, employmentTypeId);
+            }
+        }
+
+        public IList<DropDownItem> GetEmploymentTypes()
+        {
+            using (IEmployeeHelper helper = new EmployeeHelper())
+            {
+                return helper.GetEmploymentTypes();
+            }
+        }
+
         public long GetUserId(string name)
         {
             using (IEmployeeHelper helper = new EmployeeHelper())
@@ -101,11 +117,19 @@ namespace NLTD.EmployeePortal.LMS.Client
             }
         }
 
-        public IList<ElCreditModel> GetEmployeeProfilesforEL(DateTime lastCreditRun)
+        public IList<LeaveCreditModel> GetEmployeeProfilesforEL(DateTime lastCreditRun)
         {
             using (IEmployeeHelper helper = new EmployeeHelper())
             {
                 return helper.GetEmployeeProfilesforEL(lastCreditRun);
+            }
+        }
+
+        public IList<LeaveCreditModel> GetEmployeeProfilesforCLSL(long leaveTypeId)
+        {
+            using (IEmployeeHelper helper = new EmployeeHelper())
+            {
+                return helper.GetEmployeeProfilesforCLSL(leaveTypeId);
             }
         }
     }
