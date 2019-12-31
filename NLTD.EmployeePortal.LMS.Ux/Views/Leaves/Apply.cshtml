@@ -46,10 +46,9 @@
                    minDate: minDate,
                    maxDate: maxDate,
                    format: "DD/MM/YYYY"
-                   
+
                }
                )
-
 
         });
     </script>
@@ -69,7 +68,7 @@
 
     @Html.Hidden("hdnLeaveFrom", Model.LeaveFrom)
     @Html.Hidden("hdnLeaveUpto", Model.LeaveUpto)
-  
+
     @Html.Hidden("hdnWeekOff", Model.WeekOffs)
     @Html.Hidden("hdnHolidays", Model.holidayDates)
     @Html.Hidden("hdnTimebasedLeaveTypeIds", Model.TimebasedLeaveTypeIds)
@@ -112,13 +111,13 @@
 
                             <div class="col-sm-2">
                                 <div class="form-group">
-                                    
+
                                      @Html.Label("From", new { id = "fromLabel" })
-                                    
-                                    <div class="overtimeentry" style="display:none">                                        
+
+                                    <div class="overtimeentry" style="display:none">
                                         @Html.TextBox("PermissionDate", Model.PermissionDate.ToString("DD/MM/YYYY"), new { @class = "form-control datepickerNoHolidays" })
                                     </div>
-                                    <div class="fromentry" >
+                                    <div class="fromentry">
                                         @Html.TextBox("LeaveFrom", Model.LeaveFrom.ToString("DD/MM/YYYY"), new { @class = "form-control datepicker" })
                                         </div>
                                     </div>
@@ -172,7 +171,7 @@
                                 </div>
                             </div>
                             <div class="col-sm-2 duration" style="padding-top:2em">
-                               
+
                                 <p id="chkException"> @Html.CheckBoxFor(m => m.IsExceptionTypeLeave)  Avail leave combination exception </p>
                             </div>
                         </div>

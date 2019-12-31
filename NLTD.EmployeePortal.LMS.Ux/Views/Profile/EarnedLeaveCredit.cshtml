@@ -75,14 +75,14 @@ else
         }
 
         <div id="divForEarnedLeaveCreditAllocation"></div>
-             
+
         <div class="box-body" id="elCreditOperaions">
             <div class="row">
                 <form id="frmexportEL" method="post" action='@Url.Action("ExportExcelEarnedLeaveCreditDetails")'>
                     <div class="box-footer">
                         <div class="col-sm-10">
                             Previous Earned Leave Credit was processed till: <b>@ViewBag.lastCreditProcess </b>
-                        </div>                        
+                        </div>
                         <div class="col-sm-2">
                             <input type='submit' class="btn btn-primary" value='EXPORT TO EXCEL' onclick="return exportExcelEarnedLeaveDetails()" />
                             @*<button id="btnprocess" type="button" class="btn btn-primary pull-right" onclick="processELCredit()">PROCESS</button>*@
@@ -104,7 +104,6 @@ else
         </button>
         Earned leave has been credited for @ViewBag.CurrentRun
     </div>
-
 
     @section readyscript{
         @{
