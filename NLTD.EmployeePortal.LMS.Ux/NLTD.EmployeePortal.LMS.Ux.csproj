@@ -565,6 +565,7 @@
     <Content Include="Content\DataTables\css\semanticui.scss" />
     <Content Include="Content\DataTables\css\mixins.scss" />
     <Content Include="Content\DataTables\css\common.scss" />
+    <Content Include="Help\LeavePolicy.pdf" />
     <None Include="Properties\PublishProfiles\LMS For Prod.pubxml" />
     <None Include="Properties\PublishProfiles\LMS Local.pubxml" />
     <Content Include="Scripts\bootstrap.js" />
