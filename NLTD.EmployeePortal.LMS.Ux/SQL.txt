@@ -1,1 +1,1262 @@
-﻿
+﻿USE [Cebu]
+GO
+DROP PROCEDURE [dbo].[Sp_MapEmployee_Timesheet]
+GO
+DROP PROCEDURE [dbo].[ELMAH_LogError]
+GO
+DROP PROCEDURE [dbo].[ELMAH_GetErrorXml]
+GO
+DROP PROCEDURE [dbo].[ELMAH_GetErrorsXml]
+GO
+ALTER TABLE [dbo].[ShiftMapping] DROP CONSTRAINT [FK_UserID]
+GO
+ALTER TABLE [dbo].[ShiftMapping] DROP CONSTRAINT [FK_ShiftID]
+GO
+ALTER TABLE [dbo].[PermissionDetail] DROP CONSTRAINT [FK_PermissionDetail_Leave]
+GO
+ALTER TABLE [dbo].[LeaveType] DROP CONSTRAINT [FK_LeaveType_OfficeLocation]
+GO
+ALTER TABLE [dbo].[LeaveTransactionHistory] DROP CONSTRAINT [FK_LeaveTransactiontHistory_LeaveType]
+GO
+ALTER TABLE [dbo].[LeaveTransactionHistory] DROP CONSTRAINT [FK_LeaveTransactiontHistory_Employee]
+GO
+ALTER TABLE [dbo].[LeaveDetail] DROP CONSTRAINT [FK_LeaveDetail_Leave]
+GO
+ALTER TABLE [dbo].[LeaveAttachment] DROP CONSTRAINT [FK_LeaveAttachment_Leave]
+GO
+ALTER TABLE [dbo].[Leave] DROP CONSTRAINT [FK_Leave_LeaveType]
+GO
+ALTER TABLE [dbo].[Leave] DROP CONSTRAINT [FK_Leave_Employee]
+GO
+ALTER TABLE [dbo].[EmployeeWeekOff] DROP CONSTRAINT [FK_EmployeeWeekOff_Employee]
+GO
+ALTER TABLE [dbo].[EmployeeWeekOff] DROP CONSTRAINT [FK_EmployeeWeekOff_DaysOfWeek]
+GO
+ALTER TABLE [dbo].[EmployeeLeaveBalance] DROP CONSTRAINT [FK_EmployeeLeaveBalance_LeaveType]
+GO
+ALTER TABLE [dbo].[EmployeeLeaveBalance] DROP CONSTRAINT [FK_EmployeeLeaveBalance_Employee]
+GO
+ALTER TABLE [dbo].[Employee] DROP CONSTRAINT [FK_Employee_ShiftID]
+GO
+ALTER TABLE [dbo].[Employee] DROP CONSTRAINT [FK_Employee_OfficeLocation]
+GO
+ALTER TABLE [dbo].[Employee] DROP CONSTRAINT [FK_Employee_EmploymentType]
+GO
+ALTER TABLE [dbo].[Employee] DROP CONSTRAINT [FK_Employee_EmployeeRole]
+GO
+ALTER TABLE [dbo].[OfficeLocation] DROP CONSTRAINT [DF_OfficeLocation_IsActive]
+GO
+ALTER TABLE [dbo].[EmployeeRole] DROP CONSTRAINT [DF_EmployeeRole_IsActive]
+GO
+ALTER TABLE [dbo].[EmployeeRole] DROP CONSTRAINT [DF_EmployeeRole_IsHR]
+GO
+ALTER TABLE [dbo].[EmployeeRole] DROP CONSTRAINT [DF_EmployeeRole_IsAdmin]
+GO
+ALTER TABLE [dbo].[EmployeeRole] DROP CONSTRAINT [DF_EmployeeRole_IsHandleMembers]
+GO
+ALTER TABLE [dbo].[Employee] DROP CONSTRAINT [DF_Employee_CanAvalilYearlyLeave]
+GO
+ALTER TABLE [dbo].[Employee] DROP CONSTRAINT [DF_Employee_IsInProbagationPeriod]
+GO
+ALTER TABLE [dbo].[Employee] DROP CONSTRAINT [DF_Employee_IsHandleMembers]
+GO
+DROP INDEX [IX_ShiftMapping_E7B78BEC_E361_47FD_8064_20D7E0DAB4EC] ON [dbo].[ShiftMapping]
+GO
+DROP INDEX [IX_ShiftMapping_53131AFA_4902_40F0_9A16_37DC93F9085C] ON [dbo].[ShiftMapping]
+GO
+DROP INDEX [IX_LeaveTransactionHistory_2C49D725_34B8_4D34_953C_82727D3C51A0] ON [dbo].[LeaveTransactionHistory]
+GO
+DROP INDEX [IX_LeaveDetail_B100FE25_0C66_4CB1_82AC_5B663BBB0895] ON [dbo].[LeaveDetail]
+GO
+DROP INDEX [IX_LeaveDetail_9BF34EB0_166C_4711_9D93_4316C6673F0A] ON [dbo].[LeaveDetail]
+GO
+DROP INDEX [IX_LeaveDetail_7E89C82B_FAAC_4F37_B959_AA9633483FA4] ON [dbo].[LeaveDetail]
+GO
+DROP INDEX [IX_LeaveDetail_2EE79757_D55B_428B_B435_B89DB8634728] ON [dbo].[LeaveDetail]
+GO
+DROP INDEX [IX_Leave_E7AFB1E2_69A9_4A85_A884_CE333CE9C957] ON [dbo].[Leave]
+GO
+DROP INDEX [IX_Leave_B4B87FA9_7D01_43EF_A9BD_41A33A3D4D79] ON [dbo].[Leave]
+GO
+DROP INDEX [IX_Leave_835120C8_D2EB_4800_B87D_BB6AB67E9372] ON [dbo].[Leave]
+GO
+DROP INDEX [IX_Leave_709A6032_69BC_4C01_906E_154895DA4EE6] ON [dbo].[Leave]
+GO
+DROP INDEX [IX_Leave_2F66E46C_072F_4BD7_8719_EA667F6418BE] ON [dbo].[Leave]
+GO
+DROP INDEX [IX_EmployeeAttendance_449CDFB9_A9C5_4E27_AA36_D406DFD32633] ON [dbo].[EmployeeAttendance]
+GO
+DROP INDEX [IX_EmployeeAttendance_2F7BF948_6D38_456D_A2DF_47D070CFAE20] ON [dbo].[EmployeeAttendance]
+GO
+DROP TABLE [dbo].[ShiftTransaction]
+GO
+DROP TABLE [dbo].[ShiftMaster]
+GO
+DROP TABLE [dbo].[ShiftMapping]
+GO
+DROP TABLE [dbo].[PermissionDetail]
+GO
+DROP TABLE [dbo].[OfficeLocation]
+GO
+DROP TABLE [dbo].[OfficeHoliday]
+GO
+DROP TABLE [dbo].[LeaveTransactionHistory]
+GO
+DROP TABLE [dbo].[LeaveDetail]
+GO
+DROP TABLE [dbo].[LeaveAttachment]
+GO
+DROP TABLE [dbo].[EmploymentType]
+GO
+DROP TABLE [dbo].[EmployeeWeekOff]
+GO
+DROP TABLE [dbo].[EmployeeTransactionHistory]
+GO
+DROP TABLE [dbo].[EmployeeRole]
+GO
+DROP TABLE [dbo].[EmployeeLeaveBalance_Temp]
+GO
+DROP TABLE [dbo].[EmployeeLeaveBalance]
+GO
+DROP TABLE [dbo].[EmployeeAttendance]
+GO
+DROP TABLE [dbo].[Employee_Temp]
+GO
+DROP TABLE [dbo].[ELMAH_Error]
+GO
+DROP TABLE [dbo].[DaysOfWeek]
+GO
+DROP TABLE [dbo].[AccessTransactions]
+GO
+DROP TABLE [dbo].[Leave]
+GO
+DROP TABLE [dbo].[LeaveType]
+GO
+DROP TABLE [dbo].[Employee]
+GO
+DROP USER [lmsuser]
+GO
+USE [master]
+GO
+DROP DATABASE [Cebu]
+GO
+CREATE DATABASE [Cebu]
+ CONTAINMENT = NONE
+ ON  PRIMARY 
+( NAME = N'LMS', FILENAME = N'D:\SQL\Data\Cebu.mdf' , SIZE = 347136KB , MAXSIZE = UNLIMITED, FILEGROWTH = 1024KB )
+ LOG ON 
+( NAME = N'LMS_log', FILENAME = N'D:\SQL\Data\Cebu_log.ldf' , SIZE = 43264KB , MAXSIZE = 2048GB , FILEGROWTH = 10%)
+GO
+ALTER DATABASE [Cebu] SET COMPATIBILITY_LEVEL = 120
+GO
+IF (1 = FULLTEXTSERVICEPROPERTY('IsFullTextInstalled'))
+begin
+EXEC [Cebu].[dbo].[sp_fulltext_database] @action = 'enable'
+end
+GO
+ALTER DATABASE [Cebu] SET ANSI_NULL_DEFAULT OFF 
+GO
+ALTER DATABASE [Cebu] SET ANSI_NULLS OFF 
+GO
+ALTER DATABASE [Cebu] SET ANSI_PADDING OFF 
+GO
+ALTER DATABASE [Cebu] SET ANSI_WARNINGS OFF 
+GO
+ALTER DATABASE [Cebu] SET ARITHABORT OFF 
+GO
+ALTER DATABASE [Cebu] SET AUTO_CLOSE OFF 
+GO
+ALTER DATABASE [Cebu] SET AUTO_SHRINK OFF 
+GO
+ALTER DATABASE [Cebu] SET AUTO_UPDATE_STATISTICS ON 
+GO
+ALTER DATABASE [Cebu] SET CURSOR_CLOSE_ON_COMMIT OFF 
+GO
+ALTER DATABASE [Cebu] SET CURSOR_DEFAULT  GLOBAL 
+GO
+ALTER DATABASE [Cebu] SET CONCAT_NULL_YIELDS_NULL OFF 
+GO
+ALTER DATABASE [Cebu] SET NUMERIC_ROUNDABORT OFF 
+GO
+ALTER DATABASE [Cebu] SET QUOTED_IDENTIFIER OFF 
+GO
+ALTER DATABASE [Cebu] SET RECURSIVE_TRIGGERS OFF 
+GO
+ALTER DATABASE [Cebu] SET  DISABLE_BROKER 
+GO
+ALTER DATABASE [Cebu] SET AUTO_UPDATE_STATISTICS_ASYNC OFF 
+GO
+ALTER DATABASE [Cebu] SET DATE_CORRELATION_OPTIMIZATION OFF 
+GO
+ALTER DATABASE [Cebu] SET TRUSTWORTHY OFF 
+GO
+ALTER DATABASE [Cebu] SET ALLOW_SNAPSHOT_ISOLATION OFF 
+GO
+ALTER DATABASE [Cebu] SET PARAMETERIZATION SIMPLE 
+GO
+ALTER DATABASE [Cebu] SET READ_COMMITTED_SNAPSHOT OFF 
+GO
+ALTER DATABASE [Cebu] SET HONOR_BROKER_PRIORITY OFF 
+GO
+ALTER DATABASE [Cebu] SET RECOVERY SIMPLE 
+GO
+ALTER DATABASE [Cebu] SET  MULTI_USER 
+GO
+ALTER DATABASE [Cebu] SET PAGE_VERIFY CHECKSUM  
+GO
+ALTER DATABASE [Cebu] SET DB_CHAINING OFF 
+GO
+ALTER DATABASE [Cebu] SET FILESTREAM( NON_TRANSACTED_ACCESS = OFF ) 
+GO
+ALTER DATABASE [Cebu] SET TARGET_RECOVERY_TIME = 0 SECONDS 
+GO
+ALTER DATABASE [Cebu] SET DELAYED_DURABILITY = DISABLED 
+GO
+ALTER DATABASE [Cebu] SET QUERY_STORE = OFF
+GO
+USE [Cebu]
+GO
+ALTER DATABASE SCOPED CONFIGURATION SET LEGACY_CARDINALITY_ESTIMATION = OFF;
+GO
+ALTER DATABASE SCOPED CONFIGURATION SET MAXDOP = 0;
+GO
+ALTER DATABASE SCOPED CONFIGURATION SET PARAMETER_SNIFFING = ON;
+GO
+ALTER DATABASE SCOPED CONFIGURATION SET QUERY_OPTIMIZER_HOTFIXES = OFF;
+GO
+USE [Cebu]
+GO
+CREATE USER [lmsuser] WITHOUT LOGIN WITH DEFAULT_SCHEMA=[dbo]
+GO
+ALTER ROLE [db_owner] ADD MEMBER [lmsuser]
+GO
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Employee](
+	[UserId] [bigint] IDENTITY(1,1) NOT NULL,
+	[EmployeeId] [nvarchar](50) NULL,
+	[LoginId] [nvarchar](50) NOT NULL,
+	[OfficeId] [bigint] NOT NULL,
+	[FirstName] [nvarchar](100) NOT NULL,
+	[LastName] [nvarchar](100) NOT NULL,
+	[EmailAddress] [nvarchar](100) NULL,
+	[MobileNumber] [nvarchar](10) NULL,
+	[Gender] [nvarchar](1) NOT NULL,
+	[AvatarUrl] [nvarchar](500) NULL,
+	[ReportingToId] [bigint] NULL,
+	[OfficeHolidayId] [bigint] NOT NULL,
+	[EmployeeRoleId] [bigint] NOT NULL,
+	[IsHandleMembers] [bit] NULL,
+	[IsInProbationaryPeriod] [bit] NULL,
+	[CanAvailYearlyLeave] [bit] NULL,
+	[IsActive] [bit] NOT NULL,
+	[CreatedBy] [bigint] NOT NULL,
+	[CreatedOn] [datetime] NOT NULL,
+	[ModifiedBy] [bigint] NOT NULL,
+	[ModifiedOn] [datetime] NOT NULL,
+	[ShiftID] [int] NULL,
+	[CardID] [bigint] NULL,
+	[DOJ] [datetime] NULL,
+	[ConfirmationDate] [datetime] NULL,
+	[RelievingDate] [datetime] NULL,
+	[AvailedLeavePolicyException] [int] NULL,
+	[SkipTimesheetCompliance] [bit] NULL,
+	[EmploymentTypeId] [bigint] NOT NULL,
+	[OnlyDirectAlerts] [bit] NOT NULL,
+ CONSTRAINT [PK_Employee] PRIMARY KEY CLUSTERED 
+(
+	[UserId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, FILLFACTOR = 80) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[LeaveType](
+	[LeaveTypeId] [bigint] IDENTITY(1,1) NOT NULL,
+	[OfficeId] [bigint] NOT NULL,
+	[Type] [nvarchar](100) NOT NULL,
+	[MaximumPerYear] [int] NULL,
+	[MaximumPerMonth] [int] NULL,
+	[MaximumPerRequest] [int] NULL,
+	[AdjustLeaveBalance] [bit] NOT NULL,
+	[ApplicableGender] [nvarchar](1) NOT NULL,
+	[IsLeave] [bit] NOT NULL,
+	[IsTimeBased] [bit] NOT NULL,
+	[CreatedBy] [bigint] NOT NULL,
+	[Createdon] [datetime] NOT NULL,
+	[ModifiedBy] [bigint] NOT NULL,
+	[Modifiedon] [datetime] NOT NULL,
+	[SortOrder] [int] NULL,
+	[LastCreditRun] [datetime] NULL,
+	[LeaveCombinationAllowed] [bit] NOT NULL,
+ CONSTRAINT [PK_LeaveType] PRIMARY KEY CLUSTERED 
+(
+	[LeaveTypeId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, FILLFACTOR = 80) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Leave](
+	[LeaveId] [bigint] IDENTITY(1,1) NOT NULL,
+	[UserId] [bigint] NOT NULL,
+	[StartDate] [datetime] NOT NULL,
+	[StartDateType] [nvarchar](2) NOT NULL,
+	[EndDate] [datetime] NOT NULL,
+	[EndDateType] [nvarchar](2) NOT NULL,
+	[LeaveTypeId] [bigint] NOT NULL,
+	[Duration] [decimal](5, 1) NOT NULL,
+	[Remarks] [nvarchar](max) NULL,
+	[Comments] [nvarchar](max) NULL,
+	[Status] [nvarchar](1) NOT NULL,
+	[AppliedBy] [bigint] NOT NULL,
+	[AppliedAt] [datetime] NOT NULL,
+	[ApprovedBy] [bigint] NULL,
+	[ApprovedAt] [datetime] NULL,
+	[IsExceptionLeave] [bit] NULL,
+ CONSTRAINT [PK_Leave] PRIMARY KEY CLUSTERED 
+(
+	[LeaveId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, FILLFACTOR = 80) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[AccessTransactions](
+	[ID] [bigint] IDENTITY(1,1) NOT NULL,
+	[CardID] [bigint] NOT NULL,
+	[InOutDate] [datetime2](7) NOT NULL,
+	[InOut] [bit] NOT NULL,
+	[EmployeeId] [varchar](100) NULL,
+	[AccessTransactionID] [bigint] NULL,
+ CONSTRAINT [PK_TimeSheetTransaction] PRIMARY KEY CLUSTERED 
+(
+	[ID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, FILLFACTOR = 80) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[DaysOfWeek](
+	[DaysOfWeekId] [bigint] IDENTITY(1,1) NOT NULL,
+	[DayIdNo] [int] NOT NULL,
+	[Day] [nvarchar](10) NOT NULL,
+	[CreatedBy] [bigint] NOT NULL,
+	[Createdon] [datetime] NOT NULL,
+	[ModifiedBy] [bigint] NOT NULL,
+	[Modifiedon] [datetime] NOT NULL,
+ CONSTRAINT [PK_DaysOfWeek] PRIMARY KEY CLUSTERED 
+(
+	[DaysOfWeekId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, FILLFACTOR = 80) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[ELMAH_Error](
+	[ErrorId] [uniqueidentifier] NOT NULL,
+	[Application] [nvarchar](60) NOT NULL,
+	[Host] [nvarchar](50) NOT NULL,
+	[Type] [nvarchar](100) NOT NULL,
+	[Source] [nvarchar](60) NOT NULL,
+	[Message] [nvarchar](500) NOT NULL,
+	[User] [nvarchar](50) NOT NULL,
+	[StatusCode] [int] NOT NULL,
+	[TimeUtc] [datetime] NOT NULL,
+	[Sequence] [int] IDENTITY(1,1) NOT NULL,
+	[AllXml] [ntext] NOT NULL
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Employee_Temp](
+	[EmpID] [nvarchar](50) NULL,
+	[FirstName] [nvarchar](100) NULL,
+	[LastName] [nvarchar](100) NULL,
+	[Gender] [nvarchar](1) NULL,
+	[CorpId] [nvarchar](50) NULL,
+	[EmailAddress] [nvarchar](100) NULL,
+	[ReportingManager] [nvarchar](100) NULL,
+	[HolidayOffice] [bigint] NULL,
+	[HandlesTeam] [bit] NULL
+) ON [PRIMARY]
+GO
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[EmployeeAttendance](
+	[ID] [bigint] IDENTITY(1,1) NOT NULL,
+	[UserID] [bigint] NULL,
+	[CardID] [bigint] NOT NULL,
+	[InOutDate] [datetime2](7) NOT NULL,
+	[InOut] [bit] NOT NULL,
+ CONSTRAINT [PK_Employee_Attendance] PRIMARY KEY CLUSTERED 
+(
+	[ID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, FILLFACTOR = 80) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[EmployeeLeaveBalance](
+	[LeaveBalanceId] [bigint] IDENTITY(1,1) NOT NULL,
+	[UserId] [bigint] NOT NULL,
+	[Year] [int] NOT NULL,
+	[LeaveTypeId] [bigint] NOT NULL,
+	[TotalDays] [decimal](5, 1) NULL,
+	[LeaveTakenDays] [decimal](5, 1) NULL,
+	[PendingApprovalDays] [decimal](5, 1) NULL,
+	[BalanceDays] [decimal](5, 1) NULL,
+	[CreatedBy] [bigint] NOT NULL,
+	[CreatedOn] [datetime] NOT NULL,
+	[ModifiedBy] [bigint] NOT NULL,
+	[ModifiedOn] [datetime] NOT NULL,
+ CONSTRAINT [PK_EmployeeLeaveBalance] PRIMARY KEY CLUSTERED 
+(
+	[LeaveBalanceId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, FILLFACTOR = 80) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[EmployeeLeaveBalance_Temp](
+	[EmployeeId] [nvarchar](50) NULL,
+	[UserId] [bigint] NULL,
+	[TotalCL] [decimal](5, 1) NULL,
+	[UsedCL] [decimal](5, 1) NULL,
+	[TotalSL] [decimal](5, 1) NULL,
+	[UsedSL] [decimal](5, 1) NULL,
+	[TotalPL] [decimal](5, 1) NULL,
+	[UsedPL] [decimal](5, 1) NULL
+) ON [PRIMARY]
+GO
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[EmployeeRole](
+	[RoleId] [bigint] IDENTITY(1,1) NOT NULL,
+	[Role] [nvarchar](100) NOT NULL,
+	[IsHandleMembers] [bit] NOT NULL,
+	[IsAdmin] [bit] NOT NULL,
+	[IsHR] [bit] NOT NULL,
+	[IsActive] [bit] NOT NULL,
+	[CreatedBy] [bigint] NULL,
+	[Createdon] [datetime] NULL,
+	[ModifiedBy] [bigint] NULL,
+	[Modifiedon] [datetime] NULL,
+ CONSTRAINT [PK_EmployeeRole] PRIMARY KEY CLUSTERED 
+(
+	[RoleId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, FILLFACTOR = 80) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[EmployeeTransactionHistory](
+	[TransactionId] [bigint] IDENTITY(1,1) NOT NULL,
+	[UserId] [bigint] NOT NULL,
+	[TransactionDate] [datetime] NOT NULL,
+	[TransactionType] [nvarchar](10) NOT NULL,
+	[TransactionBy] [bigint] NOT NULL,
+	[Remarks] [nvarchar](max) NULL
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[EmployeeWeekOff](
+	[EmployeeWeekOffId] [bigint] IDENTITY(1,1) NOT NULL,
+	[UserId] [bigint] NOT NULL,
+	[DaysOfWeekId] [bigint] NOT NULL,
+	[CreatedBy] [bigint] NOT NULL,
+	[Createdon] [datetime] NOT NULL,
+	[ModifiedBy] [bigint] NOT NULL,
+	[Modifiedon] [datetime] NOT NULL,
+ CONSTRAINT [PK_EmployeeWeekOff] PRIMARY KEY CLUSTERED 
+(
+	[EmployeeWeekOffId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, FILLFACTOR = 80) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[EmploymentType](
+	[EmploymentTypeId] [bigint] IDENTITY(1,1) NOT NULL,
+	[Code] [varchar](50) NOT NULL,
+	[EmployeeIdPrefix] [varchar](1) NOT NULL,
+	[Description] [varchar](100) NULL,
+	[CreatedBy] [bigint] NOT NULL,
+	[CreatedOn] [datetime] NOT NULL,
+	[ModifiedBy] [bigint] NOT NULL,
+	[ModifiedOn] [datetime] NOT NULL,
+ CONSTRAINT [PK_EmploymentType] PRIMARY KEY CLUSTERED 
+(
+	[EmploymentTypeId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[LeaveAttachment](
+	[AttachmentId] [bigint] IDENTITY(1,1) NOT NULL,
+	[LeaveId] [bigint] NOT NULL,
+	[AttachmentDocumentTitle] [nvarchar](1000) NOT NULL,
+	[AttachmentPath] [nvarchar](1000) NOT NULL,
+ CONSTRAINT [PK_LeaveAttachment] PRIMARY KEY CLUSTERED 
+(
+	[AttachmentId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, FILLFACTOR = 80) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[LeaveDetail](
+	[LeaveDetailId] [bigint] IDENTITY(1,1) NOT NULL,
+	[LeaveId] [bigint] NOT NULL,
+	[LeaveDate] [datetime] NOT NULL,
+	[PartOfDay] [nvarchar](50) NULL,
+	[LeaveDayQty] [decimal](5, 1) NOT NULL,
+	[IsDayOff] [bit] NOT NULL,
+	[Remarks] [nvarchar](100) NULL,
+ CONSTRAINT [PK_LeaveDetail] PRIMARY KEY CLUSTERED 
+(
+	[LeaveDetailId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, FILLFACTOR = 80) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[LeaveTransactionHistory](
+	[TransactionId] [bigint] IDENTITY(1,1) NOT NULL,
+	[UserId] [bigint] NOT NULL,
+	[LeaveTypeId] [bigint] NOT NULL,
+	[LeaveId] [bigint] NOT NULL,
+	[TransactionDate] [datetime] NOT NULL,
+	[TransactionType] [nvarchar](1) NOT NULL,
+	[NumberOfDays] [decimal](5, 1) NOT NULL,
+	[TransactionBy] [bigint] NOT NULL,
+	[Remarks] [nvarchar](100) NULL,
+ CONSTRAINT [PK_LeaveTransactiontHistory] PRIMARY KEY CLUSTERED 
+(
+	[TransactionId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, FILLFACTOR = 80) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[OfficeHoliday](
+	[OfficeHolidayId] [bigint] IDENTITY(1,1) NOT NULL,
+	[OfficeId] [bigint] NOT NULL,
+	[Title] [nvarchar](100) NOT NULL,
+	[Holiday] [datetime] NOT NULL,
+	[Year] [int] NOT NULL,
+	[CreatedBy] [bigint] NOT NULL,
+	[Createdon] [datetime] NOT NULL,
+	[ModifiedBy] [bigint] NOT NULL,
+	[Modifiedon] [datetime] NOT NULL,
+ CONSTRAINT [PK_OfficeHoliday] PRIMARY KEY CLUSTERED 
+(
+	[OfficeHolidayId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, FILLFACTOR = 80) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[OfficeLocation](
+	[OfficeId] [bigint] IDENTITY(1,1) NOT NULL,
+	[OfficeName] [nvarchar](100) NOT NULL,
+	[IsActive] [bit] NOT NULL,
+	[Modifiedon] [datetime] NOT NULL,
+	[Createdon] [datetime] NOT NULL,
+	[ModifiedBy] [bigint] NOT NULL,
+	[CreatedBy] [bigint] NOT NULL,
+ CONSTRAINT [PK_OfficeLocation] PRIMARY KEY CLUSTERED 
+(
+	[OfficeId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, FILLFACTOR = 80) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[PermissionDetail](
+	[PermissionDetailId] [bigint] IDENTITY(1,1) NOT NULL,
+	[LeaveId] [bigint] NOT NULL,
+	[PermissionDate] [datetime] NOT NULL,
+	[TimeFrom] [nvarchar](20) NOT NULL,
+	[TimeTo] [nvarchar](20) NOT NULL,
+	[Remarks] [nvarchar](50) NULL,
+ CONSTRAINT [PK_PermissionDetail] PRIMARY KEY CLUSTERED 
+(
+	[PermissionDetailId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, FILLFACTOR = 80) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[ShiftMapping](
+	[UserID] [bigint] NOT NULL,
+	[ShiftID] [int] NULL,
+	[Createddate] [datetime] NULL,
+	[CreatedBy] [bigint] NULL,
+	[ModifiedDate] [datetime] NULL,
+	[ModifiedBy] [bigint] NULL,
+	[ShiftMappingID] [int] IDENTITY(1,1) NOT NULL,
+	[ShiftDate] [datetime] NOT NULL,
+ CONSTRAINT [PK__ShiftMap__A4FAED1E0A1E3AE4] PRIMARY KEY CLUSTERED 
+(
+	[ShiftMappingID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, FILLFACTOR = 80) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[ShiftMaster](
+	[ShiftID] [int] IDENTITY(1,1) NOT NULL,
+	[FromTime] [time](7) NULL,
+	[ToTime] [time](7) NULL,
+	[CreatedBy] [bigint] NOT NULL,
+	[CreatedDate] [datetime] NOT NULL,
+	[ShiftDescription] [varchar](50) NULL,
+ CONSTRAINT [PK__ShiftMas__C0A838E16EDA9A18] PRIMARY KEY CLUSTERED 
+(
+	[ShiftID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, FILLFACTOR = 80) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[ShiftTransaction](
+	[ShiftTransactionID] [int] IDENTITY(1,1) NOT NULL,
+	[GroupID] [int] NULL,
+	[ShiftID] [int] NULL,
+	[UserID] [int] NULL,
+	[Createddate] [datetime] NULL,
+	[CreatedBy] [bigint] NULL,
+	[FromDate] [datetime] NULL,
+	[ToDate] [datetime] NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[ShiftTransactionID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, FILLFACTOR = 80) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+CREATE NONCLUSTERED INDEX [IX_EmployeeAttendance_2F7BF948_6D38_456D_A2DF_47D070CFAE20] ON [dbo].[EmployeeAttendance]
+(
+	[InOutDate] ASC
+)
+INCLUDE ( 	[UserID],
+	[CardID],
+	[InOut]) WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, FILLFACTOR = 80) ON [PRIMARY]
+GO
+CREATE NONCLUSTERED INDEX [IX_EmployeeAttendance_449CDFB9_A9C5_4E27_AA36_D406DFD32633] ON [dbo].[EmployeeAttendance]
+(
+	[InOutDate] ASC
+)
+INCLUDE ( 	[UserID],
+	[InOut]) WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, FILLFACTOR = 80) ON [PRIMARY]
+GO
+SET ANSI_PADDING ON
+GO
+CREATE NONCLUSTERED INDEX [IX_Leave_2F66E46C_072F_4BD7_8719_EA667F6418BE] ON [dbo].[Leave]
+(
+	[LeaveTypeId] ASC,
+	[Status] ASC
+)
+INCLUDE ( 	[LeaveId],
+	[UserId]) WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, FILLFACTOR = 80) ON [PRIMARY]
+GO
+SET ANSI_PADDING ON
+GO
+CREATE NONCLUSTERED INDEX [IX_Leave_709A6032_69BC_4C01_906E_154895DA4EE6] ON [dbo].[Leave]
+(
+	[Status] ASC
+)
+INCLUDE ( 	[UserId]) WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, FILLFACTOR = 80) ON [PRIMARY]
+GO
+SET ANSI_PADDING ON
+GO
+CREATE NONCLUSTERED INDEX [IX_Leave_835120C8_D2EB_4800_B87D_BB6AB67E9372] ON [dbo].[Leave]
+(
+	[Status] ASC
+)
+INCLUDE ( 	[LeaveId],
+	[UserId],
+	[LeaveTypeId]) WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, FILLFACTOR = 80) ON [PRIMARY]
+GO
+SET ANSI_PADDING ON
+GO
+CREATE NONCLUSTERED INDEX [IX_Leave_B4B87FA9_7D01_43EF_A9BD_41A33A3D4D79] ON [dbo].[Leave]
+(
+	[UserId] ASC
+)
+INCLUDE ( 	[LeaveId],
+	[StartDate],
+	[StartDateType],
+	[EndDate],
+	[EndDateType],
+	[LeaveTypeId],
+	[Duration],
+	[Remarks],
+	[Comments],
+	[Status],
+	[AppliedBy],
+	[AppliedAt],
+	[ApprovedBy],
+	[ApprovedAt]) WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, FILLFACTOR = 80) ON [PRIMARY]
+GO
+CREATE NONCLUSTERED INDEX [IX_Leave_E7AFB1E2_69A9_4A85_A884_CE333CE9C957] ON [dbo].[Leave]
+(
+	[UserId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, FILLFACTOR = 80) ON [PRIMARY]
+GO
+SET ANSI_PADDING ON
+GO
+CREATE NONCLUSTERED INDEX [IX_LeaveDetail_2EE79757_D55B_428B_B435_B89DB8634728] ON [dbo].[LeaveDetail]
+(
+	[LeaveId] ASC,
+	[IsDayOff] ASC
+)
+INCLUDE ( 	[LeaveDetailId],
+	[LeaveDate],
+	[PartOfDay]) WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, FILLFACTOR = 80) ON [PRIMARY]
+GO
+CREATE NONCLUSTERED INDEX [IX_LeaveDetail_7E89C82B_FAAC_4F37_B959_AA9633483FA4] ON [dbo].[LeaveDetail]
+(
+	[LeaveId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, FILLFACTOR = 80) ON [PRIMARY]
+GO
+SET ANSI_PADDING ON
+GO
+CREATE NONCLUSTERED INDEX [IX_LeaveDetail_9BF34EB0_166C_4711_9D93_4316C6673F0A] ON [dbo].[LeaveDetail]
+(
+	[IsDayOff] ASC,
+	[LeaveDate] ASC
+)
+INCLUDE ( 	[LeaveId],
+	[PartOfDay],
+	[LeaveDayQty]) WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, FILLFACTOR = 80) ON [PRIMARY]
+GO
+CREATE NONCLUSTERED INDEX [IX_LeaveDetail_B100FE25_0C66_4CB1_82AC_5B663BBB0895] ON [dbo].[LeaveDetail]
+(
+	[IsDayOff] ASC
+)
+INCLUDE ( 	[LeaveId],
+	[LeaveDate],
+	[LeaveDayQty]) WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, FILLFACTOR = 80) ON [PRIMARY]
+GO
+CREATE NONCLUSTERED INDEX [IX_LeaveTransactionHistory_2C49D725_34B8_4D34_953C_82727D3C51A0] ON [dbo].[LeaveTransactionHistory]
+(
+	[UserId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, FILLFACTOR = 80) ON [PRIMARY]
+GO
+CREATE NONCLUSTERED INDEX [IX_ShiftMapping_53131AFA_4902_40F0_9A16_37DC93F9085C] ON [dbo].[ShiftMapping]
+(
+	[UserID] ASC,
+	[ShiftDate] ASC
+)
+INCLUDE ( 	[ShiftID]) WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, FILLFACTOR = 80) ON [PRIMARY]
+GO
+CREATE NONCLUSTERED INDEX [IX_ShiftMapping_E7B78BEC_E361_47FD_8064_20D7E0DAB4EC] ON [dbo].[ShiftMapping]
+(
+	[UserID] ASC
+)
+INCLUDE ( 	[ShiftID],
+	[ShiftDate]) WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, FILLFACTOR = 80) ON [PRIMARY]
+GO
+ALTER TABLE [dbo].[Employee] ADD  CONSTRAINT [DF_Employee_IsHandleMembers]  DEFAULT ((0)) FOR [IsHandleMembers]
+GO
+ALTER TABLE [dbo].[Employee] ADD  CONSTRAINT [DF_Employee_IsInProbagationPeriod]  DEFAULT ((0)) FOR [IsInProbationaryPeriod]
+GO
+ALTER TABLE [dbo].[Employee] ADD  CONSTRAINT [DF_Employee_CanAvalilYearlyLeave]  DEFAULT ((0)) FOR [CanAvailYearlyLeave]
+GO
+ALTER TABLE [dbo].[EmployeeRole] ADD  CONSTRAINT [DF_EmployeeRole_IsHandleMembers]  DEFAULT ((0)) FOR [IsHandleMembers]
+GO
+ALTER TABLE [dbo].[EmployeeRole] ADD  CONSTRAINT [DF_EmployeeRole_IsAdmin]  DEFAULT ((0)) FOR [IsAdmin]
+GO
+ALTER TABLE [dbo].[EmployeeRole] ADD  CONSTRAINT [DF_EmployeeRole_IsHR]  DEFAULT ((0)) FOR [IsHR]
+GO
+ALTER TABLE [dbo].[EmployeeRole] ADD  CONSTRAINT [DF_EmployeeRole_IsActive]  DEFAULT ((1)) FOR [IsActive]
+GO
+ALTER TABLE [dbo].[OfficeLocation] ADD  CONSTRAINT [DF_OfficeLocation_IsActive]  DEFAULT ((1)) FOR [IsActive]
+GO
+ALTER TABLE [dbo].[Employee]  WITH CHECK ADD  CONSTRAINT [FK_Employee_EmployeeRole] FOREIGN KEY([EmployeeRoleId])
+REFERENCES [dbo].[EmployeeRole] ([RoleId])
+GO
+ALTER TABLE [dbo].[Employee] CHECK CONSTRAINT [FK_Employee_EmployeeRole]
+GO
+ALTER TABLE [dbo].[Employee]  WITH CHECK ADD  CONSTRAINT [FK_Employee_EmploymentType] FOREIGN KEY([EmploymentTypeId])
+REFERENCES [dbo].[EmploymentType] ([EmploymentTypeId])
+GO
+ALTER TABLE [dbo].[Employee] CHECK CONSTRAINT [FK_Employee_EmploymentType]
+GO
+ALTER TABLE [dbo].[Employee]  WITH CHECK ADD  CONSTRAINT [FK_Employee_OfficeLocation] FOREIGN KEY([OfficeId])
+REFERENCES [dbo].[OfficeLocation] ([OfficeId])
+GO
+ALTER TABLE [dbo].[Employee] CHECK CONSTRAINT [FK_Employee_OfficeLocation]
+GO
+ALTER TABLE [dbo].[Employee]  WITH CHECK ADD  CONSTRAINT [FK_Employee_ShiftID] FOREIGN KEY([ShiftID])
+REFERENCES [dbo].[ShiftMaster] ([ShiftID])
+GO
+ALTER TABLE [dbo].[Employee] CHECK CONSTRAINT [FK_Employee_ShiftID]
+GO
+ALTER TABLE [dbo].[EmployeeLeaveBalance]  WITH CHECK ADD  CONSTRAINT [FK_EmployeeLeaveBalance_Employee] FOREIGN KEY([UserId])
+REFERENCES [dbo].[Employee] ([UserId])
+GO
+ALTER TABLE [dbo].[EmployeeLeaveBalance] CHECK CONSTRAINT [FK_EmployeeLeaveBalance_Employee]
+GO
+ALTER TABLE [dbo].[EmployeeLeaveBalance]  WITH CHECK ADD  CONSTRAINT [FK_EmployeeLeaveBalance_LeaveType] FOREIGN KEY([LeaveTypeId])
+REFERENCES [dbo].[LeaveType] ([LeaveTypeId])
+GO
+ALTER TABLE [dbo].[EmployeeLeaveBalance] CHECK CONSTRAINT [FK_EmployeeLeaveBalance_LeaveType]
+GO
+ALTER TABLE [dbo].[EmployeeWeekOff]  WITH CHECK ADD  CONSTRAINT [FK_EmployeeWeekOff_DaysOfWeek] FOREIGN KEY([DaysOfWeekId])
+REFERENCES [dbo].[DaysOfWeek] ([DaysOfWeekId])
+GO
+ALTER TABLE [dbo].[EmployeeWeekOff] CHECK CONSTRAINT [FK_EmployeeWeekOff_DaysOfWeek]
+GO
+ALTER TABLE [dbo].[EmployeeWeekOff]  WITH CHECK ADD  CONSTRAINT [FK_EmployeeWeekOff_Employee] FOREIGN KEY([UserId])
+REFERENCES [dbo].[Employee] ([UserId])
+GO
+ALTER TABLE [dbo].[EmployeeWeekOff] CHECK CONSTRAINT [FK_EmployeeWeekOff_Employee]
+GO
+ALTER TABLE [dbo].[Leave]  WITH CHECK ADD  CONSTRAINT [FK_Leave_Employee] FOREIGN KEY([UserId])
+REFERENCES [dbo].[Employee] ([UserId])
+GO
+ALTER TABLE [dbo].[Leave] CHECK CONSTRAINT [FK_Leave_Employee]
+GO
+ALTER TABLE [dbo].[Leave]  WITH CHECK ADD  CONSTRAINT [FK_Leave_LeaveType] FOREIGN KEY([LeaveTypeId])
+REFERENCES [dbo].[LeaveType] ([LeaveTypeId])
+GO
+ALTER TABLE [dbo].[Leave] CHECK CONSTRAINT [FK_Leave_LeaveType]
+GO
+ALTER TABLE [dbo].[LeaveAttachment]  WITH CHECK ADD  CONSTRAINT [FK_LeaveAttachment_Leave] FOREIGN KEY([LeaveId])
+REFERENCES [dbo].[Leave] ([LeaveId])
+GO
+ALTER TABLE [dbo].[LeaveAttachment] CHECK CONSTRAINT [FK_LeaveAttachment_Leave]
+GO
+ALTER TABLE [dbo].[LeaveDetail]  WITH CHECK ADD  CONSTRAINT [FK_LeaveDetail_Leave] FOREIGN KEY([LeaveId])
+REFERENCES [dbo].[Leave] ([LeaveId])
+GO
+ALTER TABLE [dbo].[LeaveDetail] CHECK CONSTRAINT [FK_LeaveDetail_Leave]
+GO
+ALTER TABLE [dbo].[LeaveTransactionHistory]  WITH CHECK ADD  CONSTRAINT [FK_LeaveTransactiontHistory_Employee] FOREIGN KEY([UserId])
+REFERENCES [dbo].[Employee] ([UserId])
+GO
+ALTER TABLE [dbo].[LeaveTransactionHistory] CHECK CONSTRAINT [FK_LeaveTransactiontHistory_Employee]
+GO
+ALTER TABLE [dbo].[LeaveTransactionHistory]  WITH CHECK ADD  CONSTRAINT [FK_LeaveTransactiontHistory_LeaveType] FOREIGN KEY([LeaveTypeId])
+REFERENCES [dbo].[LeaveType] ([LeaveTypeId])
+GO
+ALTER TABLE [dbo].[LeaveTransactionHistory] CHECK CONSTRAINT [FK_LeaveTransactiontHistory_LeaveType]
+GO
+ALTER TABLE [dbo].[LeaveType]  WITH CHECK ADD  CONSTRAINT [FK_LeaveType_OfficeLocation] FOREIGN KEY([OfficeId])
+REFERENCES [dbo].[OfficeLocation] ([OfficeId])
+GO
+ALTER TABLE [dbo].[LeaveType] CHECK CONSTRAINT [FK_LeaveType_OfficeLocation]
+GO
+ALTER TABLE [dbo].[PermissionDetail]  WITH CHECK ADD  CONSTRAINT [FK_PermissionDetail_Leave] FOREIGN KEY([LeaveId])
+REFERENCES [dbo].[Leave] ([LeaveId])
+GO
+ALTER TABLE [dbo].[PermissionDetail] CHECK CONSTRAINT [FK_PermissionDetail_Leave]
+GO
+ALTER TABLE [dbo].[ShiftMapping]  WITH CHECK ADD  CONSTRAINT [FK_ShiftID] FOREIGN KEY([ShiftID])
+REFERENCES [dbo].[ShiftMaster] ([ShiftID])
+GO
+ALTER TABLE [dbo].[ShiftMapping] CHECK CONSTRAINT [FK_ShiftID]
+GO
+ALTER TABLE [dbo].[ShiftMapping]  WITH CHECK ADD  CONSTRAINT [FK_UserID] FOREIGN KEY([UserID])
+REFERENCES [dbo].[Employee] ([UserId])
+GO
+ALTER TABLE [dbo].[ShiftMapping] CHECK CONSTRAINT [FK_UserID]
+GO
+Create PROCEDURE[dbo].[ELMAH_GetErrorsXml]  
+  
+(  
+    @Application NVARCHAR(60),  
+    @PageIndex INT = 0,  
+    @PageSize INT = 15,  
+    @TotalCount INT OUTPUT  
+  
+)  
+  
+AS  
+  
+SET NOCOUNT ON  
+  
+DECLARE @FirstTimeUTC DATETIME  
+DECLARE @FirstSequence INT  
+DECLARE @StartRow INT  
+DECLARE @StartRowIndex INT  
+SELECT  
+  
+@TotalCount = COUNT(1)  
+  
+FROM  
+  
+    [ELMAH_Error]  
+  
+WHERE  
+  
+    [Application] = @Application  
+SET @StartRowIndex = @PageIndex * @PageSize + 1  
+IF @StartRowIndex <= @TotalCount  
+  
+BEGIN  
+  
+SET ROWCOUNT @StartRowIndex  
+  
+SELECT  
+  
+@FirstTimeUTC = [TimeUtc],  
+  
+    @FirstSequence = [Sequence]  
+  
+FROM  
+  
+    [ELMAH_Error]  
+  
+WHERE  
+  
+    [Application] = @Application  
+  
+ORDER BY  
+  
+    [TimeUtc] DESC,  
+    [Sequence] DESC  
+  
+END  
+  
+ELSE  
+  
+BEGIN  
+  
+SET @PageSize = 0  
+  
+END  
+  
+SET ROWCOUNT @PageSize  
+  
+SELECT  
+  
+errorId = [ErrorId],  
+  
+    application = [Application],  
+    host = [Host],  
+    type = [Type],  
+    source = [Source],  
+    message = [Message],  
+    [user] = [User],  
+    statusCode = [StatusCode],  
+    time = CONVERT(VARCHAR(50), [TimeUtc], 126) + 'Z'  
+  
+FROM  
+  
+    [ELMAH_Error] error  
+  
+WHERE  
+  
+    [Application] = @Application  
+  
+AND  
+  
+    [TimeUtc] <= @FirstTimeUTC  
+  
+AND  
+  
+    [Sequence] <= @FirstSequence  
+  
+ORDER BY  
+  
+    [TimeUtc] DESC,  
+  
+    [Sequence] DESC  
+  
+FOR  
+  
+XML AUTO  
+GO
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+Create PROCEDURE[dbo].[ELMAH_GetErrorXml]  
+  
+(  
+  
+    @Application NVARCHAR(60),  
+    @ErrorId UNIQUEIDENTIFIER  
+  
+)  
+  
+AS  
+  
+SET NOCOUNT ON  
+SELECT  
+  
+    [AllXml]  
+FROM  
+  
+    [ELMAH_Error]  
+WHERE  
+  
+    [ErrorId] = @ErrorId  
+AND  
+    [Application] = @Application  
+GO
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+Create PROCEDURE[dbo].[ELMAH_LogError]  
+  
+(  
+  
+    @ErrorId UNIQUEIDENTIFIER,    
+    @Application NVARCHAR(60),    
+    @Host NVARCHAR(30),    
+    @Type NVARCHAR(100),  
+    @Source NVARCHAR(60),    
+    @Message NVARCHAR(500),  
+    @User NVARCHAR(50),   
+    @AllXml NTEXT,    
+    @StatusCode INT,   
+    @TimeUtc DATETIME  
+  
+)  
+  
+AS  
+  
+SET NOCOUNT ON  
+  
+INSERT  
+  
+INTO  
+  
+    [ELMAH_Error]
+(  
+  
+    [ErrorId],   
+    [Application],   
+    [Host],  
+    [Type],  
+    [Source],  
+    [Message],    
+    [User],    
+    [AllXml],    
+    [StatusCode],    
+    [TimeUtc]  
+  
+)  
+  
+VALUES  
+  
+    (  
+  
+    @ErrorId,  
+    @Application,    
+    @Host,    
+    @Type,    
+    @Source,   
+    @Message,    
+    @User,   
+    @AllXml,   
+    @StatusCode,   
+    @TimeUtc  
+  
+)  
+GO
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE [dbo].[Sp_MapEmployee_Timesheet]
+AS
+
+CREATE TABLE #Temp
+(
+    USERID bigint, 
+    CARDID bigint, 
+    INOUTDATE DateTime, 
+    INOUT bit
+)
+
+INSERT INTO #Temp SELECT NULL AS USERID, AT.CardID, AT.InOutDate, AT.InOut
+FROM
+	AccessTransactions AT
+LEFT JOIN
+	EmployeeAttendance EA
+ON
+	AT.CardID = EA.CardID AND AT.InOutDate=EA.InOutDate
+WHERE
+	EA.InOutDate IS NULL
+
+UPDATE
+	#Temp
+SET
+	USERID = E.USERID
+FROM
+	#Temp T
+INNER JOIN
+	EMPLOYEE E
+ON
+	T.CARDID=E.CARDID
+WHERE
+	E.IsActive=1
+	AND T.INOUTDATE > E.DOJ AND (E.RelievingDate IS NULL OR T.INOUTDATE < E.RelievingDate)
+
+INSERT INTO
+	EMPLOYEEATTENDANCE
+SELECT * FROM #Temp
+
+DROP TABLE #Temp
+GO
+
+--Master Data
+SET IDENTITY_INSERT [dbo].[DaysOfWeek] ON 
+INSERT [dbo].[DaysOfWeek] ([DaysOfWeekId], [DayIdNo], [Day], [CreatedBy], [Createdon], [ModifiedBy], [Modifiedon]) VALUES (1, 0, N'Sunday', 1, CAST(N'2017-08-22T00:00:00.000' AS DateTime), -1, CAST(N'2017-08-22T00:00:00.000' AS DateTime))
+INSERT [dbo].[DaysOfWeek] ([DaysOfWeekId], [DayIdNo], [Day], [CreatedBy], [Createdon], [ModifiedBy], [Modifiedon]) VALUES (2, 1, N'Monday', 1, CAST(N'2017-08-22T00:00:00.000' AS DateTime), -1, CAST(N'2017-08-22T00:00:00.000' AS DateTime))
+INSERT [dbo].[DaysOfWeek] ([DaysOfWeekId], [DayIdNo], [Day], [CreatedBy], [Createdon], [ModifiedBy], [Modifiedon]) VALUES (3, 2, N'Tuesday', 1, CAST(N'2017-08-22T00:00:00.000' AS DateTime), -1, CAST(N'2017-08-22T00:00:00.000' AS DateTime))
+INSERT [dbo].[DaysOfWeek] ([DaysOfWeekId], [DayIdNo], [Day], [CreatedBy], [Createdon], [ModifiedBy], [Modifiedon]) VALUES (4, 3, N'Wednesday', 1, CAST(N'2017-08-22T00:00:00.000' AS DateTime), -1, CAST(N'2017-08-22T00:00:00.000' AS DateTime))
+INSERT [dbo].[DaysOfWeek] ([DaysOfWeekId], [DayIdNo], [Day], [CreatedBy], [Createdon], [ModifiedBy], [Modifiedon]) VALUES (5, 4, N'Thursday', 1, CAST(N'2017-08-22T00:00:00.000' AS DateTime), -1, CAST(N'2017-08-22T00:00:00.000' AS DateTime))
+INSERT [dbo].[DaysOfWeek] ([DaysOfWeekId], [DayIdNo], [Day], [CreatedBy], [Createdon], [ModifiedBy], [Modifiedon]) VALUES (6, 5, N'Friday', 1, CAST(N'2017-08-22T00:00:00.000' AS DateTime), -1, CAST(N'2017-08-22T00:00:00.000' AS DateTime))
+INSERT [dbo].[DaysOfWeek] ([DaysOfWeekId], [DayIdNo], [Day], [CreatedBy], [Createdon], [ModifiedBy], [Modifiedon]) VALUES (7, 6, N'Saturday', 1, CAST(N'2017-08-22T00:00:00.000' AS DateTime), -1, CAST(N'2017-08-22T00:00:00.000' AS DateTime))
+SET IDENTITY_INSERT [dbo].[DaysOfWeek] OFF
+
+SET IDENTITY_INSERT [dbo].[EmployeeRole] ON 
+INSERT [dbo].[EmployeeRole] ([RoleId], [Role], [IsHandleMembers], [IsAdmin], [IsHR], [IsActive], [CreatedBy], [Createdon], [ModifiedBy], [Modifiedon]) VALUES (1, N'Employee', 0, 0, 0, 1, 1, CAST(N'2017-08-22T00:00:00.000' AS DateTime), -1, CAST(N'2017-08-22T00:00:00.000' AS DateTime))
+INSERT [dbo].[EmployeeRole] ([RoleId], [Role], [IsHandleMembers], [IsAdmin], [IsHR], [IsActive], [CreatedBy], [Createdon], [ModifiedBy], [Modifiedon]) VALUES (2, N'Admin', 0, 1, 0, 1, 1, CAST(N'2017-08-22T00:00:00.000' AS DateTime), -1, CAST(N'2017-08-22T00:00:00.000' AS DateTime))
+INSERT [dbo].[EmployeeRole] ([RoleId], [Role], [IsHandleMembers], [IsAdmin], [IsHR], [IsActive], [CreatedBy], [Createdon], [ModifiedBy], [Modifiedon]) VALUES (3, N'HR', 0, 1, 1, 1, 1, CAST(N'2017-08-22T00:00:00.000' AS DateTime), -1, CAST(N'2017-08-22T00:00:00.000' AS DateTime))
+SET IDENTITY_INSERT [dbo].[EmployeeRole] OFF
+
+SET IDENTITY_INSERT [dbo].[EmploymentType] ON 
+INSERT [dbo].[EmploymentType] ([EmploymentTypeId], [Code], [EmployeeIdPrefix], [Description], [CreatedBy], [CreatedOn], [ModifiedBy], [ModifiedOn]) VALUES (1, N'Employee', N'', N'Employee', 0, CAST(N'2019-09-04T17:43:04.797' AS DateTime), -1, CAST(N'2019-09-04T17:43:04.797' AS DateTime))
+INSERT [dbo].[EmploymentType] ([EmploymentTypeId], [Code], [EmployeeIdPrefix], [Description], [CreatedBy], [CreatedOn], [ModifiedBy], [ModifiedOn]) VALUES (2, N'Consultant', N'C', N'Consultant', 0, CAST(N'2019-09-04T17:43:04.797' AS DateTime), -1, CAST(N'2019-09-04T17:43:04.797' AS DateTime))
+SET IDENTITY_INSERT [dbo].[EmploymentType] OFF
+
+SET IDENTITY_INSERT [dbo].[OfficeLocation] ON 
+INSERT [dbo].[OfficeLocation] ([OfficeId], [OfficeName], [IsActive], [Modifiedon], [Createdon], [ModifiedBy], [CreatedBy]) VALUES (1, N'NLTD Cebu', 1, CAST(N'2017-09-04T15:17:42.627' AS DateTime), CAST(N'2017-09-04T15:17:42.627' AS DateTime), -1, 1)
+SET IDENTITY_INSERT [dbo].[OfficeLocation] OFF
+
+SET IDENTITY_INSERT [dbo].[LeaveType] ON 
+INSERT [dbo].[LeaveType] ([LeaveTypeId], [OfficeId], [Type], [MaximumPerYear], [MaximumPerMonth], [MaximumPerRequest], [AdjustLeaveBalance], [ApplicableGender], [IsLeave], [IsTimeBased], [CreatedBy], [Createdon], [ModifiedBy], [Modifiedon], [SortOrder], [LastCreditRun], [LeaveCombinationAllowed]) VALUES (1, 1, N'Casual Leave', NULL, NULL, 3, 1, N'A', 1, 0, 1, CAST(N'2017-09-04T15:16:31.740' AS DateTime), -1, CAST(N'2017-09-04T15:16:31.740' AS DateTime), 1, NULL, 0)
+INSERT [dbo].[LeaveType] ([LeaveTypeId], [OfficeId], [Type], [MaximumPerYear], [MaximumPerMonth], [MaximumPerRequest], [AdjustLeaveBalance], [ApplicableGender], [IsLeave], [IsTimeBased], [CreatedBy], [Createdon], [ModifiedBy], [Modifiedon], [SortOrder], [LastCreditRun], [LeaveCombinationAllowed]) VALUES (2, 1, N'Earned Leave', NULL, NULL, NULL, 1, N'A', 1, 0, 1, CAST(N'2017-09-04T15:16:31.740' AS DateTime), 98, CAST(N'2018-09-12T13:17:11.210' AS DateTime), 3, CAST(N'2019-01-01T00:00:00.000' AS DateTime), 0)
+INSERT [dbo].[LeaveType] ([LeaveTypeId], [OfficeId], [Type], [MaximumPerYear], [MaximumPerMonth], [MaximumPerRequest], [AdjustLeaveBalance], [ApplicableGender], [IsLeave], [IsTimeBased], [CreatedBy], [Createdon], [ModifiedBy], [Modifiedon], [SortOrder], [LastCreditRun], [LeaveCombinationAllowed]) VALUES (3, 1, N'Leave Without Pay', NULL, NULL, NULL, 0, N'A', 1, 0, 1, CAST(N'2017-09-04T15:16:31.740' AS DateTime), -1, CAST(N'2017-09-04T15:16:31.740' AS DateTime), 10, NULL, 0)
+INSERT [dbo].[LeaveType] ([LeaveTypeId], [OfficeId], [Type], [MaximumPerYear], [MaximumPerMonth], [MaximumPerRequest], [AdjustLeaveBalance], [ApplicableGender], [IsLeave], [IsTimeBased], [CreatedBy], [Createdon], [ModifiedBy], [Modifiedon], [SortOrder], [LastCreditRun], [LeaveCombinationAllowed]) VALUES (6, 1, N'Work From Home', NULL, NULL, NULL, 0, N'A', 0, 0, 1, CAST(N'2017-09-04T15:16:31.740' AS DateTime), -1, CAST(N'2017-09-04T15:16:31.740' AS DateTime), 6, NULL, 1)
+INSERT [dbo].[LeaveType] ([LeaveTypeId], [OfficeId], [Type], [MaximumPerYear], [MaximumPerMonth], [MaximumPerRequest], [AdjustLeaveBalance], [ApplicableGender], [IsLeave], [IsTimeBased], [CreatedBy], [Createdon], [ModifiedBy], [Modifiedon], [SortOrder], [LastCreditRun], [LeaveCombinationAllowed]) VALUES (7, 1, N'Permission - Personal', NULL, 2, NULL, 0, N'A', 0, 1, 1, CAST(N'2017-09-04T15:16:31.740' AS DateTime), -1, CAST(N'2017-09-04T15:16:31.740' AS DateTime), 5, NULL, 1)
+INSERT [dbo].[LeaveType] ([LeaveTypeId], [OfficeId], [Type], [MaximumPerYear], [MaximumPerMonth], [MaximumPerRequest], [AdjustLeaveBalance], [ApplicableGender], [IsLeave], [IsTimeBased], [CreatedBy], [Createdon], [ModifiedBy], [Modifiedon], [SortOrder], [LastCreditRun], [LeaveCombinationAllowed]) VALUES (8, 1, N'Compensatory Off', NULL, NULL, NULL, 0, N'A', 1, 0, 1, CAST(N'2017-09-04T15:16:31.740' AS DateTime), -1, CAST(N'2017-09-04T15:16:31.740' AS DateTime), 9, NULL, 1)
+INSERT [dbo].[LeaveType] ([LeaveTypeId], [OfficeId], [Type], [MaximumPerYear], [MaximumPerMonth], [MaximumPerRequest], [AdjustLeaveBalance], [ApplicableGender], [IsLeave], [IsTimeBased], [CreatedBy], [Createdon], [ModifiedBy], [Modifiedon], [SortOrder], [LastCreditRun], [LeaveCombinationAllowed]) VALUES (9, 1, N'Onsite', NULL, NULL, NULL, 0, N'A', 0, 0, 1, CAST(N'2017-10-25T15:32:06.657' AS DateTime), -1, CAST(N'2017-10-25T15:32:06.657' AS DateTime), 8, NULL, 1)
+INSERT [dbo].[LeaveType] ([LeaveTypeId], [OfficeId], [Type], [MaximumPerYear], [MaximumPerMonth], [MaximumPerRequest], [AdjustLeaveBalance], [ApplicableGender], [IsLeave], [IsTimeBased], [CreatedBy], [Createdon], [ModifiedBy], [Modifiedon], [SortOrder], [LastCreditRun], [LeaveCombinationAllowed]) VALUES (10, 1, N'Debit Leave', NULL, NULL, NULL, 0, N'A', 1, 0, 1, CAST(N'2017-11-08T18:43:48.877' AS DateTime), -1, CAST(N'2017-11-08T18:43:48.877' AS DateTime), 11, NULL, 1)
+INSERT [dbo].[LeaveType] ([LeaveTypeId], [OfficeId], [Type], [MaximumPerYear], [MaximumPerMonth], [MaximumPerRequest], [AdjustLeaveBalance], [ApplicableGender], [IsLeave], [IsTimeBased], [CreatedBy], [Createdon], [ModifiedBy], [Modifiedon], [SortOrder], [LastCreditRun], [LeaveCombinationAllowed]) VALUES (11, 1, N'Permission - Official', NULL, NULL, NULL, 0, N'A', 0, 1, 1, CAST(N'2018-07-10T17:05:22.030' AS DateTime), -1, CAST(N'2018-07-10T17:05:22.030' AS DateTime), 4, NULL, 1)
+INSERT [dbo].[LeaveType] ([LeaveTypeId], [OfficeId], [Type], [MaximumPerYear], [MaximumPerMonth], [MaximumPerRequest], [AdjustLeaveBalance], [ApplicableGender], [IsLeave], [IsTimeBased], [CreatedBy], [Createdon], [ModifiedBy], [Modifiedon], [SortOrder], [LastCreditRun], [LeaveCombinationAllowed]) VALUES (12, 1, N'OverTime', NULL, NULL, NULL, 0, N'A', 0, 1, 1, CAST(N'2018-07-10T17:05:22.033' AS DateTime), -1, CAST(N'2018-07-10T17:05:22.033' AS DateTime), 7, NULL, 1)
+INSERT [dbo].[LeaveType] ([LeaveTypeId], [OfficeId], [Type], [MaximumPerYear], [MaximumPerMonth], [MaximumPerRequest], [AdjustLeaveBalance], [ApplicableGender], [IsLeave], [IsTimeBased], [CreatedBy], [Createdon], [ModifiedBy], [Modifiedon], [SortOrder], [LastCreditRun], [LeaveCombinationAllowed]) VALUES (13, 1, N'Maternity Leave', NULL, NULL, NULL, 0, N'F', 1, 0, 1, CAST(N'2018-08-02T15:49:54.107' AS DateTime), -1, CAST(N'2018-08-02T15:49:54.107' AS DateTime), 12, NULL, 0)
+INSERT [dbo].[LeaveType] ([LeaveTypeId], [OfficeId], [Type], [MaximumPerYear], [MaximumPerMonth], [MaximumPerRequest], [AdjustLeaveBalance], [ApplicableGender], [IsLeave], [IsTimeBased], [CreatedBy], [Createdon], [ModifiedBy], [Modifiedon], [SortOrder], [LastCreditRun], [LeaveCombinationAllowed]) VALUES (14, 1, N'Sick/Unplanned Leave', NULL, NULL, NULL, 1, N'A', 1, 0, 1, CAST(N'2019-01-02T09:29:28.053' AS DateTime), -1, CAST(N'2019-01-02T09:29:28.053' AS DateTime), 2, NULL, 0)
+SET IDENTITY_INSERT [dbo].[LeaveType] OFF
+
+SET IDENTITY_INSERT [dbo].[ShiftMaster] ON 
+INSERT [dbo].[ShiftMaster] ([ShiftID], [FromTime], [ToTime], [CreatedBy], [CreatedDate], [ShiftDescription]) VALUES (1, CAST(N'09:30:00' AS Time), CAST(N'18:30:00' AS Time), 1, CAST(N'2017-12-06T11:53:05.050' AS DateTime), N'Shift 09.30-18.30')
+INSERT [dbo].[ShiftMaster] ([ShiftID], [FromTime], [ToTime], [CreatedBy], [CreatedDate], [ShiftDescription]) VALUES (2, CAST(N'10:00:00' AS Time), CAST(N'19:00:00' AS Time), 1, CAST(N'2017-12-06T11:53:05.050' AS DateTime), N'Shift 10.00-19.00')
+INSERT [dbo].[ShiftMaster] ([ShiftID], [FromTime], [ToTime], [CreatedBy], [CreatedDate], [ShiftDescription]) VALUES (3, CAST(N'10:30:00' AS Time), CAST(N'19:30:00' AS Time), 1, CAST(N'2017-12-06T11:53:05.050' AS DateTime), N'Shift 10.30-19.30')
+INSERT [dbo].[ShiftMaster] ([ShiftID], [FromTime], [ToTime], [CreatedBy], [CreatedDate], [ShiftDescription]) VALUES (4, CAST(N'11:00:00' AS Time), CAST(N'20:00:00' AS Time), 1, CAST(N'2017-12-06T11:53:05.050' AS DateTime), N'Shift 11.00-20.00')
+INSERT [dbo].[ShiftMaster] ([ShiftID], [FromTime], [ToTime], [CreatedBy], [CreatedDate], [ShiftDescription]) VALUES (5, CAST(N'11:30:00' AS Time), CAST(N'20:30:00' AS Time), 1, CAST(N'2017-12-06T11:53:05.050' AS DateTime), N'Shift 11.30-20.30')
+INSERT [dbo].[ShiftMaster] ([ShiftID], [FromTime], [ToTime], [CreatedBy], [CreatedDate], [ShiftDescription]) VALUES (6, CAST(N'12:00:00' AS Time), CAST(N'21:00:00' AS Time), 1, CAST(N'2017-12-06T11:53:05.050' AS DateTime), N'Shift 12.00-21.00')
+INSERT [dbo].[ShiftMaster] ([ShiftID], [FromTime], [ToTime], [CreatedBy], [CreatedDate], [ShiftDescription]) VALUES (7, CAST(N'12:30:00' AS Time), CAST(N'21:30:00' AS Time), 1, CAST(N'2017-12-06T11:53:05.050' AS DateTime), N'Shift 12.30-21.30')
+INSERT [dbo].[ShiftMaster] ([ShiftID], [FromTime], [ToTime], [CreatedBy], [CreatedDate], [ShiftDescription]) VALUES (8, CAST(N'13:00:00' AS Time), CAST(N'22:00:00' AS Time), 1, CAST(N'2017-12-06T11:53:05.050' AS DateTime), N'Shift 13.00-22.00')
+INSERT [dbo].[ShiftMaster] ([ShiftID], [FromTime], [ToTime], [CreatedBy], [CreatedDate], [ShiftDescription]) VALUES (9, CAST(N'13:30:00' AS Time), CAST(N'22:30:00' AS Time), 1, CAST(N'2017-12-06T11:53:05.050' AS DateTime), N'Shift 13.30-22.30')
+INSERT [dbo].[ShiftMaster] ([ShiftID], [FromTime], [ToTime], [CreatedBy], [CreatedDate], [ShiftDescription]) VALUES (10, CAST(N'14:00:00' AS Time), CAST(N'23:00:00' AS Time), 1, CAST(N'2017-12-06T11:53:05.050' AS DateTime), N'Shift 14.00-23.00')
+INSERT [dbo].[ShiftMaster] ([ShiftID], [FromTime], [ToTime], [CreatedBy], [CreatedDate], [ShiftDescription]) VALUES (11, CAST(N'14:30:00' AS Time), CAST(N'23:30:00' AS Time), 1, CAST(N'2017-12-06T11:53:05.050' AS DateTime), N'Shift 14.30-23.30')
+INSERT [dbo].[ShiftMaster] ([ShiftID], [FromTime], [ToTime], [CreatedBy], [CreatedDate], [ShiftDescription]) VALUES (12, CAST(N'15:00:00' AS Time), CAST(N'23:59:59' AS Time), 1, CAST(N'2017-12-06T11:53:05.050' AS DateTime), N'Shift 15.00-00.00')
+INSERT [dbo].[ShiftMaster] ([ShiftID], [FromTime], [ToTime], [CreatedBy], [CreatedDate], [ShiftDescription]) VALUES (13, CAST(N'15:30:00' AS Time), CAST(N'00:30:00' AS Time), 1, CAST(N'2017-12-06T11:53:05.050' AS DateTime), N'Shift 15.30-00.30')
+INSERT [dbo].[ShiftMaster] ([ShiftID], [FromTime], [ToTime], [CreatedBy], [CreatedDate], [ShiftDescription]) VALUES (14, CAST(N'16:00:00' AS Time), CAST(N'01:00:00' AS Time), 1, CAST(N'2017-12-06T11:53:05.050' AS DateTime), N'Shift 16.00-01.00')
+INSERT [dbo].[ShiftMaster] ([ShiftID], [FromTime], [ToTime], [CreatedBy], [CreatedDate], [ShiftDescription]) VALUES (15, CAST(N'16:30:00' AS Time), CAST(N'01:30:00' AS Time), 1, CAST(N'2017-12-06T11:53:05.050' AS DateTime), N'Shift 16.30-01.30')
+INSERT [dbo].[ShiftMaster] ([ShiftID], [FromTime], [ToTime], [CreatedBy], [CreatedDate], [ShiftDescription]) VALUES (16, CAST(N'17:00:00' AS Time), CAST(N'02:00:00' AS Time), 1, CAST(N'2017-12-06T11:53:05.050' AS DateTime), N'Shift 17.00-02.00')
+INSERT [dbo].[ShiftMaster] ([ShiftID], [FromTime], [ToTime], [CreatedBy], [CreatedDate], [ShiftDescription]) VALUES (17, CAST(N'17:30:00' AS Time), CAST(N'02:30:00' AS Time), 1, CAST(N'2017-12-06T11:53:05.050' AS DateTime), N'Shift 17.30-02.30')
+INSERT [dbo].[ShiftMaster] ([ShiftID], [FromTime], [ToTime], [CreatedBy], [CreatedDate], [ShiftDescription]) VALUES (18, CAST(N'18:00:00' AS Time), CAST(N'03:00:00' AS Time), 1, CAST(N'2017-12-06T11:53:05.050' AS DateTime), N'Shift 18.00-03.00')
+INSERT [dbo].[ShiftMaster] ([ShiftID], [FromTime], [ToTime], [CreatedBy], [CreatedDate], [ShiftDescription]) VALUES (19, CAST(N'18:30:00' AS Time), CAST(N'03:30:00' AS Time), 1, CAST(N'2017-12-06T11:53:05.050' AS DateTime), N'Shift 18.30-03.30')
+INSERT [dbo].[ShiftMaster] ([ShiftID], [FromTime], [ToTime], [CreatedBy], [CreatedDate], [ShiftDescription]) VALUES (20, CAST(N'19:00:00' AS Time), CAST(N'04:00:00' AS Time), 1, CAST(N'2017-12-06T11:53:05.050' AS DateTime), N'Shift 19.00-04.00')
+INSERT [dbo].[ShiftMaster] ([ShiftID], [FromTime], [ToTime], [CreatedBy], [CreatedDate], [ShiftDescription]) VALUES (21, CAST(N'19:30:00' AS Time), CAST(N'04:30:00' AS Time), 1, CAST(N'2017-12-06T11:53:05.050' AS DateTime), N'Shift 19.30-04.30')
+INSERT [dbo].[ShiftMaster] ([ShiftID], [FromTime], [ToTime], [CreatedBy], [CreatedDate], [ShiftDescription]) VALUES (22, CAST(N'20:00:00' AS Time), CAST(N'05:00:00' AS Time), 1, CAST(N'2017-12-06T11:53:05.050' AS DateTime), N'Shift 20.00-05.00')
+INSERT [dbo].[ShiftMaster] ([ShiftID], [FromTime], [ToTime], [CreatedBy], [CreatedDate], [ShiftDescription]) VALUES (23, CAST(N'20:30:00' AS Time), CAST(N'05:30:00' AS Time), 1, CAST(N'2017-12-06T11:53:05.050' AS DateTime), N'Shift 20.30-05.30')
+INSERT [dbo].[ShiftMaster] ([ShiftID], [FromTime], [ToTime], [CreatedBy], [CreatedDate], [ShiftDescription]) VALUES (24, CAST(N'21:00:00' AS Time), CAST(N'06:00:00' AS Time), 1, CAST(N'2017-12-06T11:53:05.050' AS DateTime), N'Shift 21.00-06.00')
+INSERT [dbo].[ShiftMaster] ([ShiftID], [FromTime], [ToTime], [CreatedBy], [CreatedDate], [ShiftDescription]) VALUES (25, CAST(N'21:30:00' AS Time), CAST(N'06:30:00' AS Time), 1, CAST(N'2017-12-06T11:53:05.050' AS DateTime), N'Shift 21.30-06.30')
+INSERT [dbo].[ShiftMaster] ([ShiftID], [FromTime], [ToTime], [CreatedBy], [CreatedDate], [ShiftDescription]) VALUES (26, CAST(N'22:00:00' AS Time), CAST(N'07:00:00' AS Time), 1, CAST(N'2017-12-06T11:53:05.050' AS DateTime), N'Shift 22.00-07.00')
+INSERT [dbo].[ShiftMaster] ([ShiftID], [FromTime], [ToTime], [CreatedBy], [CreatedDate], [ShiftDescription]) VALUES (27, CAST(N'22:30:00' AS Time), CAST(N'07:30:00' AS Time), 1, CAST(N'2017-12-06T11:53:05.050' AS DateTime), N'Shift 22.30-07.30')
+INSERT [dbo].[ShiftMaster] ([ShiftID], [FromTime], [ToTime], [CreatedBy], [CreatedDate], [ShiftDescription]) VALUES (28, CAST(N'23:00:00' AS Time), CAST(N'08:00:00' AS Time), 1, CAST(N'2017-12-06T11:53:05.050' AS DateTime), N'Shift 23.00-08.00')
+INSERT [dbo].[ShiftMaster] ([ShiftID], [FromTime], [ToTime], [CreatedBy], [CreatedDate], [ShiftDescription]) VALUES (29, CAST(N'23:30:00' AS Time), CAST(N'08:30:00' AS Time), 1, CAST(N'2017-12-06T11:53:05.050' AS DateTime), N'Shift 23.30-08.30')
+INSERT [dbo].[ShiftMaster] ([ShiftID], [FromTime], [ToTime], [CreatedBy], [CreatedDate], [ShiftDescription]) VALUES (30, CAST(N'00:00:00' AS Time), CAST(N'09:00:00' AS Time), 1, CAST(N'2017-12-06T11:53:05.050' AS DateTime), N'Shift 00.00-09.00')
+INSERT [dbo].[ShiftMaster] ([ShiftID], [FromTime], [ToTime], [CreatedBy], [CreatedDate], [ShiftDescription]) VALUES (31, CAST(N'00:30:00' AS Time), CAST(N'09:30:00' AS Time), 1, CAST(N'2017-12-06T11:53:05.050' AS DateTime), N'Shift 30.00-09.30')
+INSERT [dbo].[ShiftMaster] ([ShiftID], [FromTime], [ToTime], [CreatedBy], [CreatedDate], [ShiftDescription]) VALUES (32, CAST(N'01:00:00' AS Time), CAST(N'10:00:00' AS Time), 1, CAST(N'2017-12-06T11:53:05.050' AS DateTime), N'Shift 01.00-10.00')
+INSERT [dbo].[ShiftMaster] ([ShiftID], [FromTime], [ToTime], [CreatedBy], [CreatedDate], [ShiftDescription]) VALUES (33, CAST(N'01:30:00' AS Time), CAST(N'10:30:00' AS Time), 1, CAST(N'2017-12-06T11:53:05.050' AS DateTime), N'Shift 01.30-10.30')
+INSERT [dbo].[ShiftMaster] ([ShiftID], [FromTime], [ToTime], [CreatedBy], [CreatedDate], [ShiftDescription]) VALUES (34, CAST(N'02:00:00' AS Time), CAST(N'11:00:00' AS Time), 1, CAST(N'2017-12-06T11:53:05.050' AS DateTime), N'Shift 02.00-11.00')
+INSERT [dbo].[ShiftMaster] ([ShiftID], [FromTime], [ToTime], [CreatedBy], [CreatedDate], [ShiftDescription]) VALUES (35, CAST(N'02:30:00' AS Time), CAST(N'11:30:00' AS Time), 1, CAST(N'2017-12-06T11:53:05.050' AS DateTime), N'Shift 02.30-11.30')
+INSERT [dbo].[ShiftMaster] ([ShiftID], [FromTime], [ToTime], [CreatedBy], [CreatedDate], [ShiftDescription]) VALUES (36, CAST(N'03:00:00' AS Time), CAST(N'12:00:00' AS Time), 1, CAST(N'2017-12-06T11:53:05.050' AS DateTime), N'Shift 03.00-12.00')
+INSERT [dbo].[ShiftMaster] ([ShiftID], [FromTime], [ToTime], [CreatedBy], [CreatedDate], [ShiftDescription]) VALUES (37, CAST(N'03:30:00' AS Time), CAST(N'12:30:00' AS Time), 1, CAST(N'2017-12-06T11:53:05.050' AS DateTime), N'Shift 03.30-12.30')
+INSERT [dbo].[ShiftMaster] ([ShiftID], [FromTime], [ToTime], [CreatedBy], [CreatedDate], [ShiftDescription]) VALUES (38, CAST(N'04:00:00' AS Time), CAST(N'13:00:00' AS Time), 1, CAST(N'2017-12-06T11:53:05.050' AS DateTime), N'Shift 04.00-13.00')
+INSERT [dbo].[ShiftMaster] ([ShiftID], [FromTime], [ToTime], [CreatedBy], [CreatedDate], [ShiftDescription]) VALUES (39, CAST(N'04:30:00' AS Time), CAST(N'13:30:00' AS Time), 1, CAST(N'2017-12-06T11:53:05.050' AS DateTime), N'Shift 04.30-13.30')
+INSERT [dbo].[ShiftMaster] ([ShiftID], [FromTime], [ToTime], [CreatedBy], [CreatedDate], [ShiftDescription]) VALUES (40, CAST(N'05:00:00' AS Time), CAST(N'14:00:00' AS Time), 1, CAST(N'2017-12-06T11:53:05.050' AS DateTime), N'Shift 05.00-14.00')
+INSERT [dbo].[ShiftMaster] ([ShiftID], [FromTime], [ToTime], [CreatedBy], [CreatedDate], [ShiftDescription]) VALUES (41, CAST(N'05:30:00' AS Time), CAST(N'14:30:00' AS Time), 1, CAST(N'2017-12-06T11:53:05.050' AS DateTime), N'Shift 05.30-14.30')
+INSERT [dbo].[ShiftMaster] ([ShiftID], [FromTime], [ToTime], [CreatedBy], [CreatedDate], [ShiftDescription]) VALUES (42, CAST(N'06:00:00' AS Time), CAST(N'15:00:00' AS Time), 1, CAST(N'2017-12-06T11:53:05.050' AS DateTime), N'Shift 06.00-15.00')
+INSERT [dbo].[ShiftMaster] ([ShiftID], [FromTime], [ToTime], [CreatedBy], [CreatedDate], [ShiftDescription]) VALUES (43, CAST(N'06:30:00' AS Time), CAST(N'15:30:00' AS Time), 1, CAST(N'2017-12-06T11:53:05.050' AS DateTime), N'Shift 06.30-15.30')
+INSERT [dbo].[ShiftMaster] ([ShiftID], [FromTime], [ToTime], [CreatedBy], [CreatedDate], [ShiftDescription]) VALUES (44, CAST(N'07:00:00' AS Time), CAST(N'16:00:00' AS Time), 1, CAST(N'2017-12-06T11:53:05.050' AS DateTime), N'Shift 07.00-16.00')
+INSERT [dbo].[ShiftMaster] ([ShiftID], [FromTime], [ToTime], [CreatedBy], [CreatedDate], [ShiftDescription]) VALUES (45, CAST(N'07:30:00' AS Time), CAST(N'16:30:00' AS Time), 1, CAST(N'2017-12-06T11:53:05.050' AS DateTime), N'Shift 07.30-16.30')
+INSERT [dbo].[ShiftMaster] ([ShiftID], [FromTime], [ToTime], [CreatedBy], [CreatedDate], [ShiftDescription]) VALUES (46, CAST(N'08:00:00' AS Time), CAST(N'17:00:00' AS Time), 1, CAST(N'2017-12-06T11:53:05.050' AS DateTime), N'Shift 08.00-17.00')
+INSERT [dbo].[ShiftMaster] ([ShiftID], [FromTime], [ToTime], [CreatedBy], [CreatedDate], [ShiftDescription]) VALUES (47, CAST(N'08:30:00' AS Time), CAST(N'17:30:00' AS Time), 1, CAST(N'2017-12-06T11:53:05.050' AS DateTime), N'Shift 08.30-17.30')
+INSERT [dbo].[ShiftMaster] ([ShiftID], [FromTime], [ToTime], [CreatedBy], [CreatedDate], [ShiftDescription]) VALUES (48, CAST(N'09:00:00' AS Time), CAST(N'18:00:00' AS Time), 1, CAST(N'2017-12-06T11:53:05.050' AS DateTime), N'Shift 09.00-18.00')
+SET IDENTITY_INSERT [dbo].[ShiftMaster] OFF
+--Master Data
+
+--First Employee Record
+SET IDENTITY_INSERT [dbo].[Employee] ON 
+INSERT [dbo].[Employee] ([UserId], [EmployeeId], [LoginId], [OfficeId], [FirstName], [LastName], [EmailAddress], [MobileNumber], [Gender], [AvatarUrl], [ReportingToId], [OfficeHolidayId], [EmployeeRoleId], [IsHandleMembers], [IsInProbationaryPeriod], [CanAvailYearlyLeave], [IsActive], [CreatedBy], [CreatedOn], [ModifiedBy], [ModifiedOn], [ShiftID], [CardID], [DOJ], [ConfirmationDate], [RelievingDate], [AvailedLeavePolicyException], [SkipTimesheetCompliance], [EmploymentTypeId], [OnlyDirectAlerts]) VALUES (1, N'001', N'CORP\MJAIN', 1, N'Monish', N'Jain', N'mjain@nltechdev.com', N'9884182938', N'M', NULL, NULL, 1, 3, 1, 0, 0, 1, 1, CAST(N'2017-09-04T13:51:44.703' AS DateTime), 1, CAST(N'2020-01-09T17:28:54.050' AS DateTime), 1, 5898251, CAST(N'2014-03-26T00:00:00.000' AS DateTime), CAST(N'2014-09-26T00:00:00.000' AS DateTime), NULL, 0, NULL, 1, 0)
+SET IDENTITY_INSERT [dbo].[Employee] OFF
+
+Go
