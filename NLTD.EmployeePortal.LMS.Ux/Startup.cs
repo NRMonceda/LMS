@@ -21,14 +21,11 @@ namespace NLTD.EmployeePortal.LMS.Ux
 
             //Fire and Forget
 
-            // app.UseHangfireDashboard();
-
             app.UseHangfireDashboard("/hangfire", new DashboardOptions
             {
                 Authorization = new[] { new LMSSiteAdminAuthFilter() }
             });
 
-            //app.UseHangfireServer();
             app.UseHangfireServer(new BackgroundJobServerOptions
             {
                 HeartbeatInterval = TimeSpan.FromMilliseconds(60000),
@@ -59,28 +56,5 @@ namespace NLTD.EmployeePortal.LMS.Ux
 
             return false;
         }
-
-        //public bool Authorize(IDictionary<string, object> owinEnvironment)
-        //{
-        //    var context = new OwinContext(owinEnvironment);
-
-        //    string hangfireDashboardUsers = ConfigurationManager.AppSettings["HangfireDashboardUsers"].ToString();
-        //    List<string> lstUsers = hangfireDashboardUsers.Split(',').ToList();
-
-        //    if (context.Authentication.User.Identity.IsAuthenticated)
-        //    {
-        //        if (context.Authentication.User.Identity.Name.IndexOf("CORP\\", StringComparison.Ordinal) != -1)
-        //        {
-        //            if(lstUsers.Any(x=>x.ToUpper() == context.Authentication.User.Identity.Name.Substring(5).ToUpper()))
-        //            {
-        //                return true;
-        //            }
-        //        }
-
-        //    }
-
-        //    return false;
-
-        //}
     }
 }

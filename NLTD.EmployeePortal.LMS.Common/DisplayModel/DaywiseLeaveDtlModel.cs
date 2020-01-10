@@ -22,7 +22,6 @@ namespace NLTD.EmployeePortal.LMS.Common.DisplayModel
 
         public string PartOfDay { get; set; }
 
-        //public DateTime LeaveTo { get; set; }
         public bool IsDayOff { get; set; }
 
         public decimal Duration { get; set; }

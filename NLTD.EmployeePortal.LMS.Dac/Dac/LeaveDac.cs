@@ -989,8 +989,7 @@ namespace NLTD.EmployeePortal.LMS.Dac
                         decimal leaveDuration = 0;
                         string todayDate = System.DateTime.Now.Date.ToString("ddMMyyyy", CultureInfo.InvariantCulture);
                         int numberOfLeaveExceptionsAllowed = Convert.ToInt32(ConfigurationManager.AppSettings["NumberOfLeaveExceptionsAllowed"].ToString());
-                        DateTime leavePolicyRelaxationDate = DateTime.ParseExact(ConfigurationManager.AppSettings["leavePolicyRelaxationDate"].ToString(), "ddMMyyyy", CultureInfo.InvariantCulture);
-
+                       
                         if (isTimeBased)
                         {
                             request.LeaveUpto = request.LeaveFrom;
@@ -1104,7 +1103,6 @@ namespace NLTD.EmployeePortal.LMS.Dac
                                     }
                                 }
 
-                                //duplicateRequest = "Duplicate";
                                 if (duplicateRequest == "Duplicate")
                                     return "Duplicate";
                             }
@@ -1137,8 +1135,6 @@ namespace NLTD.EmployeePortal.LMS.Dac
                         var empProfile = context.Employee.Where(x => x.UserId == request.UserId).FirstOrDefault();
 
                         //2019 Leave Policy restrictions
-                        if (DateTime.ParseExact(todayDate, "ddMMyyyy", CultureInfo.InvariantCulture).Date > leavePolicyRelaxationDate)
-                        {
                             daysBeforeApplied = (request.LeaveFrom.Date - System.DateTime.Now.Date).Days;
 
                             if (adjustBal.Type == "Casual Leave")
@@ -1181,7 +1177,6 @@ namespace NLTD.EmployeePortal.LMS.Dac
                                     }
                                 }
                             }
-                        }
                         if (adjustBal.AdjustLeaveBalance)
                         {
                             var chkLeaveBalRec = context.EmployeeLeaveBalance.Where(e => e.UserId == request.UserId && e.LeaveTypeId == request.LeaveType && e.Year == request.LeaveFrom.Year).FirstOrDefault();
@@ -1349,7 +1344,7 @@ namespace NLTD.EmployeePortal.LMS.Dac
                                 context.PermissionDetail.Add(pd);
                                 isSaved = context.SaveChanges();
                             }
-                            if (isTimeBased == false)//check this suresh OCT 25
+                            if (isTimeBased == false)
                             {
                                 if (isSaved > 0)
                                 {
@@ -1409,7 +1404,6 @@ namespace NLTD.EmployeePortal.LMS.Dac
                                         {
                                             hist.Remarks = "Pending";
                                         }
-                                        //bool retRes = SaveTransactionLog(hist);
 
                                         LeaveTransactionHistory histRec = new LeaveTransactionHistory
                                         {
@@ -1859,30 +1853,7 @@ namespace NLTD.EmployeePortal.LMS.Dac
             if (leaveDetail.Count > 0)
                 leaveDetail[0].Total = totalCount;
             return leaveDetail;
-        }
-
-        //public bool SaveTransactionLog(TransactionHistoryModel histModel)
-        //{
-        //    int isSaved = 0;
-        //    using (var context = new NLTDDbContext())
-        //    {
-        //        LeaveTransactionHistory hist = new LeaveTransactionHistory();
-        //        hist.UserId = histModel.EmployeeId;
-        //        hist.LeaveTypeId = histModel.LeaveTypeId;
-        //        hist.LeaveId = histModel.LeaveId;
-        //        hist.TransactionDate = DateTime.Now;
-        //        hist.TransactionType = histModel.TransactionType;
-        //        hist.NumberOfDays = histModel.NumberOfDays;
-        //        hist.TransactionBy = histModel.TransactionBy;
-        //        hist.Remarks = histModel.Remarks;
-        //        context.LeaveTransactionHistory.Add(hist);
-        //        isSaved = context.SaveChanges();
-        //    }
-        //    if (isSaved > 0)
-        //        return true;
-        //    else
-        //        return false;
-        //}
+        }        
 
         public IList<DaywiseLeaveDtlModel> GetDaywiseLeaveDtl(DateTime? FromDate, DateTime? ToDate, bool IsLeaveOnly, Int64 LeadId, bool OnlyReportedToMe, Int64? paramUserId, string reqUsr, bool DonotShowRejected)
         {

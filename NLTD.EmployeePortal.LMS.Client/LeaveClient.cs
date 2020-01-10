@@ -17,13 +17,6 @@ namespace NLTD.EmployeePortal.LMS.Client
             }
         }
 
-        //public string ChangeStatusFromEmail(Int64 leaveId, Int64 userId, string action)
-        //{
-        //    using (ILeaveHelper helper = new LeaveHelper())
-        //    {
-        //        return helper.ChangeStatusFromEmail(leaveId, userId, action);
-        //    }
-        //}
         public EmailDataModel ViewLeaveFromEmail(Int64 leaveId, Int64 userId)
         {
             using (ILeaveHelper helper = new LeaveHelper())
@@ -68,14 +61,6 @@ namespace NLTD.EmployeePortal.LMS.Client
                 return helper.GetLeaveRequests(qryMdl);
             }
         }
-
-        //public List<LeaveItem> GetMyLeaveRequests(long UserId)
-        //{
-        //    using (ILeaveHelper helper = new LeaveHelper())
-        //    {
-        //        return helper.GetMyLeaveRequests(UserId);
-        //    }
-        //}
         public List<LeaveTypesModel> GetLeaveTypes(long OfficeId, Int64 userId)
         {
             using (ILeaveHelper helper = new LeaveHelper())

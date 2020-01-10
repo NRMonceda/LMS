@@ -17,7 +17,6 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
         {
             EmployeeShifts shiftEmployees = new EmployeeShifts();
             ViewBag.RequestLevelPerson = "Team";
-            //IList<Shifts> shiftMaster = null;
             using (var client = new ShiftClient())
             {
                 shiftEmployees.Shifts = client.GetShiftMaster().OrderBy(p => p.FromTime).ToList();

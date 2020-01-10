@@ -12,8 +12,6 @@ namespace NLTD.EmployeePortal.LMS.Common.DisplayModel
 
         public string TimebasedLeaveTypeIds { get; set; }
 
-        //public string Holidays { get; set; }
-
         public Int64 RequestId { get; set; }
         public Int64 UserId { get; set; }
 

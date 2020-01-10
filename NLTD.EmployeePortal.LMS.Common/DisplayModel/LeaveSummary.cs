@@ -20,8 +20,5 @@ namespace NLTD.EmployeePortal.LMS.Common.DisplayModel
         public bool AdjustLeaveBalance { get; set; }
 
         public bool IsTimeBased { get; set; }
-
-        //public Int64? ReportingToId { get; set; }
-        //public string ReportingToName { get; set; }
     }
 }

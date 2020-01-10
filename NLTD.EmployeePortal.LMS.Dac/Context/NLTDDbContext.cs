@@ -9,13 +9,6 @@ namespace NLTD.EmployeePortal.LMS.Dac
         {
             return;
         }
-
-        //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        //{
-        //    //optionsBuilder.UseSqlServer(new Startup().Configuration.GetSection("Data:DefaultConnection:NLTDDbContext").Value.ToString());
-        //    optionsBuilder.UseSqlServer("data source=NLTI70;initial catalog=LMS;User ID=sa;Password=password@123;persist security info=False;packet size=4096");
-        //}
-
         public DbSet<Employee> Employee { get; set; }
         public DbSet<EmployeeLeaveBalance> EmployeeLeaveBalance { get; set; }
         public DbSet<EmployeeRole> EmployeeRole { get; set; }

@@ -680,7 +680,6 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
             string errorMessage = string.Empty;
             string startDate = TimeSheetQueryModelObj.DateRange.Substring(0, 10);
             string endDate = TimeSheetQueryModelObj.DateRange.Substring(12);
-            //TimeSheetQueryModelObj.FromDate = startDate;
             if (startDate != "")
             {
                 try
@@ -701,15 +700,6 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
                 List<string> columns = new List<string>() { "Date", "Shift", "In Time", "Out Time", "Working Hours", "Status", "Requests", "Day", "Late In", "Early Out", "Name", "Reporting Manager" };
                 string fileName = string.Format("Timesheet_{0}{1}", DateTime.Now.ToString("ddMMyyyyHHmmss"), ".xlsx");
 
-                //if (RequestLevelPerson == "My")
-                //{
-                //    EmployeeProfile profile = (EmployeeProfile)Session["Profile"];
-                //    fileName = string.Format("{0}{1}{2}{3}", profile.FirstName, profile.LastName, DateTime.Now.ToString("ddMMyyyyHHmmss"), ".xlsx");
-                //}
-                //else
-                //{
-                //fileName = string.Format("TimeSheet_{0}{1}", DateTime.Now.ToString("ddMMyyyyHHmmss"), ".xlsx");
-                //}
                 byte[] filecontent = ExcelExportHelper.ExportTimesheetExcel(excelData, "", true, columns.ToArray());
                 return File(filecontent, ExcelExportHelper.ExcelContentType, fileName);
             }
@@ -737,7 +727,6 @@ namespace NLTD.EmployeePortal.LMS.Ux.Controllers
             if (excelData.Count > 0)
             {
                 List<string> columns = new List<string>() { "AttendanceDate", "InOutTime", "InOut", "Name", "BreakDuration" };
-                // string fileName = "Attendance.xlsx";
                 string fileName = string.Format("Attendance_{0}{1}", DateTime.Now.ToString("ddMMyyyyHHmmss"), ".xlsx");
                 if (EmployeeAttendanceQueryModelObj.RequestLevelPerson == "My")
                 {

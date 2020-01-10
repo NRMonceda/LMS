@@ -24,15 +24,7 @@ namespace NLTD.EmployeePortal.LMS.Ux
                 today = today.AddDays(-1);
             }
             GetTimesheetReportData(today.Date.AddDays(-7), today.Date.AddDays(-1));
-            //GetTimesheetReportData(DateTime.Parse("4/3/2019", new CultureInfo("en-GB", true)), DateTime.Parse("10/3/2019", new CultureInfo("en-GB", true)));// Hard coded suresh
         }
-
-        //public void ProcessMonthlyReport()
-        //{
-        //    DateTime lastMonth = DateTime.Now.Date.AddMonths(-1).AddDays(1);
-        //    GetTimesheetReportData(lastMonth.Date, DateTime.Now.Date);
-        //}
-
         public void GetTimesheetReportData(DateTime FromDate, DateTime ToDate)
         {
             TimeSheetQueryModel TimeSheetQueryModelObj = new TimeSheetQueryModel();

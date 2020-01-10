@@ -137,7 +137,8 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
                 using (var context = new NLTDDbContext())
                 {
                     if ((role.ToUpper() == "ADMIN" || role.ToUpper() == "HR") && !myDirectEmployees)
-                    {// If the user role is admin we retrieve all the employees in the company
+                    {
+                        // If the user role is admin we retrieve all the employees in the company
                         employeeProfileList = (from employee in context.Employee
                                                join rt in context.EmployeeRole on employee.EmployeeRoleId equals rt.RoleId
                                                where employee.IsActive == true
@@ -379,7 +380,6 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
                 {
                     var ids = (from e in context.Employee
                                join s in context.ShiftMaster on e.ShiftId equals s.ShiftID
-                               //where e.ReportingToId == userId
                                orderby e.FirstName
                                select new { userId = e.UserId, iactive = e.IsActive, reportingToId = e.ReportingToId, name = e.FirstName + " " + e.LastName, Shift = s.FromTime + "-" + s.ToTime }
                              ).ToList();
@@ -1022,9 +1022,6 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
                             if (profile.RoleId != oldEmpData.EmployeeRoleId)
                                 remarks = remarks + "#RoleId" + "^" + profile.RoleId;
 
-                            //if (profile.ShiftId != oldEmpData.ShiftId)
-                            //    remarks = remarks + "#ShiftId" + "^" + profile.ShiftId;
-
                             if (profile.CardId != oldEmpData.Cardid)
                                 remarks = remarks + "#CardId" + "^" + profile.CardId;
 
@@ -1048,7 +1045,6 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
                             employee.Gender = profile.Gender;
                             employee.MobileNumber = profile.MobileNumber;
                             employee.EmailAddress = profile.EmailAddress;
-                            //employee.ShiftId = profile.ShiftId;
                             employee.Cardid = profile.CardId;
                             employee.OfficeHolidayId = profile.OfficeHolidayId;
                             employee.EmployeeRoleId = profile.RoleId;
@@ -1063,12 +1059,6 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
                                 employee.ModifiedOn = System.DateTime.Now;
                                 employee.ModifiedBy = ModifiedBy;
                                 isSaved = context.SaveChanges();
-
-                                //if (isSaved > 0)
-                                //{
-                                //    isSaved = AddOrUpdateEmployeeDefaultShift(profile.Mode, employee.UserId, employee.ShiftId, ModifiedBy,
-                                //        oldShiftid);
-                                //}
                             }
 
                             string isSameWeekoff = "";

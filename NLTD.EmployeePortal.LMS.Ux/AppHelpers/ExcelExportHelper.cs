@@ -79,12 +79,7 @@ namespace NLTD.EmployeePortal.LMS.Ux.AppHelpers
                 foreach (DataColumn column in dataTable.Columns)
                 {
                     ExcelRange columnCells = workSheet.Cells[workSheet.Dimension.Start.Row, columnIndex, workSheet.Dimension.End.Row, 14];
-                    //int maxLength = columnCells.Max(cell => cell.Value.ToString().Count()); //commented by suresh
-                    //if (maxLength < 150)
-                    //{
                     workSheet.Column(columnIndex).AutoFit();
-                    //}
-
                     columnIndex++;
                 }
 
@@ -183,12 +178,7 @@ namespace NLTD.EmployeePortal.LMS.Ux.AppHelpers
                 foreach (DataColumn column in dataTable.Columns)
                 {
                     ExcelRange columnCells = workSheet.Cells[workSheet.Dimension.Start.Row, columnIndex, workSheet.Dimension.End.Row, 14];
-                    //int maxLength = columnCells.Max(cell => cell.Value.ToString().Count()); //commented by suresh
-                    //if (maxLength < 150)
-                    //{
                     workSheet.Column(columnIndex).AutoFit();
-                    //}
-
                     columnIndex++;
                 }
 
@@ -289,13 +279,7 @@ namespace NLTD.EmployeePortal.LMS.Ux.AppHelpers
                 foreach (DataColumn column in dataTable.Columns)
                 {
                     ExcelRange columnCells = workSheet.Cells[workSheet.Dimension.Start.Row, columnIndex, workSheet.Dimension.End.Row, 15];
-                    //int maxLength = columnCells.Max(cell => cell.Value.ToString().Count()); //commented by suresh
-                    //if (maxLength < 150)
-                    //{
                     workSheet.Column(columnIndex).AutoFit();
-                    //}
-                    //workSheet.Column(9).Style.WrapText = true;
-                    //workSheet.Column(10).Style.WrapText = true;
                     columnIndex++;
                 }
 
@@ -393,13 +377,7 @@ namespace NLTD.EmployeePortal.LMS.Ux.AppHelpers
                 foreach (DataColumn column in dataTable.Columns)
                 {
                     ExcelRange columnCells = workSheet.Cells[workSheet.Dimension.Start.Row, columnIndex, workSheet.Dimension.End.Row, 15];
-                    //int maxLength = columnCells.Max(cell => cell.Value.ToString().Count()); //commented by suresh
-                    //if (maxLength < 150)
-                    //{
                     workSheet.Column(columnIndex).AutoFit();
-                    //}
-                    //workSheet.Column(9).Style.WrapText = true;
-                    //workSheet.Column(10).Style.WrapText = true;
                     columnIndex++;
                 }
 
@@ -1000,27 +978,6 @@ namespace NLTD.EmployeePortal.LMS.Ux.AppHelpers
                 // add the content into the Excel file
                 workSheet.Cells["A" + startRowFrom].LoadFromDataTable(dataTable, true);
                 workSheet = FormatConsolidateExcel(workSheet, dataTable, startRowFrom, showSrNo);
-                // autofit width of cells with small content
-
-                //dataTable = ListToDataTable<ConsolidateReport>(monthlyTimeSheetConsolidateList);
-                //workSheet = package.Workbook.Worksheets.Add("Monthly Report");
-                //startRowFrom = String.IsNullOrEmpty(heading) ? 1 : 3;
-                //if (showSrNo)
-                //{
-                //    DataColumn dataColumn = dataTable.Columns.Add("#", typeof(int));
-                //    dataColumn.SetOrdinal(0);
-                //    int index = 1;
-                //    foreach (DataRow item in dataTable.Rows)
-                //    {
-                //        item[0] = index;
-                //        index++;
-                //    }
-                //}
-
-                //// add the content into the Excel file
-                //workSheet.Cells["A" + startRowFrom].LoadFromDataTable(dataTable, true);
-                //// autofit width of cells with small content
-                //workSheet = FormatConsolidateExcel(workSheet, dataTable, startRowFrom, showSrNo);
                 result = package.GetAsByteArray();
             }
 
@@ -1232,12 +1189,7 @@ namespace NLTD.EmployeePortal.LMS.Ux.AppHelpers
                 foreach (DataColumn column in dataTable.Columns)
                 {
                     ExcelRange columnCells = workSheet.Cells[workSheet.Dimension.Start.Row, columnIndex, workSheet.Dimension.End.Row, columnIndex];
-                    //int maxLength = columnCells.Max(cell => cell.Value.ToString().Count());
-                    //if (maxLength < 150)
-                    //{
                     workSheet.Column(columnIndex).AutoFit();
-                    //}
-
                     columnIndex++;
                 }
 

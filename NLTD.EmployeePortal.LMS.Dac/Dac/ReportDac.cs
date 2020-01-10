@@ -107,7 +107,6 @@ namespace NLTD.EmployeePortal.LMS.Dac
                 {
                     ToDate = ToDate.Add(toTime.Add(new TimeSpan(AfterShiftBuffer, 0, 0)));
                 }
-                // TimeSpan ToDate = ToDate.Add(toDateShift);
             }
             catch (Exception)
             {
