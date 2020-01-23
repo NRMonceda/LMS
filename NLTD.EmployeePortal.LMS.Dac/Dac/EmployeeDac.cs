@@ -463,7 +463,6 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
                                    join rt in context.EmployeeRole on employee.EmployeeRoleId equals rt.RoleId
                                    join et in context.EmploymentType on employee.EmploymentTypeId equals et.EmploymentTypeId
                                    join o in context.OfficeLocation on employee.OfficeId equals o.OfficeId
-                                   join h in context.OfficeHoliday on employee.OfficeHolidayId equals h.OfficeHolidayId
                                    join s in context.ShiftMaster on employee.ShiftId equals s.ShiftID
                                    where employee.UserId == memId.userId
                                    select new ViewEmployeeProfileModel
@@ -567,7 +566,6 @@ namespace NLTD.EmployeePortal.LMS.Dac.Dac
                     profile = (from employee in context.Employee
                                join rt in context.EmployeeRole on employee.EmployeeRoleId equals rt.RoleId
                                join o in context.OfficeLocation on employee.OfficeId equals o.OfficeId
-                               join h in context.OfficeHoliday on employee.OfficeHolidayId equals h.OfficeHolidayId
                                where employee.UserId == userId
                                select new ViewEmployeeProfileModel
                                {
